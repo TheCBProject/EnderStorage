@@ -1,0 +1,19 @@
+[
+{
+  "modid": "EnderStorage",
+  "name": "EnderStorage",
+  "description": "Stores your stuff in the END!
+  
+Credits: Ecu - original idea, design,
+        chest and pouch texture
+    Rosethorns - tank model
+    Soaryn - tank texture",
+  "version": "Packager",
+  "mcversion": "1.6.2",
+  "url": "http://www.minecraftforum.net/topic/909223",
+  "authors": [ "ChickenBones" ],
+  "dependencies": [
+     "MinecraftForge, CodeChickenCore"
+  ]
+}
+]

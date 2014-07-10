@@ -1,0 +1,4 @@
+﻿tile.enderchest|0.name=Endertruhe
+tile.enderchest|1.name=Endertank
+item.enderpouch.name=Enderbeutel
+enderstorage.serverop=Operator

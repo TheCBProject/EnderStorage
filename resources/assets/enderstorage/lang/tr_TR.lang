@@ -1,0 +1,4 @@
+tile.enderchest|0.name=Ender Sandığı
+tile.enderchest|1.name=Ender Sıvı Tankı
+item.enderpouch.name=Ender Sırt Çantası
+enderstorage.serverop=Operatör

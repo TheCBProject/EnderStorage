@@ -1,0 +1,4 @@
+tile.enderchest|0.name=終界箱子
+tile.enderchest|1.name=終界蓄水槽
+item.enderpouch.name=終界袋
+enderstorage.serverop=管理員

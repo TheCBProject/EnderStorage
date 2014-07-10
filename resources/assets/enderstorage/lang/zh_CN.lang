@@ -1,0 +1,6 @@
+#zh_CN
+
+tile.enderchest|0.name=末影箱子
+tile.enderchest|1.name=末影蓄水槽
+item.enderpouch.name=末影口袋
+enderstorage.serverop=OP
