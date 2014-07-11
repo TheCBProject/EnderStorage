@@ -2,3 +2,8 @@ tile.enderchest|0.name=Сундук Края
 tile.enderchest|1.name=Цистерна Края
 item.enderpouch.name=Сумка Края
 enderstorage.serverop=Оператор
+
+enderstorage.command.usage=enderstorage <частота>|(<цвет> <цвет> <цвет>) [владелец]
+enderstorage.command.no_arguments=Неверное число аргументов
+enderstorage.command.no_freq=Неверная частота
+enderstorage.command.no_colour=Неверный цвет: %s
