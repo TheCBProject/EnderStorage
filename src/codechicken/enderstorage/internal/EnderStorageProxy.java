@@ -26,6 +26,7 @@ public class EnderStorageProxy
         
         itemEnderPouch = new ItemEnderPouch();
         itemEnderPouch.setUnlocalizedName("enderpouch");
+        GameRegistry.registerItem(itemEnderPouch, "enderPouch");
         
         GameRegistry.registerTileEntity(TileEnderChest.class, "Ender Chest");
         GameRegistry.registerTileEntity(TileEnderTank.class, "Ender Tank");
