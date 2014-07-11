@@ -78,41 +78,42 @@ public class BlockEnderStorage extends BlockContainer
         return stack;
     }
 
-    @Override
     public int getRenderType() {
         return -1;
     }
 
-    @Override
     public boolean isOpaqueCube() {
         return false;
     }
 
-    @Override
     public boolean renderAsNormalBlock() {
         return false;
     }
 
     @Override
-    public boolean removedByPlayer(World world, EntityPlayer player, int x, int y, int z, boolean willHarvest) {
-        return willHarvest || super.removedByPlayer(world, player, x, y, z, false);
-    }
+    public boolean removedByPlayer(World world, EntityPlayer player, int x, int y, int z) {
+        if (!player.capabilities.isCreativeMode && !world.isRemote)
+            dropBlockAsItem(world, x, y, z, world.getBlockMetadata(x, y, z), 0);
 
-    @Override
-    public void harvestBlock(World world, EntityPlayer player, int x, int y, int z, int meta) {
-        super.harvestBlock(world, player, x, y, z, meta);
         world.setBlockToAir(x, y, z);
+        return true;
     }
 
     @Override
+    public int quantityDropped(int meta, int fortune, Random random) {
+        return 0;
+    }
+
     public ArrayList<ItemStack> getDrops(World world, int i, int j, int k, int meta, int fortune) {
-        ArrayList<ItemStack> ret = new ArrayList<ItemStack>();
+        ArrayList<ItemStack> ai = new ArrayList<ItemStack>();
+        if (world.isRemote)
+            return ai;
 
         TileFrequencyOwner tile = (TileFrequencyOwner) world.getTileEntity(i, j, k);
         if (tile != null)
-            ret.add(createItem(meta, tile.freq, tile.owner));
+            ai.add(createItem(meta, tile.freq, tile.owner));
 
-        return ret;
+        return ai;
     }
 
     @Override
