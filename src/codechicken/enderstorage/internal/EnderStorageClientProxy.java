@@ -1,5 +1,6 @@
 package codechicken.enderstorage.internal;
 
+import codechicken.core.GuiModListScroll;
 import codechicken.lib.packet.PacketCustom;
 import codechicken.core.CCUpdateChecker;
 import codechicken.enderstorage.common.ItemEnderStorageRenderer;
@@ -22,7 +23,9 @@ public class EnderStorageClientProxy extends EnderStorageProxy
             CCUpdateChecker.updateCheck("EnderStorage");
 
         super.init();
-        
+
+        GuiModListScroll.register("EnderStorage");
+
         PacketCustom.assignHandler(EnderStorageCPH.channel, new EnderStorageCPH());
 
         MinecraftForgeClient.registerItemRenderer(Item.getItemFromBlock(blockEnderChest), new ItemEnderStorageRenderer());
