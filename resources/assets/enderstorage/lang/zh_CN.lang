@@ -2,5 +2,10 @@
 
 tile.enderchest|0.name=末影箱子
 tile.enderchest|1.name=末影蓄水槽
-item.enderpouch.name=末影口袋
+item.enderpouch.name=末影背袋
 enderstorage.serverop=OP
+
+enderstorage.command.usage=enderstorage <freq>|(<colour> <colour> <colour>) [owner]
+enderstorage.command.no_arguments=无效参数的数量
+enderstorage.command.no_freq=无效频率
+enderstorage.command.no_colour=无效颜色: %s
