@@ -257,7 +257,7 @@ public class TileEnderTank extends TileFrequencyOwner implements IFluidHandler
         
         for(int i = 0; i < 4; i++)
             cuboids.add(new IndexedCuboid6(i+1, selectionBoxes[i].copy()
-                    .apply(Rotation.quarterRotations[(rotation+2)%4].at(center)).add(pos)));
+                    .apply(Rotation.quarterRotations[rotation ^ 2].at(center)).add(pos)));
     }
     
     @Override
