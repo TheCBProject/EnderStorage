@@ -1,6 +1,6 @@
 package codechicken.enderstorage.internal;
 
-import codechicken.core.GuiModListScroll;
+import codechicken.core.ClientUtils;
 import codechicken.lib.packet.PacketCustom;
 import codechicken.core.CCUpdateChecker;
 import codechicken.enderstorage.common.ItemEnderStorageRenderer;
@@ -21,10 +21,9 @@ public class EnderStorageClientProxy extends EnderStorageProxy
     {
         if(config.getTag("checkUpdates").getBooleanValue(true))
             CCUpdateChecker.updateCheck("EnderStorage");
+        ClientUtils.enhanceSupportersList("EnderStorage");
 
         super.init();
-
-        GuiModListScroll.register("EnderStorage");
 
         PacketCustom.assignHandler(EnderStorageCPH.channel, new EnderStorageCPH());
 
