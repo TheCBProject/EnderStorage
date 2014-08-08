@@ -2,3 +2,8 @@ tile.enderchest|0.name=Ender Sandığı
 tile.enderchest|1.name=Ender Sıvı Tankı
 item.enderpouch.name=Ender Sırt Çantası
 enderstorage.serverop=Operatör
+
+enderstorage.command.usage=enderstorage <frekans>|(<renk> <renk> <renk>) [sahibi]
+enderstorage.command.no_arguments=Girdiğiniz bilgiler yanlış
+enderstorage.command.no_freq=Geçersiz Frekans
+enderstorage.command.no_colour=Geçersiz Renk: %s
