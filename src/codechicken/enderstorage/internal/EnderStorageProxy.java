@@ -42,5 +42,8 @@ public class EnderStorageProxy
         FMLCommonHandler.instance().bus().register(new TankSynchroniser());
         MinecraftForge.EVENT_BUS.register(new TankSynchroniser());
 
+        if(disableVanillaEnderChest)
+            EnderStorageRecipe.removeVanillaChest();
+
     }
 }
