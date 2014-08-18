@@ -110,7 +110,8 @@ public class EnderStorageRecipe implements IRecipe
 
     private static void addNormalRecipies() {
         for (int i = 0; i < 16; i++) {
-            GameRegistry.addRecipe(new ItemStack(EnderStorage.blockEnderChest, 1, EnderStorageManager.getFreqFromColours(i, i, i)), "bWb",
+            GameRegistry.addRecipe(new ItemStack(EnderStorage.blockEnderChest, 1, EnderStorageManager.getFreqFromColours(i, i, i)),
+                    "bWb",
                     "OCO",
                     "bpb",
                     'b', Items.blaze_rod,
@@ -119,7 +120,8 @@ public class EnderStorageRecipe implements IRecipe
                     'C', Blocks.chest,
                     'W', new ItemStack(Blocks.wool, 1, i));
 
-            GameRegistry.addRecipe(new ItemStack(EnderStorage.itemEnderPouch, 1, EnderStorageManager.getFreqFromColours(i, i, i)), "blb",
+            GameRegistry.addRecipe(new ItemStack(EnderStorage.itemEnderPouch, 1, EnderStorageManager.getFreqFromColours(i, i, i)),
+                    "blb",
                     "lpl",
                     "bWb",
                     'b', Items.blaze_powder,
@@ -127,7 +129,8 @@ public class EnderStorageRecipe implements IRecipe
                     'l', Items.leather,
                     'W', new ItemStack(Blocks.wool, 1, i));
 
-            GameRegistry.addRecipe(new ItemStack(EnderStorage.blockEnderChest, 1, 1 << 12 | EnderStorageManager.getFreqFromColours(i, i, i)), "bWb",
+            GameRegistry.addRecipe(new ItemStack(EnderStorage.blockEnderChest, 1, 1 << 12 | EnderStorageManager.getFreqFromColours(i, i, i)),
+                    "bWb",
                     "OCO",
                     "bpb",
                     'b', Items.blaze_rod,

@@ -3,6 +3,7 @@ package codechicken.enderstorage;
 import java.io.File;
 
 import codechicken.lib.config.ConfigTag;
+import cpw.mods.fml.common.event.FMLServerAboutToStartEvent;
 import net.minecraft.command.CommandHandler;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
@@ -71,7 +72,12 @@ public class EnderStorage
     }
 
     @EventHandler
-    public void registerCommands(FMLServerStartingEvent event) {
+    public void preServerStart(FMLServerAboutToStartEvent event) {
+        EnderStorageManager.reloadManager(false);
+    }
+
+    @EventHandler
+    public void serverStart(FMLServerStartingEvent event) {
         CommandHandler commandManager = (CommandHandler) event.getServer().getCommandManager();
         commandManager.registerCommand(new CommandEnderStorage());
     }
