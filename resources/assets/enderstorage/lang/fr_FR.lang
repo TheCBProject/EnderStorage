@@ -1,0 +1,9 @@
+tile.enderchest|0.name=Coffre du Néant
+tile.enderchest|1.name=Réservoir du Néant
+item.enderpouch.name=Bourse du Néant
+enderstorage.serverop=Opérateur
+
+enderstorage.command.usage=enderstorage <fréquence>|(<couleur> <couleur> <couleur>) [propriétaire]
+enderstorage.command.no_arguments=Nombre de fréquences invalide
+enderstorage.command.no_freq=Fréquence invalide
+enderstorage.command.no_colour=Couleur invalide: %s
