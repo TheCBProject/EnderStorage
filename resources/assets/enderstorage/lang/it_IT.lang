@@ -1,6 +1,6 @@
-tile.enderchest|0.name=Baule dell'End
-tile.enderchest|1.name=Serbatoio dell'End
-item.enderpouch.name=Borsa dell'End
+tile.enderchest|0.name=Baule d'omega
+tile.enderchest|1.name=Serbatoio d'omega
+item.enderpouch.name=Borsa d'omega
 enderstorage.serverop=Operatore
 
 enderstorage.command.usage=enderstorage <frequenza>|(<colore> <colore> <colore>) [proprietario]
