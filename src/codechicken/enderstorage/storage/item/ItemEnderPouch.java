@@ -68,12 +68,7 @@ public class ItemEnderPouch extends Item
                 .openSMPGui(player, item.getUnlocalizedName()+".name");
         return item;
     }
-    
-    public boolean func_46058_c()
-    {
-        return true;
-    }
-    
+
     public String getOwner(ItemStack stack)
     {
         return stack.hasTagCompound() ? stack.getTagCompound().getString("owner") : "global";

@@ -97,9 +97,9 @@ public class EnderStorageManager
                 fin.close();
 
                 if (saveFiles[saveTo ^ 1].exists()) {
-                    DataInputStream din = new DataInputStream(new FileInputStream(saveFiles[saveTo ^ 1]));
-                    saveTag = CompressedStreamTools.readCompressed(din);
-                    din.close();
+                    FileInputStream in = new FileInputStream(saveFiles[saveTo ^ 1]);
+                    saveTag = CompressedStreamTools.readCompressed(in);
+                    in.close();
                 } else {
                     saveTag = new NBTTagCompound();
                 }

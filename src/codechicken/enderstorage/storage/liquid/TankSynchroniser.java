@@ -290,7 +290,7 @@ public class TankSynchroniser
     @SubscribeEvent
     public void tickEnd(ServerTickEvent event)
     {
-        if(event.phase == Phase.END)
+        if(event.phase == Phase.END && playerItemTankStates != null)
             for(Entry<String, PlayerItemTankCache> entry : playerItemTankStates.entrySet())
                 entry.getValue().update();
     }
