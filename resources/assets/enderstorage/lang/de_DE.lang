@@ -3,7 +3,7 @@ tile.enderchest|1.name=Endertank
 item.enderpouch.name=Enderbeutel
 enderstorage.serverop=Operator
 
-enderstorage.serverop=Operatorenderstorage.command.usage=enderstorage <Freq>|(<Farbe> <Farbe> <Farbe>) [Eigentümer]
+enderstorage.serverop=enderstorage <Frequenz>|(<Farbe> <Farbe> <Farbe>) [Eigentümer]
 enderstorage.command.no_arguments=Ungültige Anzahl an Parametern
 enderstorage.command.no_freq=Ungültige Frequenz
 enderstorage.command.no_colour=Ungültige Farbe: %s
