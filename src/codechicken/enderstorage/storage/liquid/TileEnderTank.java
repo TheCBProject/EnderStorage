@@ -168,7 +168,7 @@ public class TileEnderTank extends TileFrequencyOwner implements IFluidHandler
     @Override
     public FluidTankInfo[] getTankInfo(ForgeDirection from) {
         if(worldObj.isRemote)
-            return new FluidTankInfo[]{new FluidTankInfo(liquid_state.s_liquid, 16 * FluidUtils.B)};
+            return new FluidTankInfo[]{new FluidTankInfo(liquid_state.s_liquid, EnderLiquidStorage.CAPACITY)};
 
         return storage.getTankInfo(from);
     }

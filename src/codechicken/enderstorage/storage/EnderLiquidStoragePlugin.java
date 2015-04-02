@@ -10,25 +10,21 @@ import codechicken.enderstorage.api.EnderStoragePlugin;
 import codechicken.enderstorage.storage.liquid.EnderLiquidStorage;
 
 public class EnderLiquidStoragePlugin implements EnderStoragePlugin
-{    
+{
     @Override
-    public AbstractEnderStorage createEnderStorage(EnderStorageManager manager, String owner, int freq)
-    {
+    public AbstractEnderStorage createEnderStorage(EnderStorageManager manager, String owner, int freq) {
         return new EnderLiquidStorage(manager, owner, freq);
     }
-    
+
     @Override
-    public String identifer()
-    {
+    public String identifer() {
         return "liquid";
     }
-    
-    public void loadConfig(ConfigTag config)
-    {
+
+    public void loadConfig(ConfigTag config) {
     }
-    
+
     @Override
-    public void sendClientInfo(EntityPlayer player, List<AbstractEnderStorage> list)
-    {
+    public void sendClientInfo(EntityPlayer player, List<AbstractEnderStorage> list) {
     }
 }
