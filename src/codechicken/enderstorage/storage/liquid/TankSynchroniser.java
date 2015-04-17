@@ -33,9 +33,9 @@ public class TankSynchroniser
     public static abstract class TankState
     {
         public EnderLiquidStorage storage;
-        public FluidStack c_liquid = new FluidStack(0, 0);
-        public FluidStack s_liquid = new FluidStack(0, 0);
-        public FluidStack f_liquid = new FluidStack(0, 0);
+        public FluidStack c_liquid = FluidUtils.emptyFluid();
+        public FluidStack s_liquid = FluidUtils.emptyFluid();
+        public FluidStack f_liquid = FluidUtils.emptyFluid();
         
         public void reloadStorage(EnderLiquidStorage storage)
         {
@@ -222,7 +222,7 @@ public class TankSynchroniser
             String key = key(freq, owner);
             a_visible.add(key);
             PlayerItemTankState state = tankStates.get(key);
-            return state == null ? new FluidStack(0, 0) : state.c_liquid;
+            return state == null ? FluidUtils.emptyFluid() : state.c_liquid;
         }
 
         public void handleVisiblityPacket(PacketCustom packet)
