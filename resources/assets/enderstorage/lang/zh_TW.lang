@@ -1,4 +1,9 @@
-tile.enderchest|0.name=�׬ɽc�l
-tile.enderchest|1.name=�׬ɻW����
-item.enderpouch.name=�׬ɳU
-enderstorage.serverop=�޲z��
+tile.enderchest|0.name=終界箱子
+tile.enderchest|1.name=終界蓄水槽
+item.enderpouch.name=終界袋
+enderstorage.serverop=管理員
+
+enderstorage.command.usage=enderstorage <freq>|(<colour> <colour> <colour>) [owner]
+enderstorage.command.no_arguments=參數數量不正確
+enderstorage.command.no_freq=freq參數不正確
+enderstorage.command.no_colour=color參數不正確：%s
