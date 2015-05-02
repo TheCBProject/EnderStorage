@@ -20,30 +20,42 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 import net.minecraftforge.oredict.OreDictionary;
+import net.minecraftforge.oredict.RecipeSorter;
+import net.minecraftforge.oredict.RecipeSorter.Category;
 
 public class EnderStorageRecipe implements IRecipe
 {
     @Override
-    public boolean matches(InventoryCrafting inventorycrafting, World var2) {
-        for (int row = 0; row <= 1; row++)
-            if (offsetMatchesDyes(inventorycrafting, 0, row))
+    public boolean matches(InventoryCrafting ic, World var2) {
+        for (int row = 0; row < 2; row++)
+            if (offsetMatchesDyes(ic, 0, row))
                 return true;
 
         return false;
     }
 
-    private boolean offsetMatchesDyes(InventoryCrafting inventorycrafting, int col, int row) {
-        if (!stackMatches(inventorycrafting.getStackInRowAndColumn(col + 1, row + 1), Item.getItemFromBlock(EnderStorage.blockEnderChest)))
+    private boolean offsetMatchesDyes(InventoryCrafting ic, int col, int row) {
+        if (!stackMatches(ic.getStackInRowAndColumn(col + 1, row + 1), Item.getItemFromBlock(EnderStorage.blockEnderChest)))
             return false;
 
-        if (getDyeType(inventorycrafting.getStackInRowAndColumn(col, row)) >= 0)
-            return true;
-        if (getDyeType(inventorycrafting.getStackInRowAndColumn(col + 1, row)) >= 0)
-            return true;
-        if (getDyeType(inventorycrafting.getStackInRowAndColumn(col + 2, row)) >= 0)
-            return true;
+        boolean hasDye = false;
+        for(int i = 0; i < 3; i++)
+            for(int j = 0; j < 3; j++) {
+                //ignore chest slot
+                if(i == row + 1 && j == col + 1)
+                    continue;
 
-        return false;
+                ItemStack stack = ic.getStackInRowAndColumn(j, i);
+                if(i == row && getDyeType(stack) >= 0) {
+                    hasDye = true;
+                    continue;
+                }
+
+                if(stack != null)
+                    return false;
+            }
+
+        return hasDye;
     }
 
     public static boolean stackMatches(ItemStack stack, Item item) {
@@ -51,7 +63,7 @@ public class EnderStorageRecipe implements IRecipe
     }
 
     public ItemStack getCraftingResult(InventoryCrafting ic) {
-        for (int row = 0; row <= 1; row++) {
+        for (int row = 0; row < 2; row++) {
             if (!offsetMatchesDyes(ic, 0, row))
                 continue;
 
@@ -63,7 +75,7 @@ public class EnderStorageRecipe implements IRecipe
             int colour3 = recolour(2, row, freq, ic);
 
             ItemStack result = InventoryUtils.copyStack(freqowner, 1);
-            result.setItemDamage(EnderStorageManager.getFreqFromColours(colour1, colour2, colour3) | freqowner.getItemDamage() & 0xF000);
+            result.setItemDamage(EnderStorageManager.getFreqFromColours(colour3, colour2, colour1) | freqowner.getItemDamage() & 0xF000);
             return result;
         }
         return null;
@@ -73,7 +85,7 @@ public class EnderStorageRecipe implements IRecipe
         int dyeType = getDyeType(ic.getStackInRowAndColumn(i, row));
         if (dyeType >= 0)
             return ~dyeType & 0xF;
-        return EnderStorageManager.getColourFromFreq(freq, i);
+        return EnderStorageManager.getColourFromFreq(freq, 2-i);
     }
 
     public int getRecipeSize() {
@@ -87,6 +99,7 @@ public class EnderStorageRecipe implements IRecipe
     public static void init() {
         EnderStorageRecipe instance = new EnderStorageRecipe();
         GameRegistry.addRecipe(instance);
+        RecipeSorter.register("enderstorage:recolour", EnderStorageRecipe.class, Category.SHAPED, "");
         addNormalRecipies();
     }
 
