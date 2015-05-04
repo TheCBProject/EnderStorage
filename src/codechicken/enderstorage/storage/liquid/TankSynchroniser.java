@@ -278,7 +278,8 @@ public class TankSynchroniser
     @SubscribeEvent
     public void onPlayerLogout(PlayerLoggedOutEvent event)
     {
-        playerItemTankStates.remove(event.player.getCommandSenderName());
+        if(playerItemTankStates != null) //sometimes world unloads before players logout
+            playerItemTankStates.remove(event.player.getCommandSenderName());
     }
 
     @SubscribeEvent
