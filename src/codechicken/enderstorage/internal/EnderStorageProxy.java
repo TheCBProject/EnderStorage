@@ -38,6 +38,7 @@ public class EnderStorageProxy
     public void preInit()
     {
         MinecraftForge.EVENT_BUS.register(new EnderStorageRecipe());
+        FMLCommonHandler.instance().bus().register(new EnderStorageSaveHandler());
         MinecraftForge.EVENT_BUS.register(new EnderStorageSaveHandler());
         FMLCommonHandler.instance().bus().register(new TankSynchroniser());
         MinecraftForge.EVENT_BUS.register(new TankSynchroniser());

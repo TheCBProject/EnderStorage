@@ -38,6 +38,7 @@ public class EnderItemStoragePlugin implements EnderStoragePlugin
     public void sendClientInfo(EntityPlayer player, List<AbstractEnderStorage> list)
     {
         for(AbstractEnderStorage inv : list)
-            EnderStorageSPH.sendOpenUpdateTo(player, inv.owner, inv.freq, ((EnderItemStorage)inv).openCount() > 0);
+            if(((EnderItemStorage)inv).openCount() > 0)
+                EnderStorageSPH.sendOpenUpdateTo(player, inv.owner, inv.freq, true);
     }
 }
