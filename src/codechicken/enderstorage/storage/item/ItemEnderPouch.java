@@ -2,6 +2,7 @@ package codechicken.enderstorage.storage.item;
 
 import java.util.List;
 
+import codechicken.enderstorage.EnderStorage;
 import codechicken.lib.render.SpriteSheetManager;
 import codechicken.lib.render.SpriteSheetManager.SpriteSheet;
 import codechicken.enderstorage.api.EnderStorageManager;
@@ -51,7 +52,12 @@ public class ItemEnderPouch extends Item
             stack.setItemDamage(chest.freq);
             if(!stack.hasTagCompound())
                 stack.setTagCompound(new NBTTagCompound());
-            stack.getTagCompound().setString("owner", chest.owner);
+
+            if (!EnderStorage.anarchyMode || chest.owner.equals(player.getCommandSenderName()))
+                stack.getTagCompound().setString("owner", chest.owner);
+            else
+                stack.getTagCompound().setString("owner", "global");
+
             return true;
         }
         return false;

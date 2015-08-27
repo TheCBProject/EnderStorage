@@ -39,6 +39,7 @@ public class EnderStorage
     public static Item personalItem;
     public static boolean disableVanillaEnderChest;
     public static boolean removeVanillaRecipe;
+    public static boolean anarchyMode;
 
     @EventHandler
     public void preInit(FMLPreInitializationEvent event) {
@@ -52,6 +53,7 @@ public class EnderStorage
         loadPersonalItem();
         disableVanillaEnderChest = config.getTag("disable-vanilla").setComment("Set to true to make the vanilla enderchest unplaceable.").getBooleanValue(true);
         removeVanillaRecipe = config.getTag("disable-vanilla_recipe").setComment("Set to true to make the vanilla enderchest uncraftable.").getBooleanValue(false);
+        anarchyMode = config.getTag("anarchy-mode").setComment("Causes chests to lose personal settings and drop the diamond on break").getBooleanValue(false);
 
         EnderStorageManager.loadConfig(config);
         EnderStorageManager.registerPlugin(new EnderItemStoragePlugin());

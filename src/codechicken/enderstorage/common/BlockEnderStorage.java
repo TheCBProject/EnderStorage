@@ -3,7 +3,6 @@ package codechicken.enderstorage.common;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Random;
 
 import codechicken.lib.raytracer.RayTracer;
 import codechicken.lib.raytracer.IndexedCuboid6;
@@ -109,8 +108,11 @@ public class BlockEnderStorage extends BlockContainer
         ArrayList<ItemStack> ret = new ArrayList<ItemStack>();
 
         TileFrequencyOwner tile = (TileFrequencyOwner) world.getTileEntity(i, j, k);
-        if (tile != null)
-            ret.add(createItem(meta, tile.freq, tile.owner));
+        if (tile != null) {
+            ret.add(createItem(meta, tile.freq, EnderStorage.anarchyMode ? "global" : tile.owner));
+            if(EnderStorage.anarchyMode && !tile.owner.equals("global"))
+                ret.add(EnderStorage.getPersonalItem());
+        }
 
         return ret;
     }
