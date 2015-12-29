@@ -1,0 +1,10 @@
+#ja_JP
+tile.enderchest|0.name=エンダーチェスト
+tile.enderchest|1.name=エンダータンク
+item.enderpouch.name=エンダーポーチ
+enderstorage.serverop=管理者
+
+enderstorage.command.usage=enderstorage <freq>|(<colour> <colour> <colour>) [owner]
+enderstorage.command.no_arguments=引数が無効です
+enderstorage.command.no_freq=無効な周波数
+enderstorage.command.no_colour=無効な色 : %s
