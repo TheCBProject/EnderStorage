@@ -16,9 +16,11 @@ import net.minecraft.inventory.Container;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.IChatComponent;
+import net.minecraft.util.ITickable;
 import net.minecraft.world.World;
 
-public class TileEnderChest extends TileFrequencyOwner implements IInventory
+public class TileEnderChest extends TileFrequencyOwner implements IInventory, ITickable
 {
     public double a_lidAngle;
     public double b_lidAngle;
@@ -50,28 +52,28 @@ public class TileEnderChest extends TileFrequencyOwner implements IInventory
 
     public void updateEntity()
     {
-        super.updateEntity();
-        
-        //update compatiblity
-        if(worldObj.getBlockMetadata(xCoord, yCoord, zCoord) != 0)
-        {
-            rotation = worldObj.getBlockMetadata(xCoord, yCoord, zCoord);
-            worldObj.setBlockMetadataWithNotify(xCoord, yCoord, zCoord, 0, 3);
-        }
-        
-        if(!worldObj.isRemote && (worldObj.getTotalWorldTime() % 20 == 0 || c_numOpen != storage.getNumOpen()))
-        {
-            c_numOpen = storage.getNumOpen();
-            worldObj.addBlockEvent(xCoord, yCoord, zCoord, EnderStorage.blockEnderChest, 1, c_numOpen);
-        }
-        
-        b_lidAngle = a_lidAngle;
-        a_lidAngle = MathHelper.approachLinear(a_lidAngle, c_numOpen > 0 ? 1 : 0, 0.1);
-        
-        if(b_lidAngle >= 0.5 && a_lidAngle < 0.5)
-            worldObj.playSoundEffect(xCoord + 0.5, yCoord + 0.5, zCoord + 0.5, "random.chestclosed", 0.5F, worldObj.rand.nextFloat() * 0.1F + 0.9F);
-        else if(b_lidAngle == 0 && a_lidAngle > 0)
-            worldObj.playSoundEffect(xCoord + 0.5, yCoord + 0.5, zCoord + 0.5, "random.chestopen", 0.5F, worldObj.rand.nextFloat() * 0.1F + 0.9F);
+        super.update();
+//        
+//        //update compatiblity
+//        if(worldObj.getBlockMetadata(xCoord, yCoord, zCoord) != 0)
+//        {
+//            rotation = worldObj.getBlockMetadata(xCoord, yCoord, zCoord);
+//            worldObj.setBlockMetadataWithNotify(xCoord, yCoord, zCoord, 0, 3);
+//        }
+//        
+//        if(!worldObj.isRemote && (worldObj.getTotalWorldTime() % 20 == 0 || c_numOpen != storage.getNumOpen()))
+//        {
+//            c_numOpen = storage.getNumOpen();
+//            worldObj.addBlockEvent(xCoord, yCoord, zCoord, EnderStorage.blockEnderChest, 1, c_numOpen);
+//        }
+//        
+//        b_lidAngle = a_lidAngle;
+//        a_lidAngle = MathHelper.approachLinear(a_lidAngle, c_numOpen > 0 ? 1 : 0, 0.1);
+//        
+//        if(b_lidAngle >= 0.5 && a_lidAngle < 0.5)
+//            worldObj.playSoundEffect(xCoord + 0.5, yCoord + 0.5, zCoord + 0.5, "random.chestclosed", 0.5F, worldObj.rand.nextFloat() * 0.1F + 0.9F);
+//        else if(b_lidAngle == 0 && a_lidAngle > 0)
+//            worldObj.playSoundEffect(xCoord + 0.5, yCoord + 0.5, zCoord + 0.5, "random.chestopen", 0.5F, worldObj.rand.nextFloat() * 0.1F + 0.9F);
     }
 
     @Override
@@ -123,19 +125,13 @@ public class TileEnderChest extends TileFrequencyOwner implements IInventory
     }
 
     @Override
-    public ItemStack getStackInSlotOnClosing(int var1)
-    {
-        return storage.getStackInSlotOnClosing(var1);
-    }
-
-    @Override
     public void setInventorySlotContents(int var1, ItemStack var2)
     {
         storage.setInventorySlotContents(var1, var2);
     }
     
     @Override
-    public String getInventoryName()
+    public String getName()
     {
         return "Ender Chest";
     }
@@ -150,16 +146,6 @@ public class TileEnderChest extends TileFrequencyOwner implements IInventory
     public boolean isUseableByPlayer(EntityPlayer var1)
     {
         return true;
-    }
-
-    @Override
-    public void openInventory()
-    {
-    }
-
-    @Override
-    public void closeInventory()
-    {
     }
     
     @Override
@@ -205,7 +191,7 @@ public class TileEnderChest extends TileFrequencyOwner implements IInventory
     @Override
     public void addTraceableCuboids(List<IndexedCuboid6> cuboids)
     {
-        cuboids.add(new IndexedCuboid6(0, new Cuboid6(xCoord+1/16D, yCoord, zCoord+1/16D, xCoord+15/16D, yCoord+14/16D, zCoord+15/16D)));
+        cuboids.add(new IndexedCuboid6(0, new Cuboid6(pos.getX()+1/16D, pos.getY(), pos.getZ()+1/16D, pos.getX()+15/16D, pos.getY()+14/16D, pos.getZ()+15/16D)));
         if(getRadianLidAngle(0) < 0)
             return;
         
@@ -215,10 +201,10 @@ public class TileEnderChest extends TileFrequencyOwner implements IInventory
             ebutton.rotate(0, 0.5625, 0.0625, 1, 0, 0, 0);
             ebutton.rotateMeta(rotation);
             
-            cuboids.add(new IndexedCuboid6(button+1, new Cuboid6(ebutton.getMin(), ebutton.getMax()).add(Vector3.fromTileEntity(this))));
+            cuboids.add(new IndexedCuboid6(button+1, new Cuboid6(ebutton.getMin(), ebutton.getMax()).add(Vector3.fromTile(this))));
         }
         
-        cuboids.add(new IndexedCuboid6(4, new Cuboid6(new EnderKnobSlot(rotation).getSelectionBB()).add(Vector3.fromTileEntity(this))));
+        cuboids.add(new IndexedCuboid6(4, new Cuboid6(new EnderKnobSlot(rotation).getSelectionBB()).add(Vector3.fromTile(this))));
     }
     
     @Override
@@ -227,7 +213,7 @@ public class TileEnderChest extends TileFrequencyOwner implements IInventory
     	if(!worldObj.isRemote)
     	{
 	        rotation = (rotation+1)%4;
-	        PacketCustom.sendToChunk(getDescriptionPacket(), worldObj, xCoord>>4, zCoord>>4);
+	        PacketCustom.sendToChunk(getDescriptionPacket(), worldObj, pos.getX()>>4, pos.getZ()>>4);
     	}
     	
     	return true;
@@ -239,15 +225,55 @@ public class TileEnderChest extends TileFrequencyOwner implements IInventory
         return true;
     }
     
-    @Override
-    public boolean hasCustomInventoryName()
-    {
-        return true;
-    }
     
     @Override
     public int comparatorInput()
     {
         return Container.calcRedstoneFromInventory(this);
     }
+
+	@Override
+	public boolean hasCustomName() {
+		return true;
+	}
+
+	@Override
+	public IChatComponent getDisplayName() {
+		return null;
+	}
+
+	@Override
+	public ItemStack removeStackFromSlot(int index) {
+		return null;
+	}
+
+	@Override
+	public void openInventory(EntityPlayer player) {
+		
+	}
+
+	@Override
+	public void closeInventory(EntityPlayer player) {
+		
+	}
+
+	@Override
+	public int getField(int id) {
+		return 0;
+	}
+
+	@Override
+	public void setField(int id, int value) {
+		
+	}
+
+	@Override
+	public int getFieldCount() {
+		return 0;
+	}
+
+	@Override
+	public void clear() {
+		
+	}
 }

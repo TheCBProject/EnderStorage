@@ -9,33 +9,34 @@ import com.google.common.collect.Sets.SetView;
 
 import codechicken.core.ClientUtils;
 import codechicken.core.ServerUtils;
-import codechicken.lib.math.MathHelper;
 import codechicken.core.fluid.FluidUtils;
-import codechicken.lib.packet.PacketCustom;
 import codechicken.enderstorage.api.EnderStorageManager;
 import codechicken.enderstorage.internal.EnderStorageCPH;
 import codechicken.enderstorage.internal.EnderStorageSPH;
-
-import cpw.mods.fml.common.eventhandler.SubscribeEvent;
-import cpw.mods.fml.common.gameevent.PlayerEvent.PlayerChangedDimensionEvent;
-import cpw.mods.fml.common.gameevent.PlayerEvent.PlayerLoggedInEvent;
-import cpw.mods.fml.common.gameevent.PlayerEvent.PlayerLoggedOutEvent;
-import cpw.mods.fml.common.gameevent.TickEvent.ClientTickEvent;
-import cpw.mods.fml.common.gameevent.TickEvent.Phase;
-import cpw.mods.fml.common.gameevent.TickEvent.ServerTickEvent;
+import codechicken.lib.math.MathHelper;
+import codechicken.lib.packet.PacketCustom;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraftforge.event.world.WorldEvent.Load;
 import net.minecraftforge.event.world.WorldEvent.Unload;
 import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerChangedDimensionEvent;
+import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerLoggedInEvent;
+import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerLoggedOutEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
+import net.minecraftforge.fml.common.gameevent.TickEvent.ServerTickEvent;
 
 public class TankSynchroniser
 {
     public static abstract class TankState
     {
         public EnderLiquidStorage storage;
-        public FluidStack c_liquid = FluidUtils.emptyFluid();
-        public FluidStack s_liquid = FluidUtils.emptyFluid();
-        public FluidStack f_liquid = FluidUtils.emptyFluid();
+        public FluidStack c_liquid = FluidUtils.lava;
+        public FluidStack s_liquid = FluidUtils.lava;
+        public FluidStack f_liquid = FluidUtils.lava;
+
+//        public FluidStack f_liquid = FluidUtils.emptyFluid();
         
         public void reloadStorage(EnderLiquidStorage storage)
         {
@@ -217,13 +218,13 @@ public class TankSynchroniser
             }
         }
 
-        public FluidStack getLiquid(int freq, String owner)
-        {
-            String key = key(freq, owner);
-            a_visible.add(key);
-            PlayerItemTankState state = tankStates.get(key);
-            return state == null ? FluidUtils.emptyFluid() : state.c_liquid;
-        }
+//        public FluidStack getLiquid(int freq, String owner)
+//        {
+//            String key = key(freq, owner);
+//            a_visible.add(key);
+//            PlayerItemTankState state = tankStates.get(key);
+//            return state == null ? FluidUtils.emptyFluid() : state.c_liquid;
+//        }
 
         public void handleVisiblityPacket(PacketCustom packet)
         {
@@ -261,31 +262,32 @@ public class TankSynchroniser
     
     public static FluidStack getClientLiquid(int freq, String owner)
     {
-        return clientState.getLiquid(freq, owner);
+//        return clientState.getLiquid(freq, owner);
+        return null;
     }
     
     public static void handleVisiblityPacket(EntityPlayerMP player, PacketCustom packet)
     {
-        playerItemTankStates.get(player.getCommandSenderName()).handleVisiblityPacket(packet);
+        playerItemTankStates.get(player.getDisplayNameString()).handleVisiblityPacket(packet);
     }
     
     @SubscribeEvent
     public void onPlayerLogin(PlayerLoggedInEvent event)
     {
-        playerItemTankStates.put(event.player.getCommandSenderName(), new PlayerItemTankCache((EntityPlayerMP) event.player));
+        playerItemTankStates.put(event.player.getDisplayNameString(), new PlayerItemTankCache((EntityPlayerMP) event.player));
     }
     
     @SubscribeEvent
     public void onPlayerLogout(PlayerLoggedOutEvent event)
     {
         if(playerItemTankStates != null) //sometimes world unloads before players logout
-            playerItemTankStates.remove(event.player.getCommandSenderName());
+            playerItemTankStates.remove(event.player.getDisplayNameString());
     }
 
     @SubscribeEvent
     public void onPlayerChangedDimension(PlayerChangedDimensionEvent event)
     {
-        playerItemTankStates.put(event.player.getCommandSenderName(), new PlayerItemTankCache((EntityPlayerMP) event.player));
+        playerItemTankStates.put(event.player.getDisplayNameString(), new PlayerItemTankCache((EntityPlayerMP) event.player));
     }
 
     @SubscribeEvent

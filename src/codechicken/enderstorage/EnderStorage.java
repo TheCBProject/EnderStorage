@@ -2,28 +2,26 @@ package codechicken.enderstorage;
 
 import java.io.File;
 
-import codechicken.lib.config.ConfigTag;
-import cpw.mods.fml.common.event.FMLServerAboutToStartEvent;
-import net.minecraft.command.CommandHandler;
-import net.minecraft.init.Items;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
 import codechicken.core.CommonUtils;
 import codechicken.core.launch.CodeChickenCorePlugin;
-import codechicken.lib.config.ConfigFile;
 import codechicken.enderstorage.api.EnderStorageManager;
 import codechicken.enderstorage.common.BlockEnderStorage;
 import codechicken.enderstorage.internal.EnderStorageProxy;
 import codechicken.enderstorage.storage.EnderItemStoragePlugin;
 import codechicken.enderstorage.storage.EnderLiquidStoragePlugin;
-import codechicken.enderstorage.storage.item.CommandEnderStorage;
 import codechicken.enderstorage.storage.item.ItemEnderPouch;
-import cpw.mods.fml.common.Mod;
-import cpw.mods.fml.common.Mod.EventHandler;
-import cpw.mods.fml.common.SidedProxy;
-import cpw.mods.fml.common.event.FMLInitializationEvent;
-import cpw.mods.fml.common.event.FMLPreInitializationEvent;
-import cpw.mods.fml.common.event.FMLServerStartingEvent;
+import codechicken.lib.config.ConfigFile;
+import codechicken.lib.config.ConfigTag;
+import net.minecraft.command.CommandHandler;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.common.Mod.EventHandler;
+import net.minecraftforge.fml.common.SidedProxy;
+import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLServerAboutToStartEvent;
+import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 
 @Mod(modid = "EnderStorage", dependencies = "required-after:CodeChickenCore@[" + CodeChickenCorePlugin.version + ",)", acceptedMinecraftVersions = CodeChickenCorePlugin.mcVersion)
 public class EnderStorage
@@ -66,11 +64,11 @@ public class EnderStorage
         ConfigTag tag = config.getTag("personalItemID")
                 .setComment("The name of the item used to set the chest to personal. Diamond by default");
         String name = tag.getValue("diamond");
-        personalItem = (Item) Item.itemRegistry.getObject(name);
-        if (personalItem == null) {
-            personalItem = Items.diamond;
-            tag.setValue("diamond");
-        }
+//        personalItem = (Item) Item.itemRegistry.getObject(name);
+//        if (personalItem == null) {
+//            personalItem = Items.diamond;
+//            tag.setValue("diamond");
+//        }
     }
 
     @EventHandler
@@ -80,8 +78,8 @@ public class EnderStorage
 
     @EventHandler
     public void serverStart(FMLServerStartingEvent event) {
-        CommandHandler commandManager = (CommandHandler) event.getServer().getCommandManager();
-        commandManager.registerCommand(new CommandEnderStorage());
+//        CommandHandler commandManager = (CommandHandler) event.getServer().getCommandManager();
+//        commandManager.registerCommand(new CommandEnderStorage());
     }
 
     public static ItemStack getPersonalItem() {

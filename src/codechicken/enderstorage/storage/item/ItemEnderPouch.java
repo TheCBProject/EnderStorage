@@ -3,22 +3,22 @@ package codechicken.enderstorage.storage.item;
 import java.util.List;
 
 import codechicken.enderstorage.EnderStorage;
+import codechicken.enderstorage.api.EnderStorageManager;
 import codechicken.lib.render.SpriteSheetManager;
 import codechicken.lib.render.SpriteSheetManager.SpriteSheet;
-import codechicken.enderstorage.api.EnderStorageManager;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
-
-import net.minecraft.client.renderer.texture.IIconRegister;
+import codechicken.lib.render.TextureUtils.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.IIcon;
+import net.minecraft.util.BlockPos;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class ItemEnderPouch extends Item
 {
@@ -38,14 +38,15 @@ public class ItemEnderPouch extends Item
         if(stack.hasTagCompound() && !stack.getTagCompound().getString("owner").equals("global"))
             list.add(stack.getTagCompound().getString("owner"));
     }
+
     
     @Override
-    public boolean onItemUseFirst(ItemStack stack, EntityPlayer player, World world, int x, int y, int z, int side, float hitX, float hitY, float hitZ)
+    public boolean onItemUseFirst(ItemStack stack, EntityPlayer player, World world, BlockPos pos, EnumFacing side, float hitX, float hitY, float hitZ)
     {
         if(world.isRemote)
             return false;
         
-        TileEntity tile = world.getTileEntity(x, y, z);
+        TileEntity tile = world.getTileEntity(pos);
         if(tile instanceof TileEnderChest && player.isSneaking())
         {
             TileEnderChest chest = (TileEnderChest)tile;
@@ -53,7 +54,7 @@ public class ItemEnderPouch extends Item
             if(!stack.hasTagCompound())
                 stack.setTagCompound(new NBTTagCompound());
 
-            if (!EnderStorage.anarchyMode || chest.owner.equals(player.getCommandSenderName()))
+            if (!EnderStorage.anarchyMode || chest.owner.equals(player.getDisplayNameString()))
                 stack.getTagCompound().setString("owner", chest.owner);
             else
                 stack.getTagCompound().setString("owner", "global");
@@ -80,17 +81,17 @@ public class ItemEnderPouch extends Item
         return stack.hasTagCompound() ? stack.getTagCompound().getString("owner") : "global";
     }
     
-    @Override
-    public int getRenderPasses(int metadata)
-    {
-        return 4;
-    }
+//    @Override
+//    public int getRenderPasses(int metadata)
+//    {
+//        return 4;
+//    }
     
-    @Override
-    public IIcon getIcon(ItemStack stack, int renderPass)
-    {
-        return spriteSheet.getSprite(getIconIndex(stack, renderPass));
-    }
+//    @Override
+//    public IIcon getIcon(ItemStack stack, int renderPass)
+//    {
+//        return spriteSheet.getSprite(getIconIndex(stack, renderPass));
+//    }
     
     public int getIconIndex(ItemStack stack, int renderPass)
     {
@@ -114,13 +115,13 @@ public class ItemEnderPouch extends Item
         return true;
     }
     
-    @Override
-    public void registerIcons(IIconRegister register)
-    {
-        spriteSheet = SpriteSheetManager.getSheet(new ResourceLocation("enderstorage", "textures/enderpouch.png"));
-        spriteSheet.requestIndicies(0, 1, 2, 3);
-        for(int i = 16; i < 64; i++)
-            spriteSheet.requestIndicies(i);
-        spriteSheet.registerIcons(register);
-    }
+//    @Override
+//    public void registerIcons(IIconRegister register)
+//    {
+//        spriteSheet = SpriteSheetManager.getSheet(new ResourceLocation("enderstorage", "textures/enderpouch.png"));
+//        spriteSheet.requestIndicies(0, 1, 2, 3);
+//        for(int i = 16; i < 64; i++)
+//            spriteSheet.requestIndicies(i);
+//        spriteSheet.registerIcons(register);
+//    }
 }

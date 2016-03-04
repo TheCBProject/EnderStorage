@@ -12,12 +12,13 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.Packet;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.ITickable;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 
-public abstract class TileFrequencyOwner extends TileEntity
+public abstract class TileFrequencyOwner extends TileEntity implements ITickable
 {
     public static Cuboid6 selection_button = new Cuboid6(-1/16D, 0, -2/16D, 1/16D, 1/16D, 2/16D);
     
@@ -38,7 +39,7 @@ public abstract class TileFrequencyOwner extends TileEntity
         freq = i;
         reloadStorage();
         markDirty();
-        worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
+        worldObj.markBlockForUpdate(pos);
     }
 
     public void setOwner(String username)
@@ -46,15 +47,16 @@ public abstract class TileFrequencyOwner extends TileEntity
         owner = username;
         reloadStorage();
         markDirty();
-        worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
+        worldObj.markBlockForUpdate(pos);
     }
     
     @Override
-    public void updateEntity()
+    public void update()
     {
         if(getStorage().getChangeCount() > changeCount)
         {
-            worldObj.func_147453_f(xCoord, yCoord, zCoord, getBlockType());
+        	//TODO dont know what this is
+//            worldObj.func_147453_f(pos, getBlockType());
             changeCount = getStorage().getChangeCount();
         }
     }
@@ -98,14 +100,14 @@ public abstract class TileFrequencyOwner extends TileEntity
 
     public void addTraceableCuboids(List<IndexedCuboid6> cuboids)
     {
-        cuboids.add(new IndexedCuboid6(0, new Cuboid6(xCoord, yCoord, zCoord, xCoord+1, yCoord+1, zCoord+1)));
+        cuboids.add(new IndexedCuboid6(0, new Cuboid6(pos.getX(), pos.getY(), pos.getZ(), pos.getX()+1, pos.getY()+1, pos.getZ()+1)));
     }
 
     @Override
     public final Packet getDescriptionPacket()
     {
         PacketCustom packet = new PacketCustom(EnderStorageSPH.channel, 1);
-        packet.writeCoord(xCoord, yCoord, zCoord);
+        packet.writeCoord(pos.getX(), pos.getY(), pos.getZ());
         packet.writeShort(freq);
         packet.writeString(owner);
         writeToPacket(packet);

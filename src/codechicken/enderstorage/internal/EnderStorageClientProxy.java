@@ -1,18 +1,16 @@
 package codechicken.enderstorage.internal;
 
-import codechicken.core.ClientUtils;
-import codechicken.lib.packet.PacketCustom;
+import static codechicken.enderstorage.EnderStorage.blockEnderChest;
+import static codechicken.enderstorage.EnderStorage.config;
+
 import codechicken.core.CCUpdateChecker;
-import codechicken.enderstorage.common.ItemEnderStorageRenderer;
+import codechicken.core.ClientUtils;
 import codechicken.enderstorage.storage.item.TileEnderChest;
-import codechicken.enderstorage.storage.item.EnderChestRenderer;
 import codechicken.enderstorage.storage.liquid.TileEnderTank;
-import codechicken.enderstorage.storage.liquid.EnderTankRenderer;
+import codechicken.lib.packet.PacketCustom;
 import net.minecraft.item.Item;
 import net.minecraftforge.client.MinecraftForgeClient;
-import cpw.mods.fml.client.registry.ClientRegistry;
-
-import static codechicken.enderstorage.EnderStorage.*;
+import net.minecraftforge.fml.client.registry.ClientRegistry;
 
 public class EnderStorageClientProxy extends EnderStorageProxy
 {    
@@ -26,11 +24,11 @@ public class EnderStorageClientProxy extends EnderStorageProxy
         super.init();
 
         PacketCustom.assignHandler(EnderStorageCPH.channel, new EnderStorageCPH());
-
-        MinecraftForgeClient.registerItemRenderer(Item.getItemFromBlock(blockEnderChest), new ItemEnderStorageRenderer());
-
-        ClientRegistry.bindTileEntitySpecialRenderer(TileEnderChest.class, new EnderChestRenderer());
-        ClientRegistry.bindTileEntitySpecialRenderer(TileEnderTank.class, new EnderTankRenderer());
+        //TODO 
+//        MinecraftForgeClient.registerItemRenderer(Item.getItemFromBlock(blockEnderChest), new ItemEnderStorageRenderer());
+//
+//        ClientRegistry.bindTileEntitySpecialRenderer(TileEnderChest.class, new EnderChestRenderer());
+//        ClientRegistry.bindTileEntitySpecialRenderer(TileEnderTank.class, new EnderTankRenderer());
     }
     
     public static float getPearlBob(double time)

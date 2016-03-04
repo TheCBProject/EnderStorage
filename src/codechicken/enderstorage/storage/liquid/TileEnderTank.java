@@ -1,18 +1,15 @@
 package codechicken.enderstorage.storage.liquid;
 
+import static codechicken.lib.vec.Vector3.center;
+
 import java.util.List;
 
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraftforge.common.util.ForgeDirection;
-import net.minecraftforge.fluids.Fluid;
-import net.minecraftforge.fluids.FluidTankInfo;
-import net.minecraftforge.fluids.IFluidHandler;
-import net.minecraftforge.fluids.FluidStack;
-import codechicken.lib.math.MathHelper;
 import codechicken.core.fluid.FluidUtils;
+import codechicken.enderstorage.api.EnderStorageManager;
+import codechicken.enderstorage.common.TileFrequencyOwner;
+import codechicken.enderstorage.internal.EnderStorageSPH;
+import codechicken.enderstorage.storage.liquid.TankSynchroniser.TankState;
+import codechicken.lib.math.MathHelper;
 import codechicken.lib.packet.PacketCustom;
 import codechicken.lib.raytracer.IndexedCuboid6;
 import codechicken.lib.vec.Cuboid6;
@@ -21,12 +18,15 @@ import codechicken.lib.vec.Scale;
 import codechicken.lib.vec.Transformation;
 import codechicken.lib.vec.Translation;
 import codechicken.lib.vec.Vector3;
-import codechicken.enderstorage.api.EnderStorageManager;
-import codechicken.enderstorage.common.TileFrequencyOwner;
-import codechicken.enderstorage.internal.EnderStorageSPH;
-import codechicken.enderstorage.storage.liquid.TankSynchroniser.TankState;
-
-import static codechicken.lib.vec.Vector3.*;
+import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumFacing;
+import net.minecraftforge.fluids.Fluid;
+import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fluids.FluidTankInfo;
+import net.minecraftforge.fluids.IFluidHandler;
 
 public class TileEnderTank extends TileFrequencyOwner implements IFluidHandler
 {
@@ -35,14 +35,14 @@ public class TileEnderTank extends TileFrequencyOwner implements IFluidHandler
         @Override
         public void sendSyncPacket() {
             PacketCustom packet = new PacketCustom(EnderStorageSPH.channel, 5);
-            packet.writeCoord(xCoord, yCoord, zCoord);
+            packet.writeCoord(pos.getX(), pos.getY(), pos.getZ());
             packet.writeFluidStack(s_liquid);
-            packet.sendToChunk(worldObj, xCoord >> 4, zCoord >> 4);
+            packet.sendToChunk(worldObj, pos.getX() >> 4, pos.getZ() >> 4);
         }
 
         @Override
         public void onLiquidChanged() {
-            worldObj.func_147451_t(xCoord, yCoord, zCoord);
+//            worldObj.func_147451_t(pos);
         }
     }
 
@@ -61,7 +61,7 @@ public class TileEnderTank extends TileFrequencyOwner implements IFluidHandler
                 a_rotate = MathHelper.approachExp(a_rotate, approachRotate(), 0.5, 20);
             } else {
                 b_pressure = a_pressure;
-                a_pressure = worldObj.isBlockIndirectlyGettingPowered(xCoord, yCoord, zCoord) != invert_redstone;
+//                a_pressure = worldObj.isBlockIndirectlyGettingPowered(p) != invert_redstone;
                 if (a_pressure != b_pressure)
                     sendSyncPacket();
             }
@@ -73,14 +73,14 @@ public class TileEnderTank extends TileFrequencyOwner implements IFluidHandler
 
         private void sendSyncPacket() {
             PacketCustom packet = new PacketCustom(EnderStorageSPH.channel, 6);
-            packet.writeCoord(xCoord, yCoord, zCoord);
+            packet.writeCoord(pos.getX(), pos.getY(), pos.getZ());
             packet.writeBoolean(a_pressure);
-            packet.sendToChunk(worldObj, xCoord >> 4, zCoord >> 4);
+            packet.sendToChunk(worldObj, pos.getX() >> 4, pos.getZ() >> 4);
         }
 
         public void invert() {
             invert_redstone = !invert_redstone;
-            worldObj.getChunkFromBlockCoords(xCoord, zCoord).setChunkModified();
+            worldObj.getChunkFromChunkCoords(pos.getX(), pos.getZ()).setChunkModified();
         }
     }
 
@@ -103,8 +103,8 @@ public class TileEnderTank extends TileFrequencyOwner implements IFluidHandler
     private boolean described;
 
     @Override
-    public void updateEntity() {
-        super.updateEntity();
+    public void update() {
+        super.update();
 
         pressure_state.update(worldObj.isRemote);
         if (pressure_state.a_pressure)
@@ -112,21 +112,21 @@ public class TileEnderTank extends TileFrequencyOwner implements IFluidHandler
 
         liquid_state.update(worldObj.isRemote);
     }
-
+    //TODO
     private void ejectLiquid() {
-        for (ForgeDirection side : ForgeDirection.VALID_DIRECTIONS) {
-            TileEntity t = worldObj.getTileEntity(xCoord + side.offsetX, yCoord + side.offsetY, zCoord + side.offsetZ);
-            if (!(t instanceof IFluidHandler))
-                continue;
-
-            IFluidHandler c = (IFluidHandler) t;
-            FluidStack liquid = drain(null, 100, false);
-            if (liquid == null)
-                continue;
-            int qty = c.fill(side.getOpposite(), liquid, true);
-            if (qty > 0)
-                drain(null, qty, true);
-        }
+//        for (ForgeDirection side : ForgeDirection.VALID_DIRECTIONS) {
+//            TileEntity t = worldObj.getTileEntity(xCoord + side.offsetX, yCoord + side.offsetY, zCoord + side.offsetZ);
+//            if (!(t instanceof IFluidHandler))
+//                continue;
+//
+//            IFluidHandler c = (IFluidHandler) t;
+//            FluidStack liquid = drain(null, 100, false);
+//            if (liquid == null)
+//                continue;
+//            int qty = c.fill(side.getOpposite(), liquid, true);
+//            if (qty > 0)
+//                drain(null, qty, true);
+//        }
     }
 
     public void reloadStorage() {
@@ -141,32 +141,32 @@ public class TileEnderTank extends TileFrequencyOwner implements IFluidHandler
     }
 
     @Override
-    public int fill(ForgeDirection from, FluidStack resource, boolean doFill) {
+    public int fill(EnumFacing from, FluidStack resource, boolean doFill) {
         return storage.fill(from, resource, doFill);
     }
 
     @Override
-    public FluidStack drain(ForgeDirection from, int maxDrain, boolean doDrain) {
+    public FluidStack drain(EnumFacing from, int maxDrain, boolean doDrain) {
         return storage.drain(from, maxDrain, doDrain);
     }
 
     @Override
-    public FluidStack drain(ForgeDirection from, FluidStack resource, boolean doDrain) {
+    public FluidStack drain(EnumFacing from, FluidStack resource, boolean doDrain) {
         return storage.drain(from, resource, doDrain);
     }
 
     @Override
-    public boolean canDrain(ForgeDirection from, Fluid fluid) {
+    public boolean canDrain(EnumFacing from, Fluid fluid) {
         return storage.canDrain(from, fluid);
     }
 
     @Override
-    public boolean canFill(ForgeDirection from, Fluid fluid) {
+    public boolean canFill(EnumFacing from, Fluid fluid) {
         return storage.canFill(from, fluid);
     }
 
     @Override
-    public FluidTankInfo[] getTankInfo(ForgeDirection from) {
+    public FluidTankInfo[] getTankInfo(EnumFacing from) {
         if(worldObj.isRemote)
             return new FluidTankInfo[]{new FluidTankInfo(liquid_state.s_liquid, EnderLiquidStorage.CAPACITY)};
 
@@ -225,7 +225,7 @@ public class TileEnderTank extends TileFrequencyOwner implements IFluidHandler
 
     @Override
     public void addTraceableCuboids(List<IndexedCuboid6> cuboids) {
-        Vector3 pos = new Vector3(xCoord, yCoord, zCoord);
+        Vector3 pos = new Vector3(getPos());
         cuboids.add(new IndexedCuboid6(0, new Cuboid6(0.15, 0, 0.15, 0.85, 0.916, 0.85).add(pos)));
 
         for (int i = 0; i < 4; i++)
@@ -257,7 +257,7 @@ public class TileEnderTank extends TileFrequencyOwner implements IFluidHandler
     public boolean rotate() {
         if (!worldObj.isRemote) {
             rotation = (rotation + 1) % 4;
-            PacketCustom.sendToChunk(getDescriptionPacket(), worldObj, xCoord >> 4, zCoord >> 4);
+            PacketCustom.sendToChunk(getDescriptionPacket(), worldObj, pos.getX() >> 4, pos.getZ() >> 4);
         }
 
         return true;

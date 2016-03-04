@@ -1,24 +1,25 @@
 package codechicken.enderstorage.storage.item;
 
+import static codechicken.enderstorage.storage.EnderItemStoragePlugin.configSize;
+import static codechicken.enderstorage.storage.EnderItemStoragePlugin.sizes;
+
 import codechicken.core.ClientUtils;
 import codechicken.core.IGuiPacketSender;
 import codechicken.core.ServerUtils;
-import codechicken.lib.inventory.InventoryUtils;
-import codechicken.lib.packet.PacketCustom;
 import codechicken.enderstorage.api.AbstractEnderStorage;
 import codechicken.enderstorage.api.EnderStorageManager;
 import codechicken.enderstorage.internal.EnderStorageSPH;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
-
+import codechicken.lib.inventory.InventoryUtils;
+import codechicken.lib.packet.PacketCustom;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-
-import static codechicken.enderstorage.storage.EnderItemStoragePlugin.*;
+import net.minecraft.util.IChatComponent;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class EnderItemStorage extends AbstractEnderStorage implements IInventory
 {
@@ -167,12 +168,6 @@ public class EnderItemStorage extends AbstractEnderStorage implements IInventory
     }
 
     @Override
-    public String getInventoryName()
-    {
-        return null;
-    }
-
-    @Override
     public int getInventoryStackLimit()
     {
         return 64;
@@ -244,9 +239,62 @@ public class EnderItemStorage extends AbstractEnderStorage implements IInventory
         return true;
     }
     
-    @Override
-    public boolean hasCustomInventoryName()
-    {
-        return true;
-    }
+
+	@Override
+	public String getName() {
+		return null;
+	}
+
+	@Override
+	public boolean hasCustomName() {
+		return true;
+	}
+
+	@Override
+	public IChatComponent getDisplayName() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public ItemStack removeStackFromSlot(int index) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void openInventory(EntityPlayer player) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void closeInventory(EntityPlayer player) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public int getField(int id) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public void setField(int id, int value) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public int getFieldCount() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public void clear() {
+		// TODO Auto-generated method stub
+		
+	}
 }

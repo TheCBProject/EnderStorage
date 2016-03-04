@@ -3,22 +3,20 @@ package codechicken.enderstorage.common;
 import java.util.Iterator;
 
 import codechicken.core.featurehack.GameDataManipulator;
-import codechicken.lib.inventory.InventoryUtils;
 import codechicken.enderstorage.EnderStorage;
 import codechicken.enderstorage.api.EnderStorageManager;
 import codechicken.enderstorage.storage.item.ItemEnderChestDummy;
-
-import cpw.mods.fml.common.registry.GameRegistry;
-
+import codechicken.lib.inventory.InventoryUtils;
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
-import net.minecraft.item.crafting.CraftingManager;
-import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.inventory.InventoryCrafting;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.crafting.CraftingManager;
+import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.oredict.OreDictionary;
 import net.minecraftforge.oredict.RecipeSorter;
 import net.minecraftforge.oredict.RecipeSorter.Category;
@@ -190,4 +188,10 @@ public class EnderStorageRecipe implements IRecipe
                 return i;
         return -1;
     }
+
+	@Override
+	public ItemStack[] getRemainingItems(InventoryCrafting inv) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

@@ -1,8 +1,9 @@
 package codechicken.enderstorage.internal;
 
-import cpw.mods.fml.common.FMLCommonHandler;
-import net.minecraftforge.common.MinecraftForge;
-import codechicken.lib.packet.PacketCustom;
+import static codechicken.enderstorage.EnderStorage.blockEnderChest;
+import static codechicken.enderstorage.EnderStorage.disableVanillaEnderChest;
+import static codechicken.enderstorage.EnderStorage.itemEnderPouch;
+
 import codechicken.enderstorage.api.EnderStorageManager.EnderStorageSaveHandler;
 import codechicken.enderstorage.common.BlockEnderStorage;
 import codechicken.enderstorage.common.EnderStorageRecipe;
@@ -11,16 +12,17 @@ import codechicken.enderstorage.storage.item.ItemEnderPouch;
 import codechicken.enderstorage.storage.item.TileEnderChest;
 import codechicken.enderstorage.storage.liquid.TankSynchroniser;
 import codechicken.enderstorage.storage.liquid.TileEnderTank;
-import cpw.mods.fml.common.registry.GameRegistry;
-
-import static codechicken.enderstorage.EnderStorage.*;
+import codechicken.lib.packet.PacketCustom;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fml.common.FMLCommonHandler;
+import net.minecraftforge.fml.common.registry.GameRegistry;
 
 public class EnderStorageProxy
 {    
     public void init()
     {
         blockEnderChest = new BlockEnderStorage();
-        blockEnderChest.setBlockName("enderchest");
+        blockEnderChest.setUnlocalizedName("enderchest");
         GameRegistry.registerBlock(blockEnderChest, ItemEnderStorage.class, "enderChest");
         MinecraftForge.EVENT_BUS.register(blockEnderChest);
         

@@ -53,6 +53,6 @@ public class EnderKnobSlot
             else if(vec.z > max.z)
                 max.z = vec.z;
         }
-        return AxisAlignedBB.getBoundingBox(min.x, min.y, min.z, max.x, max.y, max.z);
+        return AxisAlignedBB.fromBounds(min.x, min.y, min.z, max.x, max.y, max.z);
     }
 }

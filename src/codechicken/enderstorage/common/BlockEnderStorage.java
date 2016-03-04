@@ -4,39 +4,41 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-import codechicken.lib.raytracer.RayTracer;
-import codechicken.lib.raytracer.IndexedCuboid6;
-import codechicken.lib.vec.BlockCoord;
-import codechicken.lib.vec.Vector3;
 import codechicken.enderstorage.EnderStorage;
 import codechicken.enderstorage.api.EnderStorageManager;
 import codechicken.enderstorage.storage.item.TileEnderChest;
 import codechicken.enderstorage.storage.liquid.TileEnderTank;
-import cpw.mods.fml.common.eventhandler.SubscribeEvent;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import codechicken.lib.raytracer.IndexedCuboid6;
+import codechicken.lib.raytracer.RayTracer;
+import codechicken.lib.render.TextureUtils.IIconRegister;
+import codechicken.lib.vec.BlockCoord;
+import codechicken.lib.vec.Cuboid6;
+import codechicken.lib.vec.Vector3;
 import net.minecraft.block.BlockContainer;
-import net.minecraft.client.renderer.texture.IIconRegister;
-import net.minecraft.init.Blocks;
-import net.minecraft.item.Item;
-import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.block.material.Material;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.block.material.Material;
-import net.minecraft.util.IIcon;
-import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.BlockPos;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.MovingObjectPosition.MovingObjectType;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.client.event.DrawBlockHighlightEvent;
 import net.minecraftforge.common.ForgeHooks;
-import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class BlockEnderStorage extends BlockContainer
 {
@@ -62,9 +64,10 @@ public class BlockEnderStorage extends BlockContainer
     }
 
     @Override
-    public ItemStack getPickBlock(MovingObjectPosition mop, World world, int x, int y, int z) {
-        TileFrequencyOwner tile = (TileFrequencyOwner) world.getTileEntity(x, y, z);
-        return createItem(world.getBlockMetadata(x, y, z), tile.freq, tile.owner);
+    public ItemStack getPickBlock(MovingObjectPosition mop, World world, BlockPos pos) {
+        TileFrequencyOwner tile = (TileFrequencyOwner) world.getTileEntity(pos);
+        //TODO This might not work
+        return createItem(world.getBlockState(pos).getBlock().getMetaFromState(getDefaultState()), tile.freq, tile.owner);
     }
 
     private ItemStack createItem(int meta, int freq, String owner) {
@@ -86,44 +89,42 @@ public class BlockEnderStorage extends BlockContainer
     public boolean isOpaqueCube() {
         return false;
     }
+    
 
     @Override
-    public boolean renderAsNormalBlock() {
-        return false;
+    public boolean removedByPlayer(World world, BlockPos pos, EntityPlayer player, boolean willHarvest) {
+        return willHarvest || super.removedByPlayer(world, pos, player, false);
+    }
+    
+
+    @Override
+    public void harvestBlock(World world, EntityPlayer player, BlockPos pos, IBlockState state, TileEntity te) {
+        super.harvestBlock(world, player, pos, state, te);
+        world.setBlockToAir(pos);
     }
 
     @Override
-    public boolean removedByPlayer(World world, EntityPlayer player, int x, int y, int z, boolean willHarvest) {
-        return willHarvest || super.removedByPlayer(world, player, x, y, z, false);
-    }
-
-    @Override
-    public void harvestBlock(World world, EntityPlayer player, int x, int y, int z, int meta) {
-        super.harvestBlock(world, player, x, y, z, meta);
-        world.setBlockToAir(x, y, z);
-    }
-
-    @Override
-    public ArrayList<ItemStack> getDrops(World world, int i, int j, int k, int meta, int fortune) {
+    public ArrayList<ItemStack> getDrops(IBlockAccess world, BlockPos pos, IBlockState state, int fortune) {
         ArrayList<ItemStack> ret = new ArrayList<ItemStack>();
 
-        TileFrequencyOwner tile = (TileFrequencyOwner) world.getTileEntity(i, j, k);
+        TileFrequencyOwner tile = (TileFrequencyOwner) world.getTileEntity(pos);
         if (tile != null) {
-            ret.add(createItem(meta, tile.freq, EnderStorage.anarchyMode ? "global" : tile.owner));
+            ret.add(createItem(state.getBlock().getMetaFromState(state), tile.freq, EnderStorage.anarchyMode ? "global" : tile.owner));
             if(EnderStorage.anarchyMode && !tile.owner.equals("global"))
                 ret.add(EnderStorage.getPersonalItem());
         }
 
         return ret;
     }
-
+    
     @Override
-    public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer player, int side, float hitX, float hitY, float hitZ) {
+    public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player,
+    		EnumFacing side, float hitX, float hitY, float hitZ) {
         if (world.isRemote)
             return true;
 
-        MovingObjectPosition hit = RayTracer.retraceBlock(world, player, x, y, z);
-        TileFrequencyOwner tile = (TileFrequencyOwner) world.getTileEntity(x, y, z);
+        MovingObjectPosition hit = RayTracer.retraceBlock(world, player, pos);
+        TileFrequencyOwner tile = (TileFrequencyOwner) world.getTileEntity(pos);
 
         if (hit == null)
             return false;
@@ -138,7 +139,7 @@ public class BlockEnderStorage extends BlockContainer
                 return true;
             } else if (item != null && item.getItem() == EnderStorage.getPersonalItem().getItem()) {
                 if (tile.owner.equals("global")) {
-                    tile.setOwner(player.getCommandSenderName());
+                    tile.setOwner(player.getDisplayNameString());
                     if (!player.capabilities.isCreativeMode)
                         item.stackSize--;
                     return true;
@@ -161,34 +162,31 @@ public class BlockEnderStorage extends BlockContainer
 
         return tile.activate(player, hit.subHit);
     }
+    
 
     @Override
-    public void onBlockPlacedBy(World world, int i, int j, int k, EntityLivingBase entity, ItemStack item) {
-        ((TileFrequencyOwner) world.getTileEntity(i, j, k)).onPlaced(entity);
+    public void onBlockPlacedBy(World world, BlockPos pos, IBlockState state, EntityLivingBase placer, ItemStack stack) {
+        ((TileFrequencyOwner) world.getTileEntity(pos)).onPlaced(placer);
     }
+    
 
     @Override
-    public void addCollisionBoxesToList(World world, int i, int j, int k, AxisAlignedBB axisalignedbb, List arraylist, Entity entity) {
+    public void addCollisionBoxesToList(World world, BlockPos pos, IBlockState state, AxisAlignedBB mask, List<AxisAlignedBB> list, Entity collidingEntity) {
         setBlockBounds(0, 0, 0, 1, 1, 1);
-        super.addCollisionBoxesToList(world, i, j, k, axisalignedbb, arraylist, entity);
-    }
-
-    @Override
-    public float getPlayerRelativeBlockHardness(EntityPlayer player, World world, int x, int y, int z) {
-        TileFrequencyOwner tile = (TileFrequencyOwner) world.getTileEntity(x, y, z);
-        return ForgeHooks.blockStrength(tile.invincible() ? Blocks.bedrock : this, player, world, 0, 0, 0);
-    }
-
-    @Override
-    public MovingObjectPosition collisionRayTrace(World world, int x, int y, int z, Vec3 start, Vec3 end) {
-        TileFrequencyOwner tile = (TileFrequencyOwner) world.getTileEntity(x, y, z);
-        if (tile == null)
-            return null;
-
-        List<IndexedCuboid6> cuboids = new LinkedList<IndexedCuboid6>();
-        tile.addTraceableCuboids(cuboids);
-        return rayTracer.rayTraceCuboids(new Vector3(start), new Vector3(end), cuboids, new BlockCoord(x, y, z), this);
-    }
+        super.addCollisionBoxesToList(world, pos, state, mask, list, collidingEntity);
+    }   
+    
+    //TODO
+//    @Override
+//    public MovingObjectPosition collisionRayTrace(World world, BlockPos pos, Vec3 start, Vec3 end) {
+//        TileFrequencyOwner tile = (TileFrequencyOwner) world.getTileEntity(pos);
+//        if (tile == null)
+//            return null;
+//
+//        List<IndexedCuboid6> cuboids = new LinkedList<IndexedCuboid6>();
+//        tile.addTraceableCuboids(cuboids);
+//        return rayTracer.rayTraceCuboid(new Vector3(start), new Vector3(end), (Cuboid6) cuboids, new BlockCoord(pos), this);
+//    }
 
     @Override
     public void getSubBlocks(Item par1, CreativeTabs par2CreativeTabs, List list) {
@@ -197,56 +195,46 @@ public class BlockEnderStorage extends BlockContainer
     }
 
     @Override
-    public int getLightValue(IBlockAccess world, int x, int y, int z) {
-        TileEntity tile = world.getTileEntity(x, y, z);
+    public int getLightValue(IBlockAccess world, BlockPos pos) {
+        TileEntity tile = world.getTileEntity(pos);
         if (tile instanceof TileFrequencyOwner)
             return ((TileFrequencyOwner) tile).getLightValue();
         return 0;
     }
-
     @Override
-    public AxisAlignedBB getCollisionBoundingBoxFromPool(World world, int x, int y, int z) {
+    public AxisAlignedBB getCollisionBoundingBox(World world, BlockPos pos, IBlockState state) {
         setBlockBounds(0, 0, 0, 1, 1, 1);
-        return super.getCollisionBoundingBoxFromPool(world, x, y, z);
+        return super.getCollisionBoundingBox(world, pos, state);
     }
 
     @SideOnly(Side.CLIENT)
     @SubscribeEvent
     public void onBlockHighlight(DrawBlockHighlightEvent event) {
-        if (event.target.typeOfHit == MovingObjectType.BLOCK && event.player.worldObj.getBlock(event.target.blockX, event.target.blockY, event.target.blockZ) == this)
-            RayTracer.retraceBlock(event.player.worldObj, event.player, event.target.blockX, event.target.blockY, event.target.blockZ);
+        if (event.target.typeOfHit == MovingObjectType.BLOCK && event.player.worldObj.getBlockState(event.target.getBlockPos()) == this)
+            RayTracer.retraceBlock(event.player.worldObj, event.player, event.target.getBlockPos());
     }
 
     @Override
-    public boolean canConnectRedstone(IBlockAccess world, int x, int y, int z, int side) {
-        TileFrequencyOwner tile = (TileFrequencyOwner) world.getTileEntity(x, y, z);
+    public boolean canConnectRedstone(IBlockAccess world, BlockPos pos, EnumFacing side) {
+        TileFrequencyOwner tile = (TileFrequencyOwner) world.getTileEntity(pos);
         return tile.redstoneInteraction();
-    }
-
-    @Override
-    public IIcon getIcon(int par1, int par2) {
-        return Blocks.obsidian.getIcon(par1, par2);
-    }
-
-    @Override
-    @SideOnly(Side.CLIENT)
-    public void registerBlockIcons(IIconRegister par1IconRegister) {
     }
 
     @Override
     public boolean hasComparatorInputOverride() {
         return true;
     }
+    
 
     @Override
-    public int getComparatorInputOverride(World world, int x, int y, int z, int par5) {
-        TileFrequencyOwner tile = (TileFrequencyOwner) world.getTileEntity(x, y, z);
+    public int getComparatorInputOverride(World world, BlockPos pos) {
+        TileFrequencyOwner tile = (TileFrequencyOwner) world.getTileEntity(pos);
         return tile.comparatorInput();
     }
 
     @Override
-    public boolean rotateBlock(World world, int x, int y, int z, ForgeDirection axis) {
-        TileFrequencyOwner tile = (TileFrequencyOwner) world.getTileEntity(x, y, z);
+    public boolean rotateBlock(World world, BlockPos pos, EnumFacing axis) {
+        TileFrequencyOwner tile = (TileFrequencyOwner) world.getTileEntity(pos);
         return tile.rotate();
     }
 }

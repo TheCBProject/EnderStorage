@@ -4,14 +4,17 @@ import java.util.List;
 
 import codechicken.enderstorage.api.EnderStorageManager;
 import codechicken.enderstorage.storage.liquid.EnderLiquidStorage;
-import cpw.mods.fml.common.FMLCommonHandler;
 import net.minecraft.block.Block;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.BlockPos;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.world.World;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.IFluidContainerItem;
+import net.minecraftforge.fml.common.FMLCommonHandler;
 
 public class ItemEnderStorage extends ItemBlock implements IFluidContainerItem
 {
@@ -34,9 +37,9 @@ public class ItemEnderStorage extends ItemBlock implements IFluidContainerItem
     }
 
     @Override
-    public boolean placeBlockAt(ItemStack stack, EntityPlayer player, World world, int x, int y, int z, int side, float hitX, float hitY, float hitZ, int metadata) {
-        if (super.placeBlockAt(stack, player, world, x, y, z, side, hitX, hitY, hitZ, metadata)) {
-            TileFrequencyOwner tile = (TileFrequencyOwner) world.getTileEntity(x, y, z);
+    public boolean placeBlockAt(ItemStack stack, EntityPlayer player, World world, BlockPos pos, EnumFacing side,float hitX, float hitY, float hitZ, IBlockState newState) {
+        if (super.placeBlockAt(stack, player, world, pos, side, hitX, hitY, hitZ, newState)) {
+            TileFrequencyOwner tile = (TileFrequencyOwner) world.getTileEntity(pos);
             tile.setFreq(getFreq(stack));
             tile.setOwner(getOwner(stack));
 
