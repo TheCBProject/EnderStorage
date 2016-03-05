@@ -1,0 +1,136 @@
+buildscript {
+    repositories {
+        jcenter()
+        maven {
+            name = "forge"
+            url = "http://files.minecraftforge.net/maven"
+        }
+    }
+    dependencies {
+        classpath 'net.minecraftforge.gradle:ForgeGradle:2.1-SNAPSHOT'
+    }
+}
+
+//add dependency repositories
+repositories {
+	maven {
+		name = "Covers1624 Repo"
+		url = "http://adel.podgeweb.com:1616/maven"
+	}
+}
+
+apply plugin: 'net.minecraftforge.gradle.forge'
+apply plugin: 'maven'
+
+group = "codechicken" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
+archivesBaseName = "EnderStorage"
+
+// Define properties file
+ext.configFile = file "build.properties"
+
+configFile.withReader {
+    // Load config.  It shall from now be referenced as simply config or project.config
+    def prop = new Properties()
+    prop.load(it)
+    project.ext.config = new ConfigSlurper().parse prop
+}
+
+dependencies {
+    compile "codechicken:CodeChickenLib:${config.mc_version}-${config.ccl_version}:deobf"
+    compile "codechicken:CodeChickenCore:${config.mc_version}-${config.ccc_version}:deobf"
+    compile "codechicken:NotEnoughItems:1.8.9-2.0.1.+:deobf"
+}
+
+version =  "${project.config.mod_version}." + System.getenv("BUILD_NUMBER") ?: "1"
+
+println  config.mc_version + "-" + config.forge_version
+// Setup the forge minecraft plugin data. Specify the preferred forge/minecraft version here
+minecraft {
+    version = config.mc_version + "-" + config.forge_version
+    mappings = config.mappings
+	makeObfSourceJar = false
+	runDir = "run"
+}
+
+processResources {
+    // Redo task if any of these properties change
+    inputs.property "version", project.version
+    inputs.property "mc_version", config.mc_version
+	
+    // Replace properties in info files
+    from(sourceSets.main.resources.srcDirs) {
+        include '*.info'
+        expand 'version':project.version,'mc_version':config.mc_version
+    }
+	
+	// Move access transformer to META-INF
+	rename '(.+_at.cfg)', 'META-INF/$1'
+}
+
+version = "${project.minecraft.version}-${project.version}"
+def commonManifest = {
+    attributes 'FMLAT': 'chickenchunks_at.cfg'
+}
+
+jar {
+    classifier = 'universal'
+    manifest commonManifest
+}
+
+task srcJar(type: Jar) {
+    from sourceSets.main.java
+    classifier = 'sources'
+}
+
+task deobfJar(type: Jar) {
+    from sourceSets.main.output
+    classifier = 'deobf'
+    manifest commonManifest
+}
+
+// Tell the artifact system about our extra jars
+artifacts {
+    archives srcJar, deobfJar
+}
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            repository(url: "file:///var/www/maven")
+            pom {
+                groupId = project.group
+                version = project.version
+                artifactId = project.archivesBaseName
+                project {
+                    name project.archivesBaseName
+                    packaging 'jar'
+                    description 'EnderStorage'
+                    url 'https://github.com/covers1624/EnderStorage'
+                    scm {
+                        url 'https://github.com/covers1624/EnderStorage'
+                        connection 'scm:git:git@github.com:covers1624/EnderStorage.git'
+                        developerConnection 'scm:git:git@github.com:covers1624/EnderStorage.git'
+                    }
+                    issueManagement {
+                        system 'github'
+                        url 'https://github.com/covers1624/EnderStorage/issues'
+                    }
+                    licenses {
+                        license {
+                            name 'License'
+                            url 'https://raw.githubusercontent.com/covers1624/EnderStorage/master/LICENSE.txt'
+                            distribution 'repo'
+                        }
+                    }
+                    developers {
+						developer {
+                            id 'chicken-bones'
+                            name 'chicken-bones'
+                            roles { role 'developer' }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
