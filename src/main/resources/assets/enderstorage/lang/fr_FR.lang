@@ -1,6 +1,6 @@
-tile.enderchest|0.name=Coffre du Néant
-tile.enderchest|1.name=Réservoir du Néant
-item.enderpouch.name=Bourse du Néant
+tile.enderChest.name=Coffre du Néant
+tile.enderTank.name=Réservoir du Néant
+item.enderPouch.name=Bourse du Néant
 enderstorage.serverop=Opérateur
 
 enderstorage.command.usage=enderstorage <fréquence>|(<couleur> <couleur> <couleur>) [propriétaire]

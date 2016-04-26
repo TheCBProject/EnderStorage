@@ -1,6 +1,6 @@
-tile.enderchest|0.name=Truhla z Endu
-tile.enderchest|1.name=Nádrž z Endu
-item.enderpouch.name=Vak z Endu
+tile.enderChest.name=Truhla z Endu
+tile.enderTank.name=Nádrž z Endu
+item.enderPouch.name=Vak z Endu
 enderstorage.serverop=Operátor
 
 enderstorage.command.usage=enderstorage <frekvence>|(<barva> <barva> <barva>) [majitel]

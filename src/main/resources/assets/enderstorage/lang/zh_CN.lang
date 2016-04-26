@@ -1,8 +1,6 @@
-#zh_CN
-
-tile.enderchest|0.name=末影箱子
-tile.enderchest|1.name=末影蓄水槽
-item.enderpouch.name=末影袋子
+tile.enderChest.name=末影箱子
+tile.enderTank.name=末影蓄水槽
+item.enderPouch.name=末影袋子
 enderstorage.serverop=OP
 
 enderstorage.command.usage=enderstorage <freq>|(<colour> <colour> <colour>) [owner]

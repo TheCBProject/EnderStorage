@@ -1,6 +1,6 @@
-tile.enderchest|0.name=Baú do Fim
-tile.enderchest|1.name=Tanque do Fim
-item.enderpouch.name=Mochila do Fim
+tile.enderChest.name=Baú do Fim
+tile.enderTank.name=Tanque do Fim
+item.enderPouch.name=Mochila do Fim
 enderstorage.serverop=Operador
 
 enderstorage.command.usage=/enderstorage <frequência>|(<cor> <cor> <cor>) [dono]

@@ -1,6 +1,6 @@
-tile.enderchest|0.name=엔더 체스트
-tile.enderchest|1.name=엔더 탱크
-item.enderpouch.name=엔더 파우치
+tile.enderChest.name=엔더 체스트
+tile.enderTank.name=엔더 탱크
+item.enderPouch.name=엔더 파우치
 enderstorage.serverop=오퍼레이터
 
 enderstorage.command.usage=enderstorage <freq>|(<colour> <colour> <colour>) [owner]

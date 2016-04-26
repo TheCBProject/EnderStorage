@@ -1,6 +1,6 @@
-tile.enderchest|0.name=Międzywymiarowa skrzynia
-tile.enderchest|1.name=Międzywymiarowy zbiornik
-item.enderpouch.name=Międzywymiarowa skawa
+tile.enderChest.name=Międzywymiarowa skrzynia
+tile.enderTank.name=Międzywymiarowy zbiornik
+item.enderPouch.name=Międzywymiarowa skawa
 enderstorage.serverop=Operator
 
 enderstorage.command.usage=enderstorage <częstotliwość>|(<kolor> <kolor> <kolor>) [właściciel]

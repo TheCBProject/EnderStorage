@@ -1,4 +1,4 @@
-tile.enderchest|0.name=Enderkista
-tile.enderchest|1.name=Endertank
-item.enderpouch.name=Enderpåse
-enderstorage.serverop=Operatör
+tile.enderChest.name=Enderkista
+tile.enderTank.name=Endertank
+item.enderPouch.name=Enderpï¿½se
+enderstorage.serverop=Operatï¿½r
