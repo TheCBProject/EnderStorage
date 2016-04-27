@@ -129,7 +129,7 @@ public class TileEnderTank extends TileFrequencyOwner implements IFluidHandler {
     }
 
     public void reloadStorage() {
-        storage = (EnderLiquidStorage) EnderStorageManager.instance(worldObj.isRemote).getStorage(owner, freq, "liquid");
+        storage = (EnderLiquidStorage) EnderStorageManager.instance(worldObj.isRemote).getStorage(owner, frequency, "liquid");
         if (!worldObj.isRemote) {
             liquid_state.reloadStorage(storage);
         }

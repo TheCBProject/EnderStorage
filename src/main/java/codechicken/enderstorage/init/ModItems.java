@@ -5,8 +5,11 @@ package codechicken.enderstorage.init;
  */
 public class ModItems {
 
+    public static void init() {
 
-    public static void init(){
+    }
+
+    public static void registerModels() {
 
     }
 

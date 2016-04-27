@@ -1,5 +1,6 @@
 package codechicken.enderstorage.item;
 
+import codechicken.enderstorage.api.Frequency;
 import codechicken.enderstorage.handler.ConfigurationHandler;
 import codechicken.enderstorage.manager.EnderStorageManager;
 import codechicken.enderstorage.storage.EnderItemStorage;
@@ -23,7 +24,7 @@ public class ItemEnderPouch extends Item {
 
     public ItemEnderPouch() {
         setMaxStackSize(1);
-        setHasSubtypes(true);
+        //setHasSubtypes(true);
         setCreativeTab(CreativeTabs.tabDecorations);
     }
 
@@ -43,11 +44,13 @@ public class ItemEnderPouch extends Item {
         TileEntity tile = world.getTileEntity(pos);
         if (tile instanceof TileEnderChest && player.isSneaking()) {
             TileEnderChest chest = (TileEnderChest) tile;
-            stack.setItemDamage(chest.freq);
+            //stack.setItemDamage(chest.freq);
             if (!stack.hasTagCompound()) {
                 stack.setTagCompound(new NBTTagCompound());
             }
-
+            NBTTagCompound frequencyTag = new NBTTagCompound();
+            chest.frequency.writeNBT(frequencyTag);
+            stack.getTagCompound().setTag("Frequency", frequencyTag);
             if (!ConfigurationHandler.anarchyMode || chest.owner.equals(player.getDisplayNameString())) {
                 stack.getTagCompound().setString("owner", chest.owner);
             } else {
@@ -66,7 +69,7 @@ public class ItemEnderPouch extends Item {
             return new ActionResult<ItemStack>(EnumActionResult.PASS, stack);
         }
 
-        ((EnderItemStorage) EnderStorageManager.instance(world.isRemote).getStorage(getOwner(stack), stack.getItemDamage() & 0xFFF, "item")).openSMPGui(player, stack.getUnlocalizedName() + ".name");
+        ((EnderItemStorage) EnderStorageManager.instance(world.isRemote).getStorage(getOwner(stack), Frequency.fromItemStack(stack), "item")).openSMPGui(player, stack.getUnlocalizedName() + ".name");
         return new ActionResult<ItemStack>(EnumActionResult.SUCCESS, stack);
     }
 
@@ -89,7 +92,7 @@ public class ItemEnderPouch extends Item {
     public int getIconIndex(ItemStack stack, int renderPass) {
         if (renderPass == 0) {
             int i = 0;
-            if (((EnderItemStorage) EnderStorageManager.instance(true).getStorage(getOwner(stack), stack.getItemDamage() & 0xFFF, "item")).openCount() > 0) {
+            if (((EnderItemStorage) EnderStorageManager.instance(true).getStorage(getOwner(stack), Frequency.fromItemStack(stack), "item")).openCount() > 0) {
                 i |= 1;
             }
             if (!getOwner(stack).equals("global")) {

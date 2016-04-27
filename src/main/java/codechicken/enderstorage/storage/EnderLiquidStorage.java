@@ -3,6 +3,7 @@ package codechicken.enderstorage.storage;
 import codechicken.core.fluid.ExtendedFluidTank;
 import codechicken.core.fluid.FluidUtils;
 import codechicken.enderstorage.api.AbstractEnderStorage;
+import codechicken.enderstorage.api.Frequency;
 import codechicken.enderstorage.manager.EnderStorageManager;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
@@ -27,7 +28,7 @@ public class EnderLiquidStorage extends AbstractEnderStorage implements IFluidHa
 
     private Tank tank;
 
-    public EnderLiquidStorage(EnderStorageManager manager, String owner, int freq) {
+    public EnderLiquidStorage(EnderStorageManager manager, String owner, Frequency freq) {
         super(manager, owner, freq);
         tank = new Tank(CAPACITY);
     }

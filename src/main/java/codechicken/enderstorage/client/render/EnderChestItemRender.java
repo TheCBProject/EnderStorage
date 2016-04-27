@@ -6,7 +6,6 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.block.model.ItemCameraTransforms;
 import net.minecraft.client.renderer.block.model.ItemOverrideList;
-import net.minecraft.client.renderer.block.model.ItemTransformVec3f;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
@@ -14,13 +13,12 @@ import net.minecraft.util.EnumFacing;
 import java.util.List;
 
 /**
- * Created by covers1624 on 4/12/2016.
+ * Created by covers1624 on 4/27/2016.
  */
 public class EnderChestItemRender implements IItemRenderer {
-
     @Override
     public void renderItem(ItemStack item) {
-
+        LogHelper.info("RENDER!");
     }
 
     @Override
@@ -50,7 +48,7 @@ public class EnderChestItemRender implements IItemRenderer {
 
     @Override
     public ItemCameraTransforms getItemCameraTransforms() {
-        return new ItemCameraTransforms(ItemTransformVec3f.DEFAULT, ItemTransformVec3f.DEFAULT, ItemTransformVec3f.DEFAULT, ItemTransformVec3f.DEFAULT, ItemTransformVec3f.DEFAULT, ItemTransformVec3f.DEFAULT, ItemTransformVec3f.DEFAULT, ItemTransformVec3f.DEFAULT);
+        return ItemCameraTransforms.DEFAULT;
     }
 
     @Override

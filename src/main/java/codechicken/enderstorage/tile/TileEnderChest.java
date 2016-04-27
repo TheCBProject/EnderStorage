@@ -94,7 +94,7 @@ public class TileEnderChest extends TileFrequencyOwner implements IInventory, IT
     }
 
     public void reloadStorage() {
-        storage = (EnderItemStorage) EnderStorageManager.instance(worldObj.isRemote).getStorage(owner, freq, "item");
+        storage = (EnderItemStorage) EnderStorageManager.instance(worldObj.isRemote).getStorage(owner, frequency, "item");
     }
 
     @Override

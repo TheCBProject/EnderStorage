@@ -11,6 +11,8 @@ public class Reference {
     public static final String MOD_NAME = "EnderStorage";
     public static final String MOD_DESCRIPTION = "Stores your stuff in the END!";
 
+    public static final String MOD_PREFIX = MOD_ID.toLowerCase() + ":";
+
     public static final String VERSION = "${VERSION}";
     public static final String DEPENDENCIES = "required-after:CodeChickenCore@[" + CodeChickenCorePlugin.version + ",)";
 

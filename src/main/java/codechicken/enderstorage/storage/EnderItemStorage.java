@@ -4,6 +4,7 @@ import codechicken.core.ClientUtils;
 import codechicken.core.IGuiPacketSender;
 import codechicken.core.ServerUtils;
 import codechicken.enderstorage.api.AbstractEnderStorage;
+import codechicken.enderstorage.api.Frequency;
 import codechicken.enderstorage.client.gui.GuiEnderItemStorage;
 import codechicken.enderstorage.container.ContainerEnderItemStorage;
 import codechicken.enderstorage.manager.EnderStorageManager;
@@ -28,7 +29,7 @@ public class EnderItemStorage extends AbstractEnderStorage implements IInventory
     private int open;
     private int size;
 
-    public EnderItemStorage(EnderStorageManager manager, String owner, int freq) {
+    public EnderItemStorage(EnderStorageManager manager, String owner, Frequency freq) {
         super(manager, owner, freq);
         size = configSize;
         empty();
@@ -177,7 +178,7 @@ public class EnderItemStorage extends AbstractEnderStorage implements IInventory
                 PacketCustom packet = new PacketCustom(EnderStorageSPH.channel, 2);
                 packet.writeByte(windowId);
                 packet.writeString(owner);
-                packet.writeShort(freq);
+                packet.writeNBTTagCompound(freq.toNBT());
                 packet.writeString(name);
                 packet.writeByte(size);
 

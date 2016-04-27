@@ -2,6 +2,7 @@ package codechicken.enderstorage.manager;
 
 import codechicken.enderstorage.api.AbstractEnderStorage;
 import codechicken.enderstorage.api.EnderStoragePlugin;
+import codechicken.enderstorage.api.Frequency;
 import codechicken.enderstorage.util.LogHelper;
 import codechicken.lib.config.ConfigFile;
 import net.minecraft.entity.player.EntityPlayer;
@@ -155,7 +156,7 @@ public class EnderStorageManager {
         return client ? clientManager : serverManager;
     }
 
-    public AbstractEnderStorage getStorage(String owner, int freq, String type) {
+    public AbstractEnderStorage getStorage(String owner, Frequency freq, String type) {
         if (owner == null) {
             owner = "global";
         }
@@ -172,14 +173,15 @@ public class EnderStorageManager {
         return storage;
     }
 
+    @Deprecated
     public static int getFreqFromColours(int colour1, int colour2, int colour3) {
         return ((colour1 & 0xF) << 8) + ((colour2 & 0xF) << 4) + (colour3 & 0xF);
     }
-
+    @Deprecated
     public static int getFreqFromColours(int[] colours) {
         return ((colours[0] & 0xF) << 8) + ((colours[1] & 0xF) << 4) + (colours[2] & 0xF);
     }
-
+    @Deprecated
     public static int getColourFromFreq(int freq, int colour) {
         switch (colour) {
         case 0:
@@ -191,7 +193,7 @@ public class EnderStorageManager {
         }
         return 0;
     }
-
+    @Deprecated
     public static int[] getColoursFromFreq(int freq) {
         int[] ai = new int[3];
         ai[0] = (freq >> 8) & 0xF;

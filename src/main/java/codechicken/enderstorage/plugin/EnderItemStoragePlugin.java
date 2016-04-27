@@ -2,6 +2,7 @@ package codechicken.enderstorage.plugin;
 
 import codechicken.enderstorage.api.AbstractEnderStorage;
 import codechicken.enderstorage.api.EnderStoragePlugin;
+import codechicken.enderstorage.api.Frequency;
 import codechicken.enderstorage.manager.EnderStorageManager;
 import codechicken.enderstorage.network.EnderStorageSPH;
 import codechicken.enderstorage.storage.EnderItemStorage;
@@ -15,7 +16,7 @@ public class EnderItemStoragePlugin implements EnderStoragePlugin {
     public static int configSize;
 
     @Override
-    public AbstractEnderStorage createEnderStorage(EnderStorageManager manager, String owner, int freq) {
+    public AbstractEnderStorage createEnderStorage(EnderStorageManager manager, String owner, Frequency freq) {
         return new EnderItemStorage(manager, owner, freq);
     }
 

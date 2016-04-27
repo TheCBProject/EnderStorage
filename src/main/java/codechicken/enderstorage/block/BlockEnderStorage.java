@@ -1,8 +1,8 @@
 package codechicken.enderstorage.block;
 
+import codechicken.enderstorage.api.Frequency;
 import codechicken.enderstorage.handler.ConfigurationHandler;
 import codechicken.enderstorage.init.EnderStorageRecipe;
-import codechicken.enderstorage.manager.EnderStorageManager;
 import codechicken.enderstorage.repack.covers1624.lib.api.block.property.PropertyString;
 import codechicken.enderstorage.tile.TileEnderChest;
 import codechicken.enderstorage.tile.TileEnderTank;
@@ -106,7 +106,7 @@ public class BlockEnderStorage extends Block implements ITileEntityProvider {
 
         TileFrequencyOwner tile = (TileFrequencyOwner) world.getTileEntity(pos);
         if (tile != null) {
-            ret.add(createItem(state.getBlock().getMetaFromState(state), tile.freq, ConfigurationHandler.anarchyMode ? "global" : tile.owner));
+            ret.add(createItem(state.getBlock().getMetaFromState(state), tile.frequency, ConfigurationHandler.anarchyMode ? "global" : tile.owner));
             if (ConfigurationHandler.anarchyMode && !tile.owner.equals("global")) {
                 ret.add(ConfigurationHandler.personalItem.copy());
             }
@@ -118,15 +118,18 @@ public class BlockEnderStorage extends Block implements ITileEntityProvider {
     @Override
     public ItemStack getPickBlock(IBlockState state, RayTraceResult rayTraceResult, World world, BlockPos pos, EntityPlayer player) {
         TileFrequencyOwner tile = (TileFrequencyOwner) world.getTileEntity(pos);
-        return createItem(this.getMetaFromState(state), tile.freq, tile.owner);
+        return createItem(this.getMetaFromState(state), tile.frequency, tile.owner);
     }
 
-    private ItemStack createItem(int meta, int freq, String owner) {
-        ItemStack stack = new ItemStack(this, 1, freq | meta << 12);
+    private ItemStack createItem(int meta, Frequency freq, String owner) {
+        ItemStack stack = new ItemStack(this, 1, meta);
+        if (!stack.hasTagCompound()) {
+            stack.setTagCompound(new NBTTagCompound());
+        }
+        NBTTagCompound frequencyTag = new NBTTagCompound();
+        freq.writeNBT(frequencyTag);
+        stack.getTagCompound().setTag("Frequency", frequencyTag);
         if (!owner.equals("global")) {
-            if (!stack.hasTagCompound()) {
-                stack.setTagCompound(new NBTTagCompound());
-            }
             stack.getTagCompound().setString("owner", owner);
         }
         return stack;
@@ -177,13 +180,12 @@ public class BlockEnderStorage extends Block implements ITileEntityProvider {
             ItemStack item = player.inventory.getCurrentItem();
             int dye = EnderStorageRecipe.getDyeType(item);
             if (dye != -1) {
-                int currentFreq = tile.freq;
-                int[] colours = EnderStorageManager.getColoursFromFreq(currentFreq);
+                int[] colours = tile.frequency.toArray();//TODO Rewrite this to remove array stuff.
                 if (colours[hit.subHit - 1] == (~dye & 0xF)) {
                     return false;
                 }
                 colours[hit.subHit - 1] = ~dye & 0xF;
-                tile.setFreq(EnderStorageManager.getFreqFromColours(colours));
+                tile.setFreq(Frequency.fromArray(colours));
                 if (!player.capabilities.isCreativeMode) {
                     item.stackSize--;
                 }
@@ -253,7 +255,7 @@ public class BlockEnderStorage extends Block implements ITileEntityProvider {
     @Override
     public void getSubBlocks(Item par1, CreativeTabs par2CreativeTabs, List<ItemStack> list) {
         list.add(new ItemStack(this, 1, 0));
-        list.add(new ItemStack(this, 1, 0x1000));
+        list.add(new ItemStack(this, 1, 1));
     }
 
     @Override

@@ -1,6 +1,7 @@
 package codechicken.enderstorage.tile;
 
 import codechicken.enderstorage.api.AbstractEnderStorage;
+import codechicken.enderstorage.api.Frequency;
 import codechicken.enderstorage.network.EnderStorageSPH;
 import codechicken.lib.packet.PacketCustom;
 import codechicken.lib.raytracer.IndexedCuboid6;
@@ -18,12 +19,12 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 
-import java.util.List;
-
 public abstract class TileFrequencyOwner extends TileEntity implements ITickable, IIndexedCuboidProvider {
     public static Cuboid6 selection_button = new Cuboid6(-1 / 16D, 0, -2 / 16D, 1 / 16D, 1 / 16D, 2 / 16D);
 
+    @Deprecated
     public int freq;
+    public Frequency frequency = new Frequency();
     public String owner = "global";
     private int changeCount;
 
@@ -35,8 +36,8 @@ public abstract class TileFrequencyOwner extends TileEntity implements ITickable
         }
     }
 
-    public void setFreq(int i) {
-        freq = i;
+    public void setFreq(Frequency frequency) {
+        this.frequency = frequency;
         reloadStorage();
         markDirty();
         IBlockState state = worldObj.getBlockState(pos);
@@ -65,13 +66,15 @@ public abstract class TileFrequencyOwner extends TileEntity implements ITickable
 
     public void readFromNBT(NBTTagCompound tag) {
         super.readFromNBT(tag);
-        freq = tag.getInteger("freq");
+        frequency.readNBT(tag.getCompoundTag("Frequency"));
         owner = tag.getString("owner");
     }
 
     public void writeToNBT(NBTTagCompound tag) {
         super.writeToNBT(tag);
-        tag.setInteger("freq", freq);
+        NBTTagCompound frequencyTag = new NBTTagCompound();
+        frequency.writeNBT(frequencyTag);
+        tag.setTag("Frequency", frequencyTag);
         tag.setString("owner", owner);
     }
 
@@ -99,7 +102,7 @@ public abstract class TileFrequencyOwner extends TileEntity implements ITickable
     public final Packet getDescriptionPacket() {
         PacketCustom packet = new PacketCustom(EnderStorageSPH.channel, 1);
         packet.writeCoord(pos.getX(), pos.getY(), pos.getZ());
-        packet.writeShort(freq);
+        packet.writeNBTTagCompound(frequency.toNBT());
         packet.writeString(owner);
         writeToPacket(packet);
         return packet.toPacket();
@@ -109,7 +112,7 @@ public abstract class TileFrequencyOwner extends TileEntity implements ITickable
     }
 
     public void handleDescriptionPacket(PacketCustom desc) {
-        freq = desc.readUShort();
+        frequency.readNBT(desc.readNBTTagCompound());
         owner = desc.readString();
     }
 

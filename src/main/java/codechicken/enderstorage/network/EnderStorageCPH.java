@@ -1,7 +1,9 @@
 package codechicken.enderstorage.network;
 
+import codechicken.enderstorage.api.Frequency;
 import codechicken.enderstorage.manager.EnderStorageManager;
 import codechicken.enderstorage.storage.EnderItemStorage;
+import codechicken.enderstorage.tile.TileEnderTank;
 import codechicken.enderstorage.tile.TileFrequencyOwner;
 import codechicken.lib.packet.PacketCustom;
 import codechicken.lib.packet.PacketCustom.IClientPacketHandler;
@@ -23,13 +25,13 @@ public class EnderStorageCPH implements IClientPacketHandler {
             break;
         case 2:
             int windowID = packet.readUByte();
-            ((EnderItemStorage) EnderStorageManager.instance(true).getStorage(packet.readString(), packet.readUShort(), "item")).openClientGui(windowID, mc.thePlayer.inventory, packet.readString(), packet.readUByte());
+            ((EnderItemStorage) EnderStorageManager.instance(true).getStorage(packet.readString(), Frequency.fromNBT(packet.readNBTTagCompound()), "item")).openClientGui(windowID, mc.thePlayer.inventory, packet.readString(), packet.readUByte());
             break;
         case 3:
-            ((EnderItemStorage) EnderStorageManager.instance(true).getStorage(packet.readString(), packet.readUShort(), "item")).setClientOpen(packet.readBoolean() ? 1 : 0);
+            ((EnderItemStorage) EnderStorageManager.instance(true).getStorage(packet.readString(), Frequency.fromNBT(packet.readNBTTagCompound()), "item")).setClientOpen(packet.readBoolean() ? 1 : 0);
             break;
         case 4:
-            TankSynchroniser.syncClient(packet.readUShort(), packet.readString(), packet.readFluidStack());
+            TankSynchroniser.syncClient(Frequency.fromNBT(packet.readNBTTagCompound()), packet.readString(), packet.readFluidStack());
             break;
         case 5:
         case 6:
@@ -40,9 +42,9 @@ public class EnderStorageCPH implements IClientPacketHandler {
 
     private void handleTankTilePacket(WorldClient world, BlockCoord pos, PacketCustom packet) {
         TileEntity tile = world.getTileEntity(new BlockPos(pos.x, pos.y, pos.z));
-        //if (tile instanceof TileEnderTank) {
-        //    ((TileEnderTank) tile).sync(packet);
-        //}
+        if (tile instanceof TileEnderTank) {
+            ((TileEnderTank) tile).sync(packet);
+        }
     }
 
     private void handleTilePacket(WorldClient world, PacketCustom packet, BlockCoord pos) {

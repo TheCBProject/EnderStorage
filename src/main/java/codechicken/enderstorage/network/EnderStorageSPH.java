@@ -1,5 +1,6 @@
 package codechicken.enderstorage.network;
 
+import codechicken.enderstorage.api.Frequency;
 import codechicken.lib.packet.PacketCustom;
 import codechicken.lib.packet.PacketCustom.IServerPacketHandler;
 import net.minecraft.entity.player.EntityPlayer;
@@ -18,10 +19,10 @@ public class EnderStorageSPH implements IServerPacketHandler {
         }
     }
 
-    public static void sendOpenUpdateTo(EntityPlayer player, String owner, int freq, boolean open) {
+    public static void sendOpenUpdateTo(EntityPlayer player, String owner, Frequency freq, boolean open) {
         PacketCustom packet = new PacketCustom(channel, 3);
         packet.writeString(owner);
-        packet.writeShort(freq);
+        packet.writeNBTTagCompound(freq.toNBT());
         packet.writeBoolean(open);
 
         packet.sendToPlayer(player);

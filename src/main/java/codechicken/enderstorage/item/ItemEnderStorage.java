@@ -1,5 +1,6 @@
 package codechicken.enderstorage.item;
 
+import codechicken.enderstorage.api.Frequency;
 import codechicken.enderstorage.manager.EnderStorageManager;
 import codechicken.enderstorage.storage.EnderLiquidStorage;
 import codechicken.enderstorage.tile.TileFrequencyOwner;
@@ -27,15 +28,15 @@ public class ItemEnderStorage extends ItemBlock implements IFluidContainerItem {
 
     @Override
     public int getMetadata(int stackMeta) {
-        return stackMeta >> 12;
+        return stackMeta;
     }
 
     public String getOwner(ItemStack stack) {
         return stack.hasTagCompound() ? stack.getTagCompound().getString("owner") : "global";
     }
 
-    public int getFreq(ItemStack stack) {
-        return stack.getItemDamage() & 0xfff;
+    public Frequency getFreq(ItemStack stack) {
+        return Frequency.fromItemStack(stack);
     }
 
     @Override

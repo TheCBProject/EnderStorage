@@ -2,10 +2,10 @@ package codechicken.enderstorage.client.render;
 
 import codechicken.core.ClientUtils;
 import codechicken.core.fluid.FluidUtils;
+import codechicken.enderstorage.api.Frequency;
 import codechicken.enderstorage.client.RenderUtils;
 import codechicken.enderstorage.client.model.ButtonModelLibrary;
 import codechicken.enderstorage.client.model.RenderCustomEndPortal;
-import codechicken.enderstorage.manager.EnderStorageManager;
 import codechicken.enderstorage.tile.TileEnderTank;
 import codechicken.lib.math.MathHelper;
 import codechicken.lib.render.CCModel;
@@ -58,11 +58,11 @@ public class RenderTileEnderTank extends TileEntitySpecialRenderer<TileEnderTank
     public void renderTileEntityAt(TileEnderTank tile, double x, double y, double z, float partialTicks, int breakProgress) {
 
         CCRenderState.reset();
-        renderTank(tile.rotation, (float) MathHelper.interpolate(tile.pressure_state.b_rotate, tile.pressure_state.a_rotate, partialTicks) * 0.01745F, tile.freq, !tile.owner.equals("global"), x, y, z, codechicken.enderstorage.client.RenderUtils.getTimeOffset(tile.getPos()));
+        renderTank(tile.rotation, (float) MathHelper.interpolate(tile.pressure_state.b_rotate, tile.pressure_state.a_rotate, partialTicks) * 0.01745F, tile.frequency, !tile.owner.equals("global"), x, y, z, codechicken.enderstorage.client.RenderUtils.getTimeOffset(tile.getPos()));
         renderLiquid(tile.liquid_state.c_liquid, x, y, z);
     }
 
-    public static void renderTank(int rotation, float valve, int freq, boolean owned, double x, double y, double z, int offset) {
+    public static void renderTank(int rotation, float valve, Frequency freq, boolean owned, double x, double y, double z, int offset) {
         TileEntityRendererDispatcher info = TileEntityRendererDispatcher.instance;
         renderEndPortal.render(x, y, z, 0, info.entityX, info.entityY, info.entityZ, info.renderEngine);
         color(1, 1, 1, 1);
@@ -82,9 +82,9 @@ public class RenderTileEnderTank extends TileEntitySpecialRenderer<TileEnderTank
         CCRenderState.changeTexture("enderstorage:textures/buttons.png");
         CCRenderState.startDrawing(7, POSITION_TEX_NORMAL);
         CCRenderState.pullBuffer();
+        int[] colours = freq.toArray();
         for (int i = 0; i < 3; i++) {
-            int colour = EnderStorageManager.getColourFromFreq(freq, i);
-            buttons[i].render(new UVTranslation(0.25 * (colour % 4), 0.25 * (colour / 4)));
+            buttons[i].render(new UVTranslation(0.25 * (colours[i] % 4), 0.25 * (colours[i] / 4)));
         }
         CCRenderState.draw();
         popMatrix();

@@ -2,6 +2,7 @@ package codechicken.enderstorage.plugin;
 
 import codechicken.enderstorage.api.AbstractEnderStorage;
 import codechicken.enderstorage.api.EnderStoragePlugin;
+import codechicken.enderstorage.api.Frequency;
 import codechicken.enderstorage.manager.EnderStorageManager;
 import codechicken.enderstorage.storage.EnderLiquidStorage;
 import codechicken.lib.config.ConfigTag;
@@ -12,7 +13,7 @@ import java.util.List;
 public class EnderLiquidStoragePlugin implements EnderStoragePlugin
 {
     @Override
-    public AbstractEnderStorage createEnderStorage(EnderStorageManager manager, String owner, int freq) {
+    public AbstractEnderStorage createEnderStorage(EnderStorageManager manager, String owner, Frequency freq) {
         return new EnderLiquidStorage(manager, owner, freq);
     }
 

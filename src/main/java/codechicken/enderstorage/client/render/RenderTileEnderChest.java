@@ -1,6 +1,7 @@
 package codechicken.enderstorage.client.render;
 
 import codechicken.core.ClientUtils;
+import codechicken.enderstorage.api.Frequency;
 import codechicken.enderstorage.client.RenderUtils;
 import codechicken.enderstorage.client.model.ModelEnderChest;
 import codechicken.enderstorage.client.model.RenderCustomEndPortal;
@@ -35,13 +36,13 @@ public class RenderTileEnderChest extends TileEntitySpecialRenderer<TileEnderChe
         CCRenderState.setBrightness(enderChest.getWorld(), enderChest.getPos());
         boolean owned = !enderChest.owner.equals("global");
         int rotation = enderChest.rotation;
-        int freq = enderChest.freq;
+        Frequency freq = enderChest.frequency;
         int offset = RenderUtils.getTimeOffset(enderChest.getPos());
         float lidAngle = (float) enderChest.getRadianLidAngle(partialTicks);
         renderChest(rotation, freq, owned, x, y, z, offset, lidAngle);
     }
 
-    public static void renderChest(int rotation, int freq, boolean owned, double x, double y, double z, int offset, float lidAngle) {
+    public static void renderChest(int rotation, Frequency freq, boolean owned, double x, double y, double z, int offset, float lidAngle) {
         TileEntityRendererDispatcher info = TileEntityRendererDispatcher.instance;
         renderEndPortal.render(x, y, z, 0, info.entityX, info.entityY, info.entityZ, info.renderEngine);
         GlStateManager.color(1, 1, 1, 1);
@@ -78,12 +79,12 @@ public class RenderTileEnderChest extends TileEntitySpecialRenderer<TileEnderChe
         GlStateManager.enableLighting();
     }
 
-    private static void renderButtons(int freq, int rot, double lidAngle) {
+    private static void renderButtons(Frequency freq, int rot, double lidAngle) {
         CCRenderState.changeTexture("enderstorage:textures/buttons.png");
 
-        drawButton(0, EnderStorageManager.getColourFromFreq(freq, 0), rot, lidAngle);
-        drawButton(1, EnderStorageManager.getColourFromFreq(freq, 1), rot, lidAngle);
-        drawButton(2, EnderStorageManager.getColourFromFreq(freq, 2), rot, lidAngle);
+        drawButton(0, freq.left, rot, lidAngle);
+        drawButton(1, freq.middle, rot, lidAngle);
+        drawButton(2, freq.right, rot, lidAngle);
     }
 
     private static void drawButton(int button, int colour, int rot, double lidAngle) {
