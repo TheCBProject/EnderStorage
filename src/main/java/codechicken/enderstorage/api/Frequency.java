@@ -1,28 +1,38 @@
 package codechicken.enderstorage.api;
 
+import codechicken.lib.util.Copyable;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.translation.I18n;
+
+import static codechicken.enderstorage.api.Colour.*;
 
 /**
  * Created by covers1624 on 4/26/2016.
  */
-public final class Frequency {
+public final class Frequency implements Copyable<Frequency> {
 
-    public static final String[] colours = new String[] { "white", "orange", "magenta", "light_blue", "yellow", "lime", "pink", "gray", "light_gray", "cyan", "purple", "blue", "brown", "green", "red", "black" };
+    //public static final String[] colours = new String[] { "white", "orange", "magenta", "light_blue", "yellow", "lime", "pink", "gray", "light_gray", "cyan", "purple", "blue", "brown", "green", "red", "black" };
+    public static final Colour[] colours = new Colour[] { WHITE, ORANGE, MAGENTA, LIGHT_BLUE, YELLOW, LIME, PINK, GRAY, LIGHT_GRAY, CYAN, PURPLE, BLUE, BROWN, GREEN, RED, BLACK };
 
     public int left;
     public int middle;
     public int right;
+    public String owner;
 
     public Frequency() {
-        this(0, 0, 0);
+        this(0, 0, 0, null);
     }
 
-    public Frequency(int left, int middle, int right) {
+    public Frequency(int left, int middle, int right, String owner) {
         this.left = left;
         this.middle = middle;
         this.right = right;
+        this.owner = owner;
+    }
+
+    public Frequency(int left, int middle, int right) {
+        this(left, middle, right, null);
     }
 
     public Frequency setLeft(int left) {
@@ -38,6 +48,15 @@ public final class Frequency {
     public Frequency setRight(int right) {
         this.right = right;
         return this;
+    }
+
+    public Frequency setOwner(String owner) {
+        this.owner = owner;
+        return this;
+    }
+
+    public boolean hasOwner() {
+        return owner != null;
     }
 
     public static Frequency fromArray(int[] colours) {
@@ -59,19 +78,44 @@ public final class Frequency {
         setLeft(frequency.left);
         setMiddle(frequency.middle);
         setRight(frequency.right);
+        setOwner(frequency.owner);
         return this;
     }
 
     public String getLeft() {
-        return colours[left];
+        return colours[left].getMinecraftName();
     }
 
     public String getMiddle() {
-        return colours[middle];
+        return colours[middle].getMinecraftName();
     }
 
     public String getRight() {
+        return colours[right].getMinecraftName();
+    }
+
+    public Colour getLeftRaw() {
+        return colours[left];
+    }
+
+    public Colour getMiddleRaw() {
+        return colours[middle];
+    }
+
+    public Colour getRightRaw() {
         return colours[right];
+    }
+
+    public String getLocalizedLeft() {
+        return I18n.translateToLocal(getLeftRaw().getUnlocalizedName());
+    }
+
+    public String getLocalizedMiddle() {
+        return I18n.translateToLocal(getMiddleRaw().getUnlocalizedName());
+    }
+
+    public String getLocalizedRight() {
+        return I18n.translateToLocal(getRightRaw().getUnlocalizedName());
     }
 
     public String[] getColours() {
@@ -86,6 +130,9 @@ public final class Frequency {
         left = tagCompound.getInteger("left");
         middle = tagCompound.getInteger("middle");
         right = tagCompound.getInteger("right");
+        if (tagCompound.hasKey("owner")) {
+            owner = tagCompound.getString("owner");
+        }
         return this;
     }
 
@@ -93,6 +140,9 @@ public final class Frequency {
         tagCompound.setInteger("left", left);
         tagCompound.setInteger("middle", middle);
         tagCompound.setInteger("right", right);
+        if (owner != null) {
+            tagCompound.setString("owner", owner);
+        }
         return this;
     }
 
@@ -121,13 +171,26 @@ public final class Frequency {
         return frequency;
     }
 
+    public String toModelLoc() {
+        return "left=" + getLeft() + ",middle=" + getMiddle() + ",right=" + getRight() + ",owned=" + hasOwner();
+    }
+
     @Override
     public String toString() {
-        return "left=" + getLeft() + ",middle=" + getMiddle() + ",right=" + getRight();
+        String owner = "";
+        if (hasOwner()) {
+            owner = ",owner=" + owner;
+        }
+        return "left=" + getLeft() + ",middle=" + getMiddle() + ",right=" + getRight() + owner;
     }
 
     @Override
     public int hashCode() {
-        return (left + middle * 31) * 31 + right;
+        return toString().hashCode();
+    }
+
+    @Override
+    public Frequency copy() {
+        return new Frequency(this.left, this.middle, this.right, this.owner);
     }
 }

@@ -10,11 +10,10 @@ import net.minecraft.entity.player.EntityPlayer;
 
 import java.util.List;
 
-public class EnderLiquidStoragePlugin implements EnderStoragePlugin
-{
+public class EnderLiquidStoragePlugin implements EnderStoragePlugin {
     @Override
-    public AbstractEnderStorage createEnderStorage(EnderStorageManager manager, String owner, Frequency freq) {
-        return new EnderLiquidStorage(manager, owner, freq);
+    public AbstractEnderStorage createEnderStorage(EnderStorageManager manager, Frequency freq) {
+        return new EnderLiquidStorage(manager, freq);
     }
 
     @Override

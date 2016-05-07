@@ -31,8 +31,14 @@ public class ItemEnderStorage extends ItemBlock implements IFluidContainerItem {
         return stackMeta;
     }
 
+    @Deprecated
     public String getOwner(ItemStack stack) {
-        return stack.hasTagCompound() ? stack.getTagCompound().getString("owner") : "global";
+        String owner = "";
+        if (stack.hasTagCompound()) {
+            owner = stack.getTagCompound().getString("owner");
+        }
+
+        return owner.isEmpty() ? "global" : owner;
     }
 
     public Frequency getFreq(ItemStack stack) {
@@ -44,8 +50,7 @@ public class ItemEnderStorage extends ItemBlock implements IFluidContainerItem {
         if (super.placeBlockAt(stack, player, world, pos, side, hitX, hitY, hitZ, newState)) {
             TileFrequencyOwner tile = (TileFrequencyOwner) world.getTileEntity(pos);
             tile.setFreq(getFreq(stack));
-            tile.setOwner(getOwner(stack));
-
+            //tile.setOwner(getOwner(stack));
             return true;
         }
         return false;
@@ -58,13 +63,18 @@ public class ItemEnderStorage extends ItemBlock implements IFluidContainerItem {
 
     @Override
     public void addInformation(ItemStack stack, EntityPlayer player, List<String> list, boolean extended) {
-        if (!getOwner(stack).equals("global")) {
-            list.add(getOwner(stack));
+        Frequency frequency = Frequency.fromItemStack(stack);
+        if (frequency.owner != null) {
+            list.add(frequency.owner);
         }
+        list.add(String.format("%s/%s/%s", frequency.getLeftRaw().getUnlocalizedName(), frequency.getMiddleRaw().getUnlocalizedName(), frequency.getRightRaw().getUnlocalizedName()));
+        //if (!getOwner(stack).equals("global")) {
+        //    list.add(getOwner(stack));
+        //}
     }
 
     private EnderLiquidStorage getLiquidStorage(ItemStack stack) {
-        return (EnderLiquidStorage) EnderStorageManager.instance(FMLCommonHandler.instance().getEffectiveSide().isClient()).getStorage(getOwner(stack), getFreq(stack), "liquid");
+        return (EnderLiquidStorage) EnderStorageManager.instance(FMLCommonHandler.instance().getEffectiveSide().isClient()).getStorage(getFreq(stack), "liquid");
     }
 
     @Override

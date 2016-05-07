@@ -31,8 +31,8 @@ public class GuiEnderItemStorage extends GuiContainer {
         fontRendererObj.drawString(name, 8, 6, 0x404040);
         fontRendererObj.drawString(I18n.translateToLocal(playerInv.getName()), 8, ySize - 94, 0x404040);
         ContainerEnderItemStorage ces = (ContainerEnderItemStorage) inventorySlots;
-        if (!ces.chestInv.owner.equals("global")) {
-            fontRendererObj.drawString(ces.chestInv.owner, 170 - fontRendererObj.getStringWidth(ces.chestInv.owner), 6, 0x404040);
+        if (ces.chestInv.freq.hasOwner()) {
+            fontRendererObj.drawString(ces.chestInv.freq.owner, 170 - fontRendererObj.getStringWidth(ces.chestInv.freq.owner), 6, 0x404040);
         }
     }
 

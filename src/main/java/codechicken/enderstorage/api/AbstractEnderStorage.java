@@ -6,13 +6,11 @@ import net.minecraft.nbt.NBTTagCompound;
 public abstract class AbstractEnderStorage {
     public final EnderStorageManager manager;
     public final Frequency freq;
-    public final String owner;
     private boolean dirty;
     private int changeCount;
 
-    public AbstractEnderStorage(EnderStorageManager manager, String owner, Frequency freq) {
+    public AbstractEnderStorage(EnderStorageManager manager, Frequency freq) {
         this.manager = manager;
-        this.owner = owner;
         this.freq = freq;
     }
 

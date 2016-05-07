@@ -22,10 +22,8 @@ import net.minecraft.world.WorldServer;
 public abstract class TileFrequencyOwner extends TileEntity implements ITickable, IIndexedCuboidProvider {
     public static Cuboid6 selection_button = new Cuboid6(-1 / 16D, 0, -2 / 16D, 1 / 16D, 1 / 16D, 2 / 16D);
 
-    @Deprecated
-    public int freq;
     public Frequency frequency = new Frequency();
-    public String owner = "global";
+    private Frequency cache = new Frequency();
     private int changeCount;
 
     @Override
@@ -44,19 +42,18 @@ public abstract class TileFrequencyOwner extends TileEntity implements ITickable
         worldObj.notifyBlockUpdate(pos, state, state, 3);
     }
 
-    public void setOwner(String username) {
-        owner = username;
-        reloadStorage();
-        markDirty();
-        IBlockState state = worldObj.getBlockState(pos);
-        worldObj.notifyBlockUpdate(pos, state, state, 3);
-    }
-
     @Override
     public void update() {
         if (getStorage().getChangeCount() > changeCount) {
             worldObj.updateComparatorOutputLevel(pos, getBlockType());
             changeCount = getStorage().getChangeCount();
+        }
+        if (!cache.equals(frequency)) {
+            reloadStorage();
+            markDirty();
+            IBlockState state = worldObj.getBlockState(pos);
+            worldObj.notifyBlockUpdate(pos, state, state, 3);
+            cache = frequency.copy();
         }
     }
 
@@ -67,7 +64,7 @@ public abstract class TileFrequencyOwner extends TileEntity implements ITickable
     public void readFromNBT(NBTTagCompound tag) {
         super.readFromNBT(tag);
         frequency.readNBT(tag.getCompoundTag("Frequency"));
-        owner = tag.getString("owner");
+        //owner = tag.getString("owner");
     }
 
     public void writeToNBT(NBTTagCompound tag) {
@@ -75,7 +72,7 @@ public abstract class TileFrequencyOwner extends TileEntity implements ITickable
         NBTTagCompound frequencyTag = new NBTTagCompound();
         frequency.writeNBT(frequencyTag);
         tag.setTag("Frequency", frequencyTag);
-        tag.setString("owner", owner);
+        //tag.setString("owner", owner);
     }
 
     public boolean activate(EntityPlayer player, int subHit) {
@@ -85,9 +82,9 @@ public abstract class TileFrequencyOwner extends TileEntity implements ITickable
     public void onPlaced(EntityLivingBase entity) {
     }
 
-    public boolean invincible() {
-        return false;
-    }
+    //public boolean invincible() {
+    //    return false;
+    //}
 
     public RayTraceResult rayTrace(World world, Vec3d vec3d, Vec3d vec3d1, RayTraceResult fullBlock) {
         return fullBlock;
@@ -103,7 +100,7 @@ public abstract class TileFrequencyOwner extends TileEntity implements ITickable
         PacketCustom packet = new PacketCustom(EnderStorageSPH.channel, 1);
         packet.writeCoord(pos.getX(), pos.getY(), pos.getZ());
         packet.writeNBTTagCompound(frequency.toNBT());
-        packet.writeString(owner);
+        //packet.writeString(owner);
         writeToPacket(packet);
         return packet.toPacket();
     }
@@ -113,7 +110,7 @@ public abstract class TileFrequencyOwner extends TileEntity implements ITickable
 
     public void handleDescriptionPacket(PacketCustom desc) {
         frequency.readNBT(desc.readNBTTagCompound());
-        owner = desc.readString();
+        //owner = desc.readString();
     }
 
     public int getLightValue() {

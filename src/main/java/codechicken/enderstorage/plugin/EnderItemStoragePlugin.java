@@ -16,8 +16,8 @@ public class EnderItemStoragePlugin implements EnderStoragePlugin {
     public static int configSize;
 
     @Override
-    public AbstractEnderStorage createEnderStorage(EnderStorageManager manager, String owner, Frequency freq) {
-        return new EnderItemStorage(manager, owner, freq);
+    public AbstractEnderStorage createEnderStorage(EnderStorageManager manager, Frequency freq) {
+        return new EnderItemStorage(manager, freq);
     }
 
     @Override
@@ -36,7 +36,7 @@ public class EnderItemStoragePlugin implements EnderStoragePlugin {
     public void sendClientInfo(EntityPlayer player, List<AbstractEnderStorage> list) {
         for (AbstractEnderStorage inv : list) {
             if (((EnderItemStorage) inv).openCount() > 0) {
-                EnderStorageSPH.sendOpenUpdateTo(player, inv.owner, inv.freq, true);
+                EnderStorageSPH.sendOpenUpdateTo(player, inv.freq, true);
             }
         }
     }

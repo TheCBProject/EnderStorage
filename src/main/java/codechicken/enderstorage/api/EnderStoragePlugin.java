@@ -7,7 +7,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import java.util.List;
 
 public interface EnderStoragePlugin {
-    AbstractEnderStorage createEnderStorage(EnderStorageManager manager, String owner, Frequency freq);
+    AbstractEnderStorage createEnderStorage(EnderStorageManager manager, Frequency freq);
 
     String identifier();
 

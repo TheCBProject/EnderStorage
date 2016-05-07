@@ -106,8 +106,8 @@ public class BlockEnderStorage extends Block implements ITileEntityProvider {
 
         TileFrequencyOwner tile = (TileFrequencyOwner) world.getTileEntity(pos);
         if (tile != null) {
-            ret.add(createItem(state.getBlock().getMetaFromState(state), tile.frequency, ConfigurationHandler.anarchyMode ? "global" : tile.owner));
-            if (ConfigurationHandler.anarchyMode && !tile.owner.equals("global")) {
+            ret.add(createItem(state.getBlock().getMetaFromState(state), tile.frequency));
+            if (ConfigurationHandler.anarchyMode && tile.frequency.hasOwner()) {
                 ret.add(ConfigurationHandler.personalItem.copy());
             }
         }
@@ -118,20 +118,23 @@ public class BlockEnderStorage extends Block implements ITileEntityProvider {
     @Override
     public ItemStack getPickBlock(IBlockState state, RayTraceResult rayTraceResult, World world, BlockPos pos, EntityPlayer player) {
         TileFrequencyOwner tile = (TileFrequencyOwner) world.getTileEntity(pos);
-        return createItem(this.getMetaFromState(state), tile.frequency, tile.owner);
+        return createItem(this.getMetaFromState(state), tile.frequency);
     }
 
-    private ItemStack createItem(int meta, Frequency freq, String owner) {
+    private ItemStack createItem(int meta, Frequency freq) {
         ItemStack stack = new ItemStack(this, 1, meta);
         if (!stack.hasTagCompound()) {
             stack.setTagCompound(new NBTTagCompound());
         }
+        if (ConfigurationHandler.anarchyMode) {
+            freq.setOwner(null);
+        }
         NBTTagCompound frequencyTag = new NBTTagCompound();
         freq.writeNBT(frequencyTag);
         stack.getTagCompound().setTag("Frequency", frequencyTag);
-        if (!owner.equals("global")) {
-            stack.getTagCompound().setString("owner", owner);
-        }
+        //if (!owner.equals("global")) {
+        //    stack.getTagCompound().setString("owner", owner);
+        //}
         return stack;
     }
 
@@ -160,16 +163,16 @@ public class BlockEnderStorage extends Block implements ITileEntityProvider {
 
         if (hit.subHit == 4) {
             ItemStack item = player.inventory.getCurrentItem();
-            if (player.isSneaking() && !tile.owner.equals("global")) {
+            if (player.isSneaking() && tile.frequency.hasOwner()) {
                 if (!player.capabilities.isCreativeMode && !player.inventory.addItemStackToInventory(ConfigurationHandler.personalItem.copy())) {
                     return false;
                 }
 
-                tile.setOwner("global");
+                tile.frequency.setOwner(null);
                 return true;
             } else if (item != null && areStacksSameTypeCrafting(item, ConfigurationHandler.personalItem)) {
-                if (tile.owner.equals("global")) {
-                    tile.setOwner(player.getDisplayNameString());
+                if (!tile.frequency.hasOwner()) {
+                    tile.frequency.setOwner(player.getDisplayNameString());
                     if (!player.capabilities.isCreativeMode) {
                         item.stackSize--;
                     }
@@ -192,6 +195,7 @@ public class BlockEnderStorage extends Block implements ITileEntityProvider {
                 return true;
             }
         }
+        LogHelper.info(tile.frequency);
         return tile.activate(player, hit.subHit);
     }
 
@@ -219,7 +223,7 @@ public class BlockEnderStorage extends Block implements ITileEntityProvider {
         ((TileFrequencyOwner) world.getTileEntity(pos)).onPlaced(placer);
     }
 
-    @Override//TODO Bring back old methods
+    @Override
     public RayTraceResult collisionRayTrace(IBlockState state, World world, BlockPos pos, Vec3d start, Vec3d end) {
         TileFrequencyOwner tile = (TileFrequencyOwner) world.getTileEntity(pos);
         if (tile == null) {

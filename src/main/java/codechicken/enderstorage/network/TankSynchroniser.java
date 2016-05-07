@@ -98,7 +98,7 @@ public class TankSynchroniser {
 
             PacketCustom packet = new PacketCustom(EnderStorageSPH.channel, 4);
             packet.writeNBTTagCompound(storage.freq.toNBT());
-            packet.writeString(storage.owner);
+            //packet.writeString(storage.owner);
             packet.writeFluidStack(s_liquid);
             packet.sendToPlayer(player);
         }
@@ -135,20 +135,20 @@ public class TankSynchroniser {
             b_visible = new HashSet<String>();
         }
 
-        public void track(Frequency freq, String owner, boolean t) {
-            String key = key(freq, owner);
+        public void track(Frequency freq, boolean t) {
+            String key = key(freq);
             PlayerItemTankState state = tankStates.get(key);
             if (state == null) {
                 if (!t) {
                     return;
                 }
-                tankStates.put(key, state = new PlayerItemTankState(player, (EnderLiquidStorage) EnderStorageManager.instance(false).getStorage(owner, freq, "liquid")));
+                tankStates.put(key, state = new PlayerItemTankState(player, (EnderLiquidStorage) EnderStorageManager.instance(false).getStorage(freq, "liquid")));
             }
             state.setTracking(t);
         }
 
-        public void sync(Frequency freq, String owner, FluidStack liquid) {
-            String key = key(freq, owner);
+        public void sync(Frequency freq, FluidStack liquid) {
+            String key = key(freq);
             PlayerItemTankState state = tankStates.get(key);
             if (state == null) {
                 tankStates.put(key, state = new PlayerItemTankState());
@@ -187,8 +187,8 @@ public class TankSynchroniser {
             }
         }
 
-        public FluidStack getLiquid(Frequency freq, String owner) {
-            String key = key(freq, owner);
+        public FluidStack getLiquid(Frequency freq) {
+            String key = key(freq);
             a_visible.add(key);
             PlayerItemTankState state = tankStates.get(key);
             return state == null ? FluidUtils.emptyFluid() : state.c_liquid;
@@ -197,17 +197,17 @@ public class TankSynchroniser {
         public void handleVisiblityPacket(PacketCustom packet) {
             int k = packet.readUShort();
             for (int i = 0; i < k; i++) {
-                track(Frequency.fromNBT(packet.readNBTTagCompound()), packet.readString(), true);
+                track(Frequency.fromNBT(packet.readNBTTagCompound()), true);
             }
             k = packet.readUShort();
             for (int i = 0; i < k; i++) {
-                track(Frequency.fromNBT(packet.readNBTTagCompound()), packet.readString(), false);
+                track(Frequency.fromNBT(packet.readNBTTagCompound()), false);
             }
         }
     }
 
-    public static String key(Frequency freq, String owner) {
-        return freq + "|" + owner;
+    public static String key(Frequency freq) {
+        return freq.toString();
     }
 
     public static int splitKeyF(String s) {
@@ -221,12 +221,12 @@ public class TankSynchroniser {
     private static HashMap<String, PlayerItemTankCache> playerItemTankStates;
     private static PlayerItemTankCache clientState;
 
-    public static void syncClient(Frequency freq, String owner, FluidStack liquid) {
-        clientState.sync(freq, owner, liquid);
+    public static void syncClient(Frequency freq, FluidStack liquid) {
+        clientState.sync(freq, liquid);
     }
 
     public static FluidStack getClientLiquid(Frequency freq, String owner) {
-        return clientState.getLiquid(freq, owner);
+        return clientState.getLiquid(freq);
     }
 
     public static void handleVisiblityPacket(EntityPlayerMP player, PacketCustom packet) {

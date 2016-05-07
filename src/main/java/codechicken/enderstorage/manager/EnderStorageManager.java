@@ -3,9 +3,9 @@ package codechicken.enderstorage.manager;
 import codechicken.enderstorage.api.AbstractEnderStorage;
 import codechicken.enderstorage.api.EnderStoragePlugin;
 import codechicken.enderstorage.api.Frequency;
-import codechicken.enderstorage.util.LogHelper;
 import codechicken.lib.config.ConfigFile;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompressedStreamTools;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.common.DimensionManager;
@@ -21,7 +21,6 @@ import java.util.*;
 
 public class EnderStorageManager {
     public static class EnderStorageSaveHandler {
-
 
         @SubscribeEvent
         public void onWorldLoad(WorldEvent.Load event) {
@@ -115,7 +114,7 @@ public class EnderStorageManager {
     private void save(boolean force) {
         if (!dirtyStorage.isEmpty() || force) {
             for (AbstractEnderStorage inv : dirtyStorage) {
-                saveTag.setTag(inv.freq + "|" + inv.owner + "|" + inv.type(), inv.saveToTag());
+                saveTag.setTag(inv.freq + ",type=" + inv.type(), inv.saveToTag());
                 inv.setClean();
             }
 
@@ -156,14 +155,11 @@ public class EnderStorageManager {
         return client ? clientManager : serverManager;
     }
 
-    public AbstractEnderStorage getStorage(String owner, Frequency freq, String type) {
-        if (owner == null) {
-            owner = "global";
-        }
-        String key = freq + "|" + owner + "|" + type;
+    public AbstractEnderStorage getStorage(Frequency freq, String type) {
+        String key = freq + ",type=" + type;
         AbstractEnderStorage storage = storageMap.get(key);
         if (storage == null) {
-            storage = plugins.get(type).createEnderStorage(this, owner, freq);
+            storage = plugins.get(type).createEnderStorage(this, freq);
             if (!client && saveTag.hasKey(key)) {
                 storage.loadFromTag(saveTag.getCompoundTag(key));
             }
@@ -177,10 +173,12 @@ public class EnderStorageManager {
     public static int getFreqFromColours(int colour1, int colour2, int colour3) {
         return ((colour1 & 0xF) << 8) + ((colour2 & 0xF) << 4) + (colour3 & 0xF);
     }
+
     @Deprecated
     public static int getFreqFromColours(int[] colours) {
         return ((colours[0] & 0xF) << 8) + ((colours[1] & 0xF) << 4) + (colours[2] & 0xF);
     }
+
     @Deprecated
     public static int getColourFromFreq(int freq, int colour) {
         switch (colour) {
@@ -193,6 +191,7 @@ public class EnderStorageManager {
         }
         return 0;
     }
+
     @Deprecated
     public static int[] getColoursFromFreq(int freq) {
         int[] ai = new int[3];
@@ -201,6 +200,21 @@ public class EnderStorageManager {
         ai[2] = freq & 0xF;
 
         return ai;
+    }
+
+    @Deprecated
+    public static String getOwner(ItemStack stack) {
+        String owner = "";
+        if (stack.hasTagCompound()) {
+            owner = stack.getTagCompound().getString("owner");
+        }
+
+        return owner.isEmpty() ? "global" : owner;
+    }
+
+    @Deprecated
+    public static boolean isOwned(ItemStack stack) {
+        return !getOwner(stack).equals("global");
     }
 
     public static void loadConfig(ConfigFile config2) {

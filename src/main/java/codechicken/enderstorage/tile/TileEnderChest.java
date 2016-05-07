@@ -1,6 +1,5 @@
 package codechicken.enderstorage.tile;
 
-import codechicken.enderstorage.init.ModBlocks;
 import codechicken.enderstorage.manager.EnderStorageManager;
 import codechicken.enderstorage.misc.EnderDyeButton;
 import codechicken.enderstorage.misc.EnderKnobSlot;
@@ -41,9 +40,8 @@ public class TileEnderChest extends TileFrequencyOwner implements IInventory, IT
         }
     }
 
-    public TileEnderChest(World world, int frequency) {
+    public TileEnderChest(World world) {
         worldObj = world;
-        freq = frequency;
         c_numOpen = -1;
     }
 
@@ -77,9 +75,9 @@ public class TileEnderChest extends TileFrequencyOwner implements IInventory, IT
     }
 
     @Override
-    public boolean receiveClientEvent(int i, int j) {
-        if (i == 1) {
-            c_numOpen = j;
+    public boolean receiveClientEvent(int id, int type) {
+        if (id == 1) {
+            c_numOpen = type;
             return true;
         }
         return false;
@@ -94,7 +92,7 @@ public class TileEnderChest extends TileFrequencyOwner implements IInventory, IT
     }
 
     public void reloadStorage() {
-        storage = (EnderItemStorage) EnderStorageManager.instance(worldObj.isRemote).getStorage(owner, frequency, "item");
+        storage = (EnderItemStorage) EnderStorageManager.instance(worldObj.isRemote).getStorage(frequency, "item");
     }
 
     @Override
@@ -108,18 +106,18 @@ public class TileEnderChest extends TileFrequencyOwner implements IInventory, IT
     }
 
     @Override
-    public ItemStack getStackInSlot(int var1) {
-        return storage.getStackInSlot(var1);
+    public ItemStack getStackInSlot(int slot) {
+        return storage.getStackInSlot(slot);
     }
 
     @Override
-    public ItemStack decrStackSize(int var1, int var2) {
-        return storage.decrStackSize(var1, var2);
+    public ItemStack decrStackSize(int slot, int count) {
+        return storage.decrStackSize(slot, count);
     }
 
     @Override
-    public void setInventorySlotContents(int var1, ItemStack var2) {
-        storage.setInventorySlotContents(var1, var2);
+    public void setInventorySlotContents(int slot, ItemStack itemStack) {
+        storage.setInventorySlotContents(slot, itemStack);
     }
 
     @Override
@@ -133,7 +131,7 @@ public class TileEnderChest extends TileFrequencyOwner implements IInventory, IT
     }
 
     @Override
-    public boolean isUseableByPlayer(EntityPlayer var1) {
+    public boolean isUseableByPlayer(EntityPlayer player) {
         return true;
     }
 
@@ -167,7 +165,6 @@ public class TileEnderChest extends TileFrequencyOwner implements IInventory, IT
 
     @Override
     public boolean activate(EntityPlayer player, int subHit) {
-        //player.openGui
         storage.openSMPGui(player, "tile.enderChest.name");
         return true;
     }
@@ -261,7 +258,6 @@ public class TileEnderChest extends TileFrequencyOwner implements IInventory, IT
     @Override
     public void clear() {
     }
-
 
     //endregion
 }

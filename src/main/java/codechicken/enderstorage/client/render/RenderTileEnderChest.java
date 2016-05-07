@@ -5,7 +5,6 @@ import codechicken.enderstorage.api.Frequency;
 import codechicken.enderstorage.client.RenderUtils;
 import codechicken.enderstorage.client.model.ModelEnderChest;
 import codechicken.enderstorage.client.model.RenderCustomEndPortal;
-import codechicken.enderstorage.manager.EnderStorageManager;
 import codechicken.enderstorage.misc.EnderDyeButton;
 import codechicken.enderstorage.tile.TileEnderChest;
 import codechicken.lib.render.CCModelLibrary;
@@ -34,15 +33,14 @@ public class RenderTileEnderChest extends TileEntitySpecialRenderer<TileEnderChe
 
         CCRenderState.reset();
         CCRenderState.setBrightness(enderChest.getWorld(), enderChest.getPos());
-        boolean owned = !enderChest.owner.equals("global");
         int rotation = enderChest.rotation;
         Frequency freq = enderChest.frequency;
         int offset = RenderUtils.getTimeOffset(enderChest.getPos());
         float lidAngle = (float) enderChest.getRadianLidAngle(partialTicks);
-        renderChest(rotation, freq, owned, x, y, z, offset, lidAngle);
+        renderChest(rotation, freq, x, y, z, offset, lidAngle);
     }
 
-    public static void renderChest(int rotation, Frequency freq, boolean owned, double x, double y, double z, int offset, float lidAngle) {
+    public static void renderChest(int rotation, Frequency freq, double x, double y, double z, int offset, float lidAngle) {
         TileEntityRendererDispatcher info = TileEntityRendererDispatcher.instance;
         renderEndPortal.render(x, y, z, 0, info.entityX, info.entityY, info.entityZ, info.renderEngine);
         GlStateManager.color(1, 1, 1, 1);
@@ -57,7 +55,7 @@ public class RenderTileEnderChest extends TileEntitySpecialRenderer<TileEnderChe
         GlStateManager.rotate(rotation * 90, 0.0F, 1.0F, 0.0F);
         GlStateManager.translate(-0.5F, -0.5F, -0.5F);
         model.chestLid.rotateAngleX = lidAngle;
-        model.render(owned);
+        model.render(freq.hasOwner());
         GlStateManager.popMatrix();
 
         GlStateManager.pushMatrix();

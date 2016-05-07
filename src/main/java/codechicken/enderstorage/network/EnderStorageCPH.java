@@ -25,13 +25,13 @@ public class EnderStorageCPH implements IClientPacketHandler {
             break;
         case 2:
             int windowID = packet.readUByte();
-            ((EnderItemStorage) EnderStorageManager.instance(true).getStorage(packet.readString(), Frequency.fromNBT(packet.readNBTTagCompound()), "item")).openClientGui(windowID, mc.thePlayer.inventory, packet.readString(), packet.readUByte());
+            ((EnderItemStorage) EnderStorageManager.instance(true).getStorage(Frequency.fromNBT(packet.readNBTTagCompound()), "item")).openClientGui(windowID, mc.thePlayer.inventory, packet.readString(), packet.readUByte());
             break;
         case 3:
-            ((EnderItemStorage) EnderStorageManager.instance(true).getStorage(packet.readString(), Frequency.fromNBT(packet.readNBTTagCompound()), "item")).setClientOpen(packet.readBoolean() ? 1 : 0);
+            ((EnderItemStorage) EnderStorageManager.instance(true).getStorage(Frequency.fromNBT(packet.readNBTTagCompound()), "item")).setClientOpen(packet.readBoolean() ? 1 : 0);
             break;
         case 4:
-            TankSynchroniser.syncClient(Frequency.fromNBT(packet.readNBTTagCompound()), packet.readString(), packet.readFluidStack());
+            TankSynchroniser.syncClient(Frequency.fromNBT(packet.readNBTTagCompound()), packet.readFluidStack());
             break;
         case 5:
         case 6:

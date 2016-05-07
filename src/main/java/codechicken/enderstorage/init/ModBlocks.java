@@ -1,6 +1,7 @@
 package codechicken.enderstorage.init;
 
 import codechicken.enderstorage.block.BlockEnderStorage;
+import codechicken.enderstorage.client.render.DummyBakedModel;
 import codechicken.enderstorage.client.render.EnderChestItemRender;
 import codechicken.enderstorage.item.ItemEnderStorage;
 import codechicken.enderstorage.reference.Reference;
@@ -35,7 +36,8 @@ public class ModBlocks {
             ModelLoader.setCustomModelResourceLocation(Item.getItemFromBlock(blockEnderStorage), i, location);
         }
 
-        ModelRegistryHelper.register(new ModelResourceLocation(Reference.MOD_PREFIX + "enderStorage", "type=enderChest"), new EnderChestItemRender());
+        ModelRegistryHelper.register(new ModelResourceLocation(Reference.MOD_PREFIX + "enderStorage", "type=enderChest"), new DummyBakedModel());
+        ModelRegistryHelper.register(new ModelResourceLocation(Reference.MOD_PREFIX + "enderStorage", "type=enderTank"), new DummyBakedModel());
     }
 
 }

@@ -28,8 +28,8 @@ public class EnderLiquidStorage extends AbstractEnderStorage implements IFluidHa
 
     private Tank tank;
 
-    public EnderLiquidStorage(EnderStorageManager manager, String owner, Frequency freq) {
-        super(manager, owner, freq);
+    public EnderLiquidStorage(EnderStorageManager manager, Frequency freq) {
+        super(manager, freq);
         tank = new Tank(CAPACITY);
     }
 

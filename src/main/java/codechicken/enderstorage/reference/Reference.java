@@ -19,5 +19,4 @@ public class Reference {
     public static final String COMMON_PROXY = "codechicken.enderstorage.proxy.CommonProxy";
     public static final String CLIENT_PROXY = "codechicken.enderstorage.proxy.ClientProxy";
 
-
 }

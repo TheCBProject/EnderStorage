@@ -29,8 +29,8 @@ public class EnderItemStorage extends AbstractEnderStorage implements IInventory
     private int open;
     private int size;
 
-    public EnderItemStorage(EnderStorageManager manager, String owner, Frequency freq) {
-        super(manager, owner, freq);
+    public EnderItemStorage(EnderStorageManager manager, Frequency freq) {
+        super(manager, freq);
         size = configSize;
         empty();
     }
@@ -119,7 +119,7 @@ public class EnderItemStorage extends AbstractEnderStorage implements IInventory
         synchronized (this) {
             open++;
             if (open == 1) {
-                EnderStorageSPH.sendOpenUpdateTo(null, owner, freq, true);
+                EnderStorageSPH.sendOpenUpdateTo(null, freq, true);
             }
         }
     }
@@ -132,7 +132,7 @@ public class EnderItemStorage extends AbstractEnderStorage implements IInventory
         synchronized (this) {
             open--;
             if (open == 0) {
-                EnderStorageSPH.sendOpenUpdateTo(null, owner, freq, false);
+                EnderStorageSPH.sendOpenUpdateTo(null, freq, false);
             }
         }
     }
@@ -177,7 +177,7 @@ public class EnderItemStorage extends AbstractEnderStorage implements IInventory
             public void sendPacket(EntityPlayerMP player, int windowId) {
                 PacketCustom packet = new PacketCustom(EnderStorageSPH.channel, 2);
                 packet.writeByte(windowId);
-                packet.writeString(owner);
+                //packet.writeString(owner);
                 packet.writeNBTTagCompound(freq.toNBT());
                 packet.writeString(name);
                 packet.writeByte(size);

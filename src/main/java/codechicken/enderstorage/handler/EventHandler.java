@@ -1,7 +1,5 @@
 package codechicken.enderstorage.handler;
 
-import codechicken.enderstorage.init.ModBlocks;
-import codechicken.enderstorage.tile.TileFrequencyOwner;
 import codechicken.enderstorage.util.LogHelper;
 import codechicken.lib.raytracer.IndexedCuboid6;
 import codechicken.lib.raytracer.RayTracer;
@@ -22,7 +20,6 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**

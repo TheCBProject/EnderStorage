@@ -19,9 +19,9 @@ public class EnderStorageSPH implements IServerPacketHandler {
         }
     }
 
-    public static void sendOpenUpdateTo(EntityPlayer player, String owner, Frequency freq, boolean open) {
+    public static void sendOpenUpdateTo(EntityPlayer player, Frequency freq, boolean open) {
         PacketCustom packet = new PacketCustom(channel, 3);
-        packet.writeString(owner);
+        //packet.writeString(owner);
         packet.writeNBTTagCompound(freq.toNBT());
         packet.writeBoolean(open);
 

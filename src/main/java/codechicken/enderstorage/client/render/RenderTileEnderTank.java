@@ -58,11 +58,11 @@ public class RenderTileEnderTank extends TileEntitySpecialRenderer<TileEnderTank
     public void renderTileEntityAt(TileEnderTank tile, double x, double y, double z, float partialTicks, int breakProgress) {
 
         CCRenderState.reset();
-        renderTank(tile.rotation, (float) MathHelper.interpolate(tile.pressure_state.b_rotate, tile.pressure_state.a_rotate, partialTicks) * 0.01745F, tile.frequency, !tile.owner.equals("global"), x, y, z, codechicken.enderstorage.client.RenderUtils.getTimeOffset(tile.getPos()));
+        renderTank(tile.rotation, (float) MathHelper.interpolate(tile.pressure_state.b_rotate, tile.pressure_state.a_rotate, partialTicks) * 0.01745F, tile.frequency, x, y, z, RenderUtils.getTimeOffset(tile.getPos()));
         renderLiquid(tile.liquid_state.c_liquid, x, y, z);
     }
 
-    public static void renderTank(int rotation, float valve, Frequency freq, boolean owned, double x, double y, double z, int offset) {
+    public static void renderTank(int rotation, float valve, Frequency freq, double x, double y, double z, int offset) {
         TileEntityRendererDispatcher info = TileEntityRendererDispatcher.instance;
         renderEndPortal.render(x, y, z, 0, info.entityX, info.entityY, info.entityZ, info.renderEngine);
         color(1, 1, 1, 1);
@@ -76,7 +76,7 @@ public class RenderTileEnderTank extends TileEntitySpecialRenderer<TileEnderTank
         CCRenderState.startDrawing(4, POSITION_TEX_NORMAL);
         CCRenderState.pullBuffer();
         tankModel.render();
-        valveModel.render(new Rotation(valve, new Vector3(0, 0, 1)).at(new Vector3(0, 0.4165, 0)), new UVTranslation(0, owned ? 13 / 64D : 0));
+        valveModel.render(new Rotation(valve, new Vector3(0, 0, 1)).at(new Vector3(0, 0.4165, 0)), new UVTranslation(0, freq.hasOwner() ? 13 / 64D : 0));
         CCRenderState.draw();
 
         CCRenderState.changeTexture("enderstorage:textures/buttons.png");
@@ -90,7 +90,7 @@ public class RenderTileEnderTank extends TileEntitySpecialRenderer<TileEnderTank
         popMatrix();
 
         double time = ClientUtils.getRenderTime() + offset;
-        Matrix4 pearlMat = RenderUtils.getMatrix(new Vector3(x + 0.5, y + 0.45 + codechicken.enderstorage.client.RenderUtils.getPearlBob(time) * 2, z + 0.5), new Rotation(time / 3, new Vector3(0, 1, 0)), 0.04);
+        Matrix4 pearlMat = RenderUtils.getMatrix(new Vector3(x + 0.5, y + 0.45 + RenderUtils.getPearlBob(time) * 2, z + 0.5), new Rotation(time / 3, new Vector3(0, 1, 0)), 0.04);
 
         disableLighting();
         CCRenderState.changeTexture("enderstorage:textures/hedronmap.png");

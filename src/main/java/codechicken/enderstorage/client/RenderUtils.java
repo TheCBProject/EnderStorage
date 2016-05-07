@@ -5,7 +5,7 @@ import net.minecraft.util.math.BlockPos;
 /**
  * Created by covers1624 on 4/12/2016.
  */
-public class RenderUtils extends codechicken.lib.render.RenderUtils{
+public class RenderUtils extends codechicken.lib.render.RenderUtils {
 
     public static float getPearlBob(double time) {
         return (float) Math.sin(time / 25 * 3.141593) * 0.1F;

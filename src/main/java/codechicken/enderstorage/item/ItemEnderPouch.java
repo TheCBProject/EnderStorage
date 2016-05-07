@@ -5,6 +5,7 @@ import codechicken.enderstorage.handler.ConfigurationHandler;
 import codechicken.enderstorage.manager.EnderStorageManager;
 import codechicken.enderstorage.storage.EnderItemStorage;
 import codechicken.enderstorage.tile.TileEnderChest;
+import codechicken.enderstorage.util.LogHelper;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
@@ -24,15 +25,21 @@ public class ItemEnderPouch extends Item {
 
     public ItemEnderPouch() {
         setMaxStackSize(1);
-        //setHasSubtypes(true);
         setCreativeTab(CreativeTabs.tabDecorations);
+        setUnlocalizedName("enderpouch");
     }
 
     @Override
     public void addInformation(ItemStack stack, EntityPlayer player, List<String> list, boolean extended) {
-        if (stack.hasTagCompound() && !stack.getTagCompound().getString("owner").equals("global")) {
-            list.add(stack.getTagCompound().getString("owner"));
+        Frequency freq = Frequency.fromItemStack(stack);
+        if (freq.owner != null) {
+            list.add(freq.owner);
         }
+        list.add(String.format("%s/%s/%s", freq.getLocalizedLeft(), freq.getLocalizedMiddle(), freq.getLocalizedRight()));
+
+        //if (stack.hasTagCompound() && !stack.getTagCompound().getString("owner").equals("global")) {
+        //    list.add(stack.getTagCompound().getString("owner"));
+        //}
     }
 
     @Override
@@ -44,18 +51,22 @@ public class ItemEnderPouch extends Item {
         TileEntity tile = world.getTileEntity(pos);
         if (tile instanceof TileEnderChest && player.isSneaking()) {
             TileEnderChest chest = (TileEnderChest) tile;
-            //stack.setItemDamage(chest.freq);
             if (!stack.hasTagCompound()) {
                 stack.setTagCompound(new NBTTagCompound());
             }
             NBTTagCompound frequencyTag = new NBTTagCompound();
-            chest.frequency.writeNBT(frequencyTag);
-            stack.getTagCompound().setTag("Frequency", frequencyTag);
-            if (!ConfigurationHandler.anarchyMode || chest.owner.equals(player.getDisplayNameString())) {
-                stack.getTagCompound().setString("owner", chest.owner);
-            } else {
-                stack.getTagCompound().setString("owner", "global");
+            Frequency frequency = chest.frequency.copy();
+            if (ConfigurationHandler.anarchyMode && !frequency.owner.equals(player.getDisplayNameString())) {
+                frequency.setOwner(null);
             }
+
+            frequency.writeNBT(frequencyTag);
+            stack.getTagCompound().setTag("Frequency", frequencyTag);
+            //if (!ConfigurationHandler.anarchyMode || chest.owner.equals(player.getDisplayNameString())) {
+            //    stack.getTagCompound().setString("owner", chest.owner);
+            //} else {
+            //    stack.getTagCompound().setString("owner", "global");
+            //}
 
             return EnumActionResult.SUCCESS;
         }
@@ -68,26 +79,25 @@ public class ItemEnderPouch extends Item {
         if (world.isRemote || player.isSneaking()) {
             return new ActionResult<ItemStack>(EnumActionResult.PASS, stack);
         }
-
-        ((EnderItemStorage) EnderStorageManager.instance(world.isRemote).getStorage(getOwner(stack), Frequency.fromItemStack(stack), "item")).openSMPGui(player, stack.getUnlocalizedName() + ".name");
+        LogHelper.info(Frequency.fromItemStack(stack));
+        ((EnderItemStorage) EnderStorageManager.instance(world.isRemote).getStorage(Frequency.fromItemStack(stack), "item")).openSMPGui(player, stack.getUnlocalizedName() + ".name");
         return new ActionResult<ItemStack>(EnumActionResult.SUCCESS, stack);
     }
 
+    @Deprecated
     public String getOwner(ItemStack stack) {
-        return stack.hasTagCompound() ? stack.getTagCompound().getString("owner") : "global";
+        return EnderStorageManager.getOwner(stack);
     }
 
-    //    @Override
-    //    public int getRenderPasses(int metadata)
-    //    {
-    //        return 4;
-    //    }
+    /*@Override
+    public int getRenderPasses(int metadata){
+        return 4;
+    }
 
-    //    @Override
-    //    public IIcon getIcon(ItemStack stack, int renderPass)
-    //    {
-    //        return spriteSheet.getSprite(getIconIndex(stack, renderPass));
-    //    }
+    @Override
+    public IIcon getIcon(ItemStack stack, int renderPass){
+        return spriteSheet.getSprite(getIconIndex(stack, renderPass));
+    }
 
     public int getIconIndex(ItemStack stack, int renderPass) {
         if (renderPass == 0) {
@@ -108,13 +118,12 @@ public class ItemEnderPouch extends Item {
         return true;
     }
 
-    //    @Override
-    //    public void registerIcons(IIconRegister register)
-    //    {
-    //        spriteSheet = SpriteSheetManager.getSheet(new ResourceLocation("enderstorage", "textures/enderpouch.png"));
-    //        spriteSheet.requestIndicies(0, 1, 2, 3);
-    //        for(int i = 16; i < 64; i++)
-    //            spriteSheet.requestIndicies(i);
-    //        spriteSheet.registerIcons(register);
-    //    }
+    @Override
+    public void registerIcons(IIconRegister register){
+        spriteSheet = SpriteSheetManager.getSheet(new ResourceLocation("enderstorage", "textures/enderpouch.png"));
+        spriteSheet.requestIndicies(0, 1, 2, 3);
+        for(int i = 16; i < 64; i++)
+            spriteSheet.requestIndicies(i);
+        spriteSheet.registerIcons(register);
+    }*/
 }
