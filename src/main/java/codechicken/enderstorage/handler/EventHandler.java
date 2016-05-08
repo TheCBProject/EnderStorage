@@ -40,7 +40,7 @@ public class EventHandler {
             List<IndexedCuboid6> cuboids = provider.getIndexedCuboids();
             for (IndexedCuboid6 cuboid6 : cuboids) {
 
-                RayTraceResult result = rayTrace(pos, RayTracer.getStartVec(player), RayTracer.getEndVec(player), cuboid6.aabb());
+                RayTraceResult result = null;//rayTrace(pos, RayTracer.getStartVec(player), RayTracer.getEndVec(player), cuboid6.aabb());
                 if (result != null) {
                     setSubHit(result, cuboid6);
                     LogHelper.info(cuboid6.data);

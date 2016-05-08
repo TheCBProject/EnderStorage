@@ -189,11 +189,11 @@ public class TileEnderChest extends TileFrequencyOwner implements IInventory, IT
             ebutton.rotate(0, 0.5625, 0.0625, 1, 0, 0, 0);
             ebutton.rotateMeta(rotation);
 
-            cuboids.add(new IndexedCuboid6(button + 1, new Cuboid6(ebutton.getMin(), ebutton.getMax())));
+            cuboids.add(new IndexedCuboid6(button + 1, new Cuboid6(ebutton.getMin(), ebutton.getMax()).add(new Vector3(getPos()))));
         }
 
         //Lock Button.
-        cuboids.add(new IndexedCuboid6(4, new Cuboid6(new EnderKnobSlot(rotation).getSelectionBB())));
+        cuboids.add(new IndexedCuboid6(4, new Cuboid6(new EnderKnobSlot(rotation).getSelectionBB()).add(new Vector3(getPos()))));
         return cuboids;
     }
 

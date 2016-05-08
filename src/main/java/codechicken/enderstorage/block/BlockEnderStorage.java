@@ -8,6 +8,7 @@ import codechicken.enderstorage.tile.TileEnderChest;
 import codechicken.enderstorage.tile.TileEnderTank;
 import codechicken.enderstorage.tile.TileFrequencyOwner;
 import codechicken.enderstorage.util.LogHelper;
+import codechicken.lib.raytracer.ExtendedMOP;
 import codechicken.lib.raytracer.IndexedCuboid6;
 import codechicken.lib.raytracer.RayTracer;
 import codechicken.lib.vec.BlockCoord;
@@ -144,23 +145,15 @@ public class BlockEnderStorage extends Block implements ITileEntityProvider {
             return true;
         }
         TileFrequencyOwner tile = (TileFrequencyOwner) world.getTileEntity(pos);
+        //Normal block trace.
         RayTraceResult hit = RayTracer.retraceBlock(world, player, pos);
-        List<IndexedCuboid6> cuboids = tile.getIndexedCuboids();
-        for (IndexedCuboid6 cuboid6 : cuboids) {
-            RayTraceResult result = rayTrace(pos, RayTracer.getStartVec(player), RayTracer.getEndVec(player), cuboid6.aabb());
-            if (result != null) {
-                setSubHit(result, cuboid6);
-                hit = result;
-                break;
-            }
-        }
-        IndexedCuboid6 cuboid6 = rayTracer.rayTraceCuboids(new Vector3(RayTracer.getStartVec(player)), new Vector3(RayTracer.getEndVec(player)), tile.getIndexedCuboids());
-        LogHelper.info(cuboid6 != null ? cuboid6.data : "null");
-        for (IndexedCuboid6 cuboid : tile.getIndexedCuboids()) {
-            LogHelper.info("SubHit: %s %s", cuboid.data, cuboid.aabb().toString());
-        }
-        //ExtendedMOP hit = rayTracer.rayTraceCuboids(new Vector3(RayTracer.getStartVec(player)), new Vector3(RayTracer.getEndVec(player)), tile.getIndexedCuboids(), new BlockCoord(pos));
 
+        RayTraceResult subHitResult = rayTracer.rayTraceCuboids(new Vector3(RayTracer.getStartVec(player)), new Vector3(RayTracer.getEndVec(player)), tile.getIndexedCuboids(), new BlockCoord(pos));
+        //Try for a sub hit.
+        if (subHitResult != null){
+            hit = subHitResult;
+        }
+        LogHelper.info(hit.subHit);
         if (hit.subHit == 4) {
             ItemStack item = player.inventory.getCurrentItem();
             if (player.isSneaking() && tile.frequency.hasOwner()) {
@@ -195,7 +188,7 @@ public class BlockEnderStorage extends Block implements ITileEntityProvider {
                 return true;
             }
         }
-        LogHelper.info(tile.frequency);
+        //LogHelper.info(tile.frequency);
         return tile.activate(player, hit.subHit);
     }
 
@@ -210,13 +203,6 @@ public class BlockEnderStorage extends Block implements ITileEntityProvider {
         return stack1 != null && stack2 != null && stack1.getItem() == stack2.getItem() && (stack1.getItemDamage() == stack2.getItemDamage() || stack1.getItemDamage() == OreDictionary.WILDCARD_VALUE || stack2.getItemDamage() == OreDictionary.WILDCARD_VALUE || stack1.getItem().isDamageable());
     }
 
-    public static RayTraceResult setSubHit(RayTraceResult result, IndexedCuboid6 cuboid6) {
-        if (cuboid6.data instanceof Integer) {
-            result.subHit = (Integer) cuboid6.data;
-        }
-        result.hitInfo = cuboid6.data;
-        return result;
-    }
 
     @Override
     public void onBlockPlacedBy(World world, BlockPos pos, IBlockState state, EntityLivingBase placer, ItemStack stack) {
@@ -232,7 +218,7 @@ public class BlockEnderStorage extends Block implements ITileEntityProvider {
 
         List<IndexedCuboid6> cuboids = tile.getIndexedCuboids();
         cuboids.add(tile.getBlockBounds());
-        RayTraceResult hit = rayTracer.rayTraceCuboids(new Vector3(start), new Vector3(end), cuboids, new BlockCoord(pos));
+        RayTraceResult hit = null;//rayTracer.rayTraceCuboids(new Vector3(start), new Vector3(end), cuboids, new BlockCoord(pos));
         if (hit == null) {
             return super.collisionRayTrace(state, world, pos, start, end);
         }
