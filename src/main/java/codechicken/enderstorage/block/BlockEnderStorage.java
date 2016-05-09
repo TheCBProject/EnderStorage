@@ -147,7 +147,6 @@ public class BlockEnderStorage extends Block implements ITileEntityProvider {
         TileFrequencyOwner tile = (TileFrequencyOwner) world.getTileEntity(pos);
         //Normal block trace.
         RayTraceResult hit = RayTracer.retraceBlock(world, player, pos);
-
         RayTraceResult subHitResult = rayTracer.rayTraceCuboids(new Vector3(RayTracer.getStartVec(player)), new Vector3(RayTracer.getEndVec(player)), tile.getIndexedCuboids(), new BlockCoord(pos));
         //Try for a sub hit.
         if (subHitResult != null){
