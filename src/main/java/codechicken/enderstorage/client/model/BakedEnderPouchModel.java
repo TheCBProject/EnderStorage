@@ -16,7 +16,6 @@ import org.apache.commons.lang3.tuple.Pair;
 
 import javax.vecmath.Matrix4f;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Created by covers1624 on 5/12/2016.
@@ -24,22 +23,16 @@ import java.util.Map;
  */
 public class BakedEnderPouchModel implements IPerspectiveAwareModel {
 
-    @Deprecated
-    private final ModelEnderPouch parent;
-    @Deprecated
-    private final Map<String, IBakedModel> cache; // contains all the baked models since they'll never change
     private final ImmutableMap<ItemCameraTransforms.TransformType, TRSRTransformation> transforms;
     private final ImmutableList<BakedQuad> quads;
     private final TextureAtlasSprite particle;
     private final VertexFormat format;
 
-    public BakedEnderPouchModel(ModelEnderPouch parent, ImmutableList<BakedQuad> quads, TextureAtlasSprite particle, VertexFormat format, ImmutableMap<ItemCameraTransforms.TransformType, TRSRTransformation> transforms, Map<String, IBakedModel> cache) {
+    public BakedEnderPouchModel(ImmutableList<BakedQuad> quads, TextureAtlasSprite particle, VertexFormat format, ImmutableMap<ItemCameraTransforms.TransformType, TRSRTransformation> transforms) {
         this.quads = quads;
         this.particle = particle;
         this.format = format;
-        this.parent = parent;
         this.transforms = transforms;
-        this.cache = cache;
     }
 
     @Override
@@ -78,16 +71,6 @@ public class BakedEnderPouchModel implements IPerspectiveAwareModel {
 
     public ItemCameraTransforms getItemCameraTransforms() {
         return ItemCameraTransforms.DEFAULT;
-    }
-
-    @Deprecated
-    public Map<String, IBakedModel> getCache() {
-        return cache;
-    }
-
-    @Deprecated
-    public ModelEnderPouch getParent() {
-        return parent;
     }
 
     public VertexFormat getFormat() {

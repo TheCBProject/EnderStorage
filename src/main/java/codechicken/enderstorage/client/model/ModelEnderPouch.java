@@ -16,9 +16,11 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.model.IModel;
 import net.minecraftforge.client.model.IPerspectiveAwareModel;
 import net.minecraftforge.client.model.ItemLayerModel;
+import net.minecraftforge.client.model.SimpleModelState;
 import net.minecraftforge.common.model.IModelState;
 import net.minecraftforge.common.model.TRSRTransformation;
 
+import javax.vecmath.Vector3f;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -26,10 +28,12 @@ import java.util.List;
 /**
  * Created by covers1624 on 5/12/2016.
  * Mostly based off the DynBucket model.
+ * Well not really, but that was my inspiration.
  */
 public class ModelEnderPouch implements IModel {
 
     public static final IModel MODEL = new ModelEnderPouch();
+    private static final TRSRTransformation flipX = new TRSRTransformation(null, null, new Vector3f(-1, 1, 1), null);
 
     private final ResourceLocation basePouch;
     private final ResourceLocation leftButton;
@@ -94,12 +98,21 @@ public class ModelEnderPouch implements IModel {
             builder.addAll(layerModel.getQuads(null, null, 0));
         }
 
-        return new BakedEnderPouchModel(this, builder.build(), particle, format, Maps.immutableEnumMap(transformMap), Maps.<String, IBakedModel>newHashMap());
+        return new BakedEnderPouchModel(builder.build(), particle, format, Maps.immutableEnumMap(transformMap));
     }
 
     @Override
     public IModelState getDefaultState() {
-        return TRSRTransformation.identity();
+        TRSRTransformation thirdperson = get(0, 3, 1, 0, 0, 0, 0.55f);
+        TRSRTransformation firstperson = get(1.13f, 3.2f, 1.13f, 0, -90, 25, 0.68f);
+        ImmutableMap.Builder<TransformType, TRSRTransformation> builder = ImmutableMap.builder();
+        builder.put(TransformType.GROUND, get(0, 2, 0, 0, 0, 0, 0.5f));
+        builder.put(TransformType.HEAD, get(0, 13, 7, 0, 180, 0, 1));
+        builder.put(TransformType.THIRD_PERSON_RIGHT_HAND, thirdperson);
+        builder.put(TransformType.THIRD_PERSON_LEFT_HAND, leftify(thirdperson));
+        builder.put(TransformType.FIRST_PERSON_RIGHT_HAND, firstperson);
+        builder.put(TransformType.FIRST_PERSON_LEFT_HAND, leftify(firstperson));
+        return new SimpleModelState(builder.build());
     }
 
     /**
@@ -133,5 +146,13 @@ public class ModelEnderPouch implements IModel {
         }
         //Return corrected model.
         return new ModelEnderPouch(base, left, middle, right);
+    }
+
+    private static TRSRTransformation get(float tx, float ty, float tz, float ax, float ay, float az, float s) {
+        return TRSRTransformation.blockCenterToCorner(new TRSRTransformation(new Vector3f(tx / 16, ty / 16, tz / 16), TRSRTransformation.quatFromXYZDegrees(new Vector3f(ax, ay, az)), new Vector3f(s, s, s), null));
+    }
+
+    private static TRSRTransformation leftify(TRSRTransformation transform) {
+        return TRSRTransformation.blockCenterToCorner(flipX.compose(TRSRTransformation.blockCornerToCenter(transform)).compose(flipX));
     }
 }

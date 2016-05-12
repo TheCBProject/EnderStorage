@@ -51,7 +51,7 @@ public class ConfigurationHandler {
             if (item == null) {
                 throw new Exception("Item does not exist!");
             }
-            String metaString = name.substring(pipeIndex);
+            String metaString = name.substring(pipeIndex + 1);
             if (metaString.equalsIgnoreCase("WILD")) {
                 meta = OreDictionary.WILDCARD_VALUE;
             } else {
