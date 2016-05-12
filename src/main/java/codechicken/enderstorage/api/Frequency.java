@@ -179,7 +179,7 @@ public final class Frequency implements Copyable<Frequency> {
     public String toString() {
         String owner = "";
         if (hasOwner()) {
-            owner = ",owner=" + owner;
+            owner = ",owner=" + this.owner;
         }
         return "left=" + getLeft() + ",middle=" + getMiddle() + ",right=" + getRight() + owner;
     }

@@ -1,7 +1,11 @@
 package codechicken.enderstorage.repack.covers1624.lib.util;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Created by covers1624 on 3/27/2016.
+ * TODO, Move to CCL.
  */
 public class ArrayUtils {
 
@@ -11,5 +15,20 @@ public class ArrayUtils {
             copy[i] = array[i].toLowerCase();
         }
         return copy;
+    }
+
+    /**
+     * Converts and array of "key=value" to a map.
+     *
+     * @param array
+     * @return
+     */
+    public static Map<String, String> convertKeyValueArrayToMap(String[] array) {
+        HashMap<String, String> map = new HashMap<String, String>();
+        for (String entry : array) {
+            String[] split = entry.split("=");
+            map.put(split[0], split[1]);
+        }
+        return map;
     }
 }

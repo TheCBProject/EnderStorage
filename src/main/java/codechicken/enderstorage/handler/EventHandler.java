@@ -1,6 +1,5 @@
 package codechicken.enderstorage.handler;
 
-import codechicken.enderstorage.util.LogHelper;
 import codechicken.lib.raytracer.IndexedCuboid6;
 import codechicken.lib.raytracer.RayTracer;
 import codechicken.lib.vec.BlockCoord;

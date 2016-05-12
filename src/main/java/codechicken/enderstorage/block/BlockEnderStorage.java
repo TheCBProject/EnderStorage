@@ -8,7 +8,6 @@ import codechicken.enderstorage.tile.TileEnderChest;
 import codechicken.enderstorage.tile.TileEnderTank;
 import codechicken.enderstorage.tile.TileFrequencyOwner;
 import codechicken.enderstorage.util.LogHelper;
-import codechicken.lib.raytracer.ExtendedMOP;
 import codechicken.lib.raytracer.IndexedCuboid6;
 import codechicken.lib.raytracer.RayTracer;
 import codechicken.lib.vec.BlockCoord;
@@ -149,7 +148,7 @@ public class BlockEnderStorage extends Block implements ITileEntityProvider {
         RayTraceResult hit = RayTracer.retraceBlock(world, player, pos);
         RayTraceResult subHitResult = rayTracer.rayTraceCuboids(new Vector3(RayTracer.getStartVec(player)), new Vector3(RayTracer.getEndVec(player)), tile.getIndexedCuboids(), new BlockCoord(pos));
         //Try for a sub hit.
-        if (subHitResult != null){
+        if (subHitResult != null) {
             hit = subHitResult;
         }
         LogHelper.info(hit.subHit);
@@ -201,7 +200,6 @@ public class BlockEnderStorage extends Block implements ITileEntityProvider {
     public static boolean areStacksSameTypeCrafting(ItemStack stack1, ItemStack stack2) {
         return stack1 != null && stack2 != null && stack1.getItem() == stack2.getItem() && (stack1.getItemDamage() == stack2.getItemDamage() || stack1.getItemDamage() == OreDictionary.WILDCARD_VALUE || stack2.getItemDamage() == OreDictionary.WILDCARD_VALUE || stack1.getItem().isDamageable());
     }
-
 
     @Override
     public void onBlockPlacedBy(World world, BlockPos pos, IBlockState state, EntityLivingBase placer, ItemStack stack) {
