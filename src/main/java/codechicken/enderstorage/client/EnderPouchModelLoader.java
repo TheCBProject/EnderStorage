@@ -55,7 +55,7 @@ public class EnderPouchModelLoader implements ICustomModelLoader {
 
     @Override
     public IModel loadModel(ResourceLocation modelLocation) throws Exception {
-        checkCacheGen();
+        //checkCacheGen();
         return ModelEnderPouch.MODEL;
     }
 
@@ -73,6 +73,7 @@ public class EnderPouchModelLoader implements ICustomModelLoader {
         }
     }
 
+    @Deprecated//TODO Make this trigger a regen if cached models on reload.
     public static void checkCacheGen() {
         synchronized (modelCache) {
             if (!cacheGenerated) {
@@ -87,15 +88,19 @@ public class EnderPouchModelLoader implements ICustomModelLoader {
                     ResourceLocation leftButton = new ResourceLocation(String.format(buttonsPrefix, "left", values.get("left")));
                     ResourceLocation middleButton = new ResourceLocation(String.format(buttonsPrefix, "middle", values.get("middle")));
                     ResourceLocation rightButton = new ResourceLocation(String.format(buttonsPrefix, "right", values.get("right")));
-                    ResourceLocation bagLocation = null;
-                    if (owned && open) {
-                        bagLocation = new ResourceLocation(pouchPrefix + "owned_open");
-                    } else if (!owned && open) {
-                        bagLocation = new ResourceLocation(pouchPrefix + "open");
-                    } else if (!owned && !open) {
-                        bagLocation = new ResourceLocation(pouchPrefix + "closed");
-                    } else if (owned && !open) {
-                        bagLocation = new ResourceLocation(pouchPrefix + "owned_closed");
+                    ResourceLocation bagLocation;
+                    if (open) {
+                        if (owned) {
+                            bagLocation = new ResourceLocation(pouchPrefix + "owned_open");
+                        } else {
+                            bagLocation = new ResourceLocation(pouchPrefix + "open");
+                        }
+                    } else {
+                        if (owned) {
+                            bagLocation = new ResourceLocation(pouchPrefix + "owned_closed");
+                        } else {
+                            bagLocation = new ResourceLocation(pouchPrefix + "closed");
+                        }
                     }
                     Function<ResourceLocation, TextureAtlasSprite> bakedTextureGetter = new Function<ResourceLocation, TextureAtlasSprite>() {
                         @Override
@@ -110,5 +115,54 @@ public class EnderPouchModelLoader implements ICustomModelLoader {
                 LogHelper.info("Finished EnderPouch Model generation.");
             }
         }
+    }
+
+    public static IBakedModel getModel(String key) {
+        if (!modelCache.containsKey(key)) {
+            IBakedModel model = generateModel(key);
+            if (model == null) {
+                return null;
+            }
+            modelCache.put(key, model);
+        }
+        return modelCache.get(key);
+    }
+
+    private static IBakedModel generateModel(String key) {
+        Map<String, String> values = ArrayUtils.convertKeyValueArrayToMap(key.split(","));
+        if (!ArrayUtils.containsKeys(values, "owned", "open", "left", "middle", "right")) {
+            LogHelper.warn("Invalid key for EnderPouch model [%s]!", key);
+            return null;
+        }
+        boolean owned = Boolean.parseBoolean(values.get("owned"));
+        boolean open = Boolean.parseBoolean(values.get("open"));
+        String pouchPrefix = Reference.MOD_PREFIX + "items/pouch/";
+        //button,colour.
+        String buttonsPrefix = pouchPrefix + "buttons/%s/%s";
+        ResourceLocation leftButton = new ResourceLocation(String.format(buttonsPrefix, "left", values.get("left")));
+        ResourceLocation middleButton = new ResourceLocation(String.format(buttonsPrefix, "middle", values.get("middle")));
+        ResourceLocation rightButton = new ResourceLocation(String.format(buttonsPrefix, "right", values.get("right")));
+        ResourceLocation bagLocation;
+        if (open) {
+            if (owned) {
+                bagLocation = new ResourceLocation(pouchPrefix + "owned_open");
+            } else {
+                bagLocation = new ResourceLocation(pouchPrefix + "open");
+            }
+        } else {
+            if (owned) {
+                bagLocation = new ResourceLocation(pouchPrefix + "owned_closed");
+            } else {
+                bagLocation = new ResourceLocation(pouchPrefix + "closed");
+            }
+        }
+        Function<ResourceLocation, TextureAtlasSprite> bakedTextureGetter = new Function<ResourceLocation, TextureAtlasSprite>() {
+            @Override
+            public TextureAtlasSprite apply(ResourceLocation input) {
+                return Minecraft.getMinecraft().getTextureMapBlocks().getAtlasSprite(input.toString());
+            }
+        };
+        ModelEnderPouch correctModel = new ModelEnderPouch(bagLocation, leftButton, middleButton, rightButton);
+        return correctModel.bake(ModelEnderPouch.MODEL.getDefaultState(), DefaultVertexFormats.ITEM, bakedTextureGetter);
     }
 }
