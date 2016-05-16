@@ -129,9 +129,9 @@ public class EnderStorageRecipe implements IRecipe {
         for (int i = 0; i < 16; i++) {
             GameRegistry.addRecipe(new ItemStack(ModBlocks.blockEnderStorage, 1, EnderStorageManager.getFreqFromColours(i, i, i)), "bWb", "OCO", "bpb", 'b', Items.blaze_rod, 'p', Items.ender_pearl, 'O', Blocks.obsidian, 'C', Blocks.chest, 'W', new ItemStack(Blocks.wool, 1, i));
 
-            GameRegistry.addRecipe(new ItemStack(ModBlocks.blockEnderStorage, 1, EnderStorageManager.getFreqFromColours(i, i, i)), "blb", "lpl", "bWb", 'b', Items.blaze_powder, 'p', Items.ender_pearl, 'l', Items.leather, 'W', new ItemStack(Blocks.wool, 1, i));
+            GameRegistry.addRecipe(new ItemStack(ModItems.enderPouch, 1, EnderStorageManager.getFreqFromColours(i, i, i)), "blb", "lpl", "bWb", 'b', Items.blaze_powder, 'p', Items.ender_pearl, 'l', Items.leather, 'W', new ItemStack(Blocks.wool, 1, i));
 
-            GameRegistry.addRecipe(new ItemStack(ModBlocks.blockEnderStorage, 1, 1 << 12 | EnderStorageManager.getFreqFromColours(i, i, i)), "bWb", "OCO", "bpb", 'b', Items.blaze_rod, 'p', Items.ender_pearl, 'O', Blocks.obsidian, 'C', Items.cauldron, 'W', new ItemStack(Blocks.wool, 1, i));
+            GameRegistry.addRecipe(new ItemStack(ModBlocks.blockEnderStorage, 1, 1 << 12 | EnderStorageManager.getFreqFromColours(i, i, i)));
         }
     }
 

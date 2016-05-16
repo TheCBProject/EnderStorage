@@ -171,6 +171,22 @@ public final class Frequency implements Copyable<Frequency> {
         return frequency;
     }
 
+    public static ItemStack toItemStack(ItemStack stack, Frequency frequency){
+        return frequency.toItemStack(stack);
+    }
+
+    public ItemStack toItemStack(ItemStack stack) {
+        NBTTagCompound tagCompound = new NBTTagCompound();
+        if (stack.hasTagCompound()) {
+            tagCompound = stack.getTagCompound();
+        }
+        NBTTagCompound frequencyTag = new NBTTagCompound();
+        writeNBT(frequencyTag);
+        tagCompound.setTag("Frequency", frequencyTag);
+        stack.setTagCompound(tagCompound);
+        return stack;
+    }
+
     public String toModelLoc() {
         return "left=" + getLeft() + ",middle=" + getMiddle() + ",right=" + getRight() + ",owned=" + hasOwner();
     }

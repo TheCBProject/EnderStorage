@@ -31,16 +31,6 @@ public class ItemEnderStorage extends ItemBlock implements IFluidContainerItem {
         return stackMeta;
     }
 
-    @Deprecated
-    public String getOwner(ItemStack stack) {
-        String owner = "";
-        if (stack.hasTagCompound()) {
-            owner = stack.getTagCompound().getString("owner");
-        }
-
-        return owner.isEmpty() ? "global" : owner;
-    }
-
     public Frequency getFreq(ItemStack stack) {
         return Frequency.fromItemStack(stack);
     }
