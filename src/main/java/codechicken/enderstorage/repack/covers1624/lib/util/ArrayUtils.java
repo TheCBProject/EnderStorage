@@ -28,7 +28,6 @@ public class ArrayUtils {
     public static Map<String, String> convertKeyValueArrayToMap(String[] array) {
         HashMap<String, String> map = new HashMap<String, String>();
         for (String entry : array) {
-            LogHelper.info(entry);
             String[] split = entry.split("=");
             map.put(split[0], split[1]);
         }

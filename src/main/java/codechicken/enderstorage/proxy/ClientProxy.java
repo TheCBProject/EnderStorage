@@ -2,8 +2,8 @@ package codechicken.enderstorage.proxy;
 
 import codechicken.core.CCUpdateChecker;
 import codechicken.enderstorage.client.EnderPouchModelLoader;
-import codechicken.enderstorage.client.render.RenderTileEnderChest;
-import codechicken.enderstorage.client.render.RenderTileEnderTank;
+import codechicken.enderstorage.client.render.tile.RenderTileEnderChest;
+import codechicken.enderstorage.client.render.tile.RenderTileEnderTank;
 import codechicken.enderstorage.handler.ConfigurationHandler;
 import codechicken.enderstorage.init.ModBlocks;
 import codechicken.enderstorage.init.ModItems;

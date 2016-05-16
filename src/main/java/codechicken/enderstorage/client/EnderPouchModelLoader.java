@@ -2,7 +2,6 @@ package codechicken.enderstorage.client;
 
 import codechicken.enderstorage.api.Colour;
 import codechicken.enderstorage.api.Frequency;
-import codechicken.enderstorage.client.model.EnderPouchModelBakery;
 import codechicken.enderstorage.reference.Reference;
 import codechicken.enderstorage.repack.covers1624.lib.util.ArrayUtils;
 import codechicken.enderstorage.util.LogHelper;

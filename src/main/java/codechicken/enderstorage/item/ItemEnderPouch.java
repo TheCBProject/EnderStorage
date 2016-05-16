@@ -79,7 +79,6 @@ public class ItemEnderPouch extends Item {
         if (world.isRemote || player.isSneaking()) {
             return new ActionResult<ItemStack>(EnumActionResult.PASS, stack);
         }
-        LogHelper.info(Frequency.fromItemStack(stack));
         ((EnderItemStorage) EnderStorageManager.instance(world.isRemote).getStorage(Frequency.fromItemStack(stack), "item")).openSMPGui(player, stack.getUnlocalizedName() + ".name");
         return new ActionResult<ItemStack>(EnumActionResult.SUCCESS, stack);
     }

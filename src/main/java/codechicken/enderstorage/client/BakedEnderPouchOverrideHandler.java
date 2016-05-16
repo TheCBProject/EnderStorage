@@ -1,7 +1,6 @@
-package codechicken.enderstorage.client.model;
+package codechicken.enderstorage.client;
 
 import codechicken.enderstorage.api.Frequency;
-import codechicken.enderstorage.client.EnderPouchModelLoader;
 import codechicken.enderstorage.manager.EnderStorageManager;
 import codechicken.enderstorage.storage.EnderItemStorage;
 import codechicken.enderstorage.util.LogHelper;

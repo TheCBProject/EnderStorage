@@ -1,8 +1,8 @@
 package codechicken.enderstorage.init;
 
 import codechicken.enderstorage.block.BlockEnderStorage;
-import codechicken.enderstorage.client.render.EnderChestItemRender;
-import codechicken.enderstorage.client.render.EnderTankItemRender;
+import codechicken.enderstorage.client.render.item.EnderChestItemRender;
+import codechicken.enderstorage.client.render.item.EnderTankItemRender;
 import codechicken.enderstorage.item.ItemEnderStorage;
 import codechicken.enderstorage.reference.Reference;
 import codechicken.enderstorage.reference.VariantReference;

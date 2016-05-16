@@ -1,5 +1,6 @@
 package codechicken.enderstorage.client.model;
 
+import codechicken.enderstorage.client.BakedEnderPouchOverrideHandler;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import net.minecraft.block.state.IBlockState;
@@ -19,7 +20,6 @@ import java.util.List;
 
 /**
  * Created by covers1624 on 5/12/2016.
- * Mostly based off the DynBucket model.
  */
 public class BakedEnderPouchModel implements IPerspectiveAwareModel {
 

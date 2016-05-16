@@ -1,6 +1,6 @@
 package codechicken.enderstorage.init;
 
-import codechicken.enderstorage.client.model.BakedEnderPouchOverrideHandler;
+import codechicken.enderstorage.client.BakedEnderPouchOverrideHandler;
 import codechicken.enderstorage.client.model.OverrideBakedModel;
 import codechicken.enderstorage.item.ItemEnderPouch;
 import codechicken.enderstorage.reference.Reference;

@@ -27,6 +27,8 @@ public class ConfigurationHandler {
     public static boolean anarchyMode;
     public static ItemStack personalItem;
 
+    //TODO public static boolean enableChestInventoryLid;
+
     public static void init(File file) {
         if (!initialized) {
             config = new ConfigFile(file).setComment("EnderStorage Configuration File\n" + "Deleting any element will restore it to it's default value");
@@ -40,6 +42,7 @@ public class ConfigurationHandler {
         disableVanillaEnderChest = config.getTag("disableVanilla").setComment("Set to true to make the vanilla EnderChest un-placeable.").getBooleanValue(true);
         removeVanillaRecipe = config.getTag("disableVanillaRecipe").setComment("Set to true to make the vanilla EnderChest un-craftable").getBooleanValue(false);
         anarchyMode = config.getTag("anarchyMode").setComment("Causes chests to lose personal settings and drop the diamond on break").getBooleanValue(false);
+        //enableChestInventoryLid = config.getTag("enableChestInventoryLid").setComment("Set this to true to enable the EnderChest opening its lid in your inventory, it may produce a lot of lag for the client.").getBooleanValue(true);
         ConfigTag tag = config.getTag("personalItem").setComment("The name of the item used to set the chest to personal. Diamond by default. Format <modid>:<registeredItemName>|<meta>, Meta can be replaced with \"WILD\"");
         //region personalItemParsing
         String name = tag.getValue("minecraft:diamond|0");

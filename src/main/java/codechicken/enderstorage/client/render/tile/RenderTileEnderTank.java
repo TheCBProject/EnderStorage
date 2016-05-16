@@ -1,13 +1,12 @@
-package codechicken.enderstorage.client.render;
+package codechicken.enderstorage.client.render.tile;
 
 import codechicken.core.ClientUtils;
 import codechicken.core.fluid.FluidUtils;
 import codechicken.enderstorage.api.Frequency;
 import codechicken.enderstorage.client.RenderUtils;
 import codechicken.enderstorage.client.model.ButtonModelLibrary;
-import codechicken.enderstorage.client.model.RenderCustomEndPortal;
+import codechicken.enderstorage.client.render.RenderCustomEndPortal;
 import codechicken.enderstorage.tile.TileEnderTank;
-import codechicken.enderstorage.util.LogHelper;
 import codechicken.lib.math.MathHelper;
 import codechicken.lib.render.CCModel;
 import codechicken.lib.render.CCModelLibrary;
@@ -18,13 +17,11 @@ import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fluids.FluidStack;
-import org.lwjgl.opengl.GL11;
 
 import java.util.ArrayList;
 import java.util.Map;
 
 import static net.minecraft.client.renderer.GlStateManager.*;
-import static net.minecraft.client.renderer.vertex.DefaultVertexFormats.POSITION_TEX_COLOR;
 import static net.minecraft.client.renderer.vertex.DefaultVertexFormats.POSITION_TEX_NORMAL;
 
 public class RenderTileEnderTank extends TileEntitySpecialRenderer<TileEnderTank> {
@@ -58,11 +55,12 @@ public class RenderTileEnderTank extends TileEntitySpecialRenderer<TileEnderTank
     }
 
     @Override
-    public void renderTileEntityAt(TileEnderTank tile, double x, double y, double z, float partialTicks, int breakProgress) {
+    public void renderTileEntityAt(TileEnderTank enderTank, double x, double y, double z, float partialTicks, int breakProgress) {
 
         CCRenderState.reset();
-        renderTank(tile.rotation, (float) MathHelper.interpolate(tile.pressure_state.b_rotate, tile.pressure_state.a_rotate, partialTicks) * 0.01745F, tile.frequency, x, y, z, RenderUtils.getTimeOffset(tile.getPos()));
-        renderLiquid(tile.liquid_state.c_liquid, x, y, z);
+        CCRenderState.setBrightness(enderTank.getWorld(), enderTank.getPos());
+        renderTank(enderTank.rotation, (float) MathHelper.interpolate(enderTank.pressure_state.b_rotate, enderTank.pressure_state.a_rotate, partialTicks) * 0.01745F, enderTank.frequency, x, y, z, RenderUtils.getTimeOffset(enderTank.getPos()));
+        renderLiquid(enderTank.liquid_state.c_liquid, x, y, z);
     }
 
     public static void renderTank(int rotation, float valve, Frequency freq, double x, double y, double z, int offset) {

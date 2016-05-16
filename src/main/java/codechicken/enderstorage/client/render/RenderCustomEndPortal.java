@@ -1,4 +1,4 @@
-package codechicken.enderstorage.client.model;
+package codechicken.enderstorage.client.render;
 
 import net.minecraft.client.renderer.ActiveRenderInfo;
 import net.minecraft.client.renderer.GLAllocation;

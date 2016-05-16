@@ -1,6 +1,7 @@
-package codechicken.enderstorage.client.render;
+package codechicken.enderstorage.client.render.item;
 
 import codechicken.enderstorage.api.Frequency;
+import codechicken.enderstorage.client.render.tile.RenderTileEnderChest;
 import codechicken.lib.render.IItemRenderer;
 import codechicken.lib.render.TransformUtils;
 import net.minecraft.block.state.IBlockState;

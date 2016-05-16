@@ -1,5 +1,6 @@
-package codechicken.enderstorage.client.model;
+package codechicken.enderstorage.client;
 
+import codechicken.enderstorage.client.model.BakedEnderPouchModel;
 import com.google.common.base.Function;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
@@ -20,12 +21,8 @@ import javax.vecmath.Vector3f;
 
 /**
  * Created by covers1624 on 5/12/2016.
- * Mostly based off the DynBucket model.
- * Well not really, but that was my inspiration.
  */
 public class EnderPouchModelBakery {
-
-    private static final TRSRTransformation flipX = new TRSRTransformation(null, null, new Vector3f(-1, 1, 1), null);
 
     private final ResourceLocation basePouch;
     private final ResourceLocation leftButton;

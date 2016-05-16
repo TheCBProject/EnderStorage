@@ -1,10 +1,10 @@
-package codechicken.enderstorage.client.render;
+package codechicken.enderstorage.client.render.tile;
 
 import codechicken.core.ClientUtils;
 import codechicken.enderstorage.api.Frequency;
 import codechicken.enderstorage.client.RenderUtils;
 import codechicken.enderstorage.client.model.ModelEnderChest;
-import codechicken.enderstorage.client.model.RenderCustomEndPortal;
+import codechicken.enderstorage.client.render.RenderCustomEndPortal;
 import codechicken.enderstorage.misc.EnderDyeButton;
 import codechicken.enderstorage.tile.TileEnderChest;
 import codechicken.lib.render.CCModelLibrary;
@@ -31,19 +31,10 @@ public class RenderTileEnderChest extends TileEntitySpecialRenderer<TileEnderChe
     @Override
     public void renderTileEntityAt(TileEnderChest enderChest, double x, double y, double z, float partialTicks, int destroyStage) {
 
-        int rotation = 0;
-        Frequency freq = new Frequency();
-        int offset = 0;
-        float lidAngle = 0.0F;
         CCRenderState.reset();
-        if (enderChest != null) {
-            CCRenderState.setBrightness(enderChest.getWorld(), enderChest.getPos());
-            rotation = enderChest.rotation;
-            freq = enderChest.frequency;
-            offset = RenderUtils.getTimeOffset(enderChest.getPos());
-            lidAngle = (float) enderChest.getRadianLidAngle(partialTicks);
-        }
-        renderChest(rotation, freq, x, y, z, offset, lidAngle);
+        CCRenderState.setBrightness(enderChest.getWorld(), enderChest.getPos());
+
+        renderChest(enderChest.rotation, enderChest.frequency, x, y, z, RenderUtils.getTimeOffset(enderChest.getPos()), (float) enderChest.getRadianLidAngle(partialTicks));
     }
 
     public static void renderChest(int rotation, Frequency freq, double x, double y, double z, int offset, float lidAngle) {
