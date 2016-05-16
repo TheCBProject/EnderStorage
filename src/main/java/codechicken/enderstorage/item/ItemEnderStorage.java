@@ -50,7 +50,6 @@ public class ItemEnderStorage extends ItemBlock implements IFluidContainerItem {
         if (super.placeBlockAt(stack, player, world, pos, side, hitX, hitY, hitZ, newState)) {
             TileFrequencyOwner tile = (TileFrequencyOwner) world.getTileEntity(pos);
             tile.setFreq(getFreq(stack));
-            //tile.setOwner(getOwner(stack));
             return true;
         }
         return false;
@@ -67,10 +66,7 @@ public class ItemEnderStorage extends ItemBlock implements IFluidContainerItem {
         if (frequency.owner != null) {
             list.add(frequency.owner);
         }
-        list.add(String.format("%s/%s/%s", frequency.getLeftRaw().getUnlocalizedName(), frequency.getMiddleRaw().getUnlocalizedName(), frequency.getRightRaw().getUnlocalizedName()));
-        //if (!getOwner(stack).equals("global")) {
-        //    list.add(getOwner(stack));
-        //}
+        list.add(String.format("%s/%s/%s", frequency.getLocalizedLeft(), frequency.getLocalizedMiddle(), frequency.getLocalizedRight()));
     }
 
     private EnderLiquidStorage getLiquidStorage(ItemStack stack) {

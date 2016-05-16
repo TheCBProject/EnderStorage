@@ -1,7 +1,10 @@
 package codechicken.enderstorage.init;
 
+import codechicken.enderstorage.client.model.BakedEnderPouchOverrideHandler;
+import codechicken.enderstorage.client.model.OverrideBakedModel;
 import codechicken.enderstorage.item.ItemEnderPouch;
 import codechicken.enderstorage.reference.Reference;
+import codechicken.lib.render.ModelRegistryHelper;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.fml.common.registry.GameRegistry;
@@ -20,6 +23,7 @@ public class ModItems {
 
     public static void registerModels() {
         ModelLoader.setCustomModelResourceLocation(enderPouch, 0,new ModelResourceLocation(Reference.MOD_PREFIX + "enderPouch", "inventory"));
+        ModelRegistryHelper.register(new ModelResourceLocation(Reference.MOD_PREFIX + "enderPouch", "inventory"), new OverrideBakedModel(BakedEnderPouchOverrideHandler.INSTANCE));
         /*ModelLoader.setCustomMeshDefinition(enderPouch, new ItemMeshDefinition() {
             @Override
             public ModelResourceLocation getModelLocation(ItemStack stack) {

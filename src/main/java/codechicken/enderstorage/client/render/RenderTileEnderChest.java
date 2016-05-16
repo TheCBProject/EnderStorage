@@ -31,12 +31,18 @@ public class RenderTileEnderChest extends TileEntitySpecialRenderer<TileEnderChe
     @Override
     public void renderTileEntityAt(TileEnderChest enderChest, double x, double y, double z, float partialTicks, int destroyStage) {
 
+        int rotation = 0;
+        Frequency freq = new Frequency();
+        int offset = 0;
+        float lidAngle = 0.0F;
         CCRenderState.reset();
-        CCRenderState.setBrightness(enderChest.getWorld(), enderChest.getPos());
-        int rotation = enderChest.rotation;
-        Frequency freq = enderChest.frequency;
-        int offset = RenderUtils.getTimeOffset(enderChest.getPos());
-        float lidAngle = (float) enderChest.getRadianLidAngle(partialTicks);
+        if (enderChest != null) {
+            CCRenderState.setBrightness(enderChest.getWorld(), enderChest.getPos());
+            rotation = enderChest.rotation;
+            freq = enderChest.frequency;
+            offset = RenderUtils.getTimeOffset(enderChest.getPos());
+            lidAngle = (float) enderChest.getRadianLidAngle(partialTicks);
+        }
         renderChest(rotation, freq, x, y, z, offset, lidAngle);
     }
 

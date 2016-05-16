@@ -12,6 +12,8 @@ import net.minecraft.client.renderer.block.model.ItemOverrideList;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
+import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fluids.IFluidContainerItem;
 import org.apache.commons.lang3.tuple.Pair;
 
 import javax.vecmath.Matrix4f;
@@ -20,14 +22,24 @@ import java.util.List;
 /**
  * Created by covers1624 on 4/27/2016.
  */
-public class EnderChestItemRender implements IItemRenderer {
+public class EnderTankItemRender implements IItemRenderer {
     @Override
     public void renderItem(ItemStack item) {
         GlStateManager.pushMatrix();
+        //GlStateManager.disableLighting();
 
         Frequency frequency = Frequency.fromItemStack(item);
-        RenderTileEnderChest.renderChest(2, frequency, 0, 0, 0, 0, 0F);
-
+        FluidStack fluidStack = null;
+        if (item.getItem() != null && item.getItem() instanceof IFluidContainerItem) {
+            IFluidContainerItem fluidContainerItem = (IFluidContainerItem) item.getItem();
+            fluidStack = fluidContainerItem.getFluid(item);
+        }
+        RenderTileEnderTank.renderTank(2, 0F, frequency, 0, 0, 0, 0);
+        if (fluidStack != null) {
+            //TODO
+            //RenderTileEnderTank.renderLiquid(fluidStack, 0, 0, 0);
+        }
+        //GlStateManager.enableLighting();
         GlStateManager.popMatrix();
     }
 

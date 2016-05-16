@@ -21,7 +21,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
  */
 public class EventHandler {
 
-    @SideOnly(Side.CLIENT)
+    /*@SideOnly(Side.CLIENT)
     @SubscribeEvent
     public void onBlockHighlight(DrawBlockHighlightEvent event) {
         World world = event.getPlayer().worldObj;
@@ -38,7 +38,7 @@ public class EventHandler {
         }
     }
 
-    //TODO Move to lib.
+
     private static void renderHitBox(EntityPlayer player, IIndexedCuboidProvider provider, RayTraceResult result, float partialTicks) {
         IndexedCuboid6 cuboid6 = provider.getIndexedCuboids().get(result.subHit - 1);
         GlStateManager.enableBlend();
@@ -55,5 +55,5 @@ public class EventHandler {
         GlStateManager.enableTexture2D();
         GlStateManager.disableBlend();
 
-    }
+    }*/
 }

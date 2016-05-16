@@ -11,7 +11,9 @@ import codechicken.enderstorage.network.EnderStorageCPH;
 import codechicken.enderstorage.tile.TileEnderChest;
 import codechicken.enderstorage.tile.TileEnderTank;
 import codechicken.lib.packet.PacketCustom;
-import net.minecraftforge.client.model.ModelLoaderRegistry;
+import codechicken.lib.render.TextureUtils;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.resources.IReloadableResourceManager;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 
 /**
@@ -22,7 +24,10 @@ public class ClientProxy extends CommonProxy {
     @Override
     public void preInit() {
         super.preInit();
-        ModelLoaderRegistry.registerLoader(new EnderPouchModelLoader());
+        //ModelLoaderRegistry.registerLoader(new EnderPouchModelLoader());
+        EnderPouchModelLoader loader = new EnderPouchModelLoader();
+        ((IReloadableResourceManager) Minecraft.getMinecraft().getResourceManager()).registerReloadListener(loader);
+        TextureUtils.addIconRegister(loader);
         ModBlocks.registerModels();
         ModItems.registerModels();
     }
@@ -36,5 +41,7 @@ public class ClientProxy extends CommonProxy {
         PacketCustom.assignHandler(EnderStorageCPH.channel, new EnderStorageCPH());
         ClientRegistry.bindTileEntitySpecialRenderer(TileEnderChest.class, new RenderTileEnderChest());
         ClientRegistry.bindTileEntitySpecialRenderer(TileEnderTank.class, new RenderTileEnderTank());
+        //ForgeHooksClient.registerTESRItemStack(Item.getItemFromBlock(Blocks.ender_chest), 0, TileEnderChest.class);
+        //ForgeHooksClient.registerTESRItemStack(Item.getItemFromBlock(Blocks.ender_chest), 1, TileEnderTank.class);
     }
 }

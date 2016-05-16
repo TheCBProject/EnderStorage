@@ -7,6 +7,7 @@ import codechicken.enderstorage.client.RenderUtils;
 import codechicken.enderstorage.client.model.ButtonModelLibrary;
 import codechicken.enderstorage.client.model.RenderCustomEndPortal;
 import codechicken.enderstorage.tile.TileEnderTank;
+import codechicken.enderstorage.util.LogHelper;
 import codechicken.lib.math.MathHelper;
 import codechicken.lib.render.CCModel;
 import codechicken.lib.render.CCModelLibrary;
@@ -17,11 +18,13 @@ import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fluids.FluidStack;
+import org.lwjgl.opengl.GL11;
 
 import java.util.ArrayList;
 import java.util.Map;
 
 import static net.minecraft.client.renderer.GlStateManager.*;
+import static net.minecraft.client.renderer.vertex.DefaultVertexFormats.POSITION_TEX_COLOR;
 import static net.minecraft.client.renderer.vertex.DefaultVertexFormats.POSITION_TEX_NORMAL;
 
 public class RenderTileEnderTank extends TileEntitySpecialRenderer<TileEnderTank> {
@@ -92,6 +95,7 @@ public class RenderTileEnderTank extends TileEntitySpecialRenderer<TileEnderTank
         double time = ClientUtils.getRenderTime() + offset;
         Matrix4 pearlMat = RenderUtils.getMatrix(new Vector3(x + 0.5, y + 0.45 + RenderUtils.getPearlBob(time) * 2, z + 0.5), new Rotation(time / 3, new Vector3(0, 1, 0)), 0.04);
 
+        pushMatrix();
         disableLighting();
         CCRenderState.changeTexture("enderstorage:textures/hedronmap.png");
         CCRenderState.startDrawing(4, POSITION_TEX_NORMAL);
@@ -99,6 +103,7 @@ public class RenderTileEnderTank extends TileEntitySpecialRenderer<TileEnderTank
         CCModelLibrary.icosahedron4.render(pearlMat);
         CCRenderState.draw();
         enableLighting();
+        popMatrix();
     }
 
     public static void renderLiquid(FluidStack liquid, double x, double y, double z) {

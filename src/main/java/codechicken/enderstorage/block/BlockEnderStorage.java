@@ -132,9 +132,6 @@ public class BlockEnderStorage extends Block implements ITileEntityProvider {
         NBTTagCompound frequencyTag = new NBTTagCompound();
         freq.writeNBT(frequencyTag);
         stack.getTagCompound().setTag("Frequency", frequencyTag);
-        //if (!owner.equals("global")) {
-        //    stack.getTagCompound().setString("owner", owner);
-        //}
         return stack;
     }
 
@@ -151,7 +148,6 @@ public class BlockEnderStorage extends Block implements ITileEntityProvider {
         if (subHitResult != null) {
             hit = subHitResult;
         }
-        LogHelper.info(hit.subHit);
         if (hit.subHit == 4) {
             ItemStack item = player.inventory.getCurrentItem();
             if (player.isSneaking() && tile.frequency.hasOwner()) {
@@ -186,7 +182,6 @@ public class BlockEnderStorage extends Block implements ITileEntityProvider {
                 return true;
             }
         }
-        //LogHelper.info(tile.frequency);
         return tile.activate(player, hit.subHit);
     }
 

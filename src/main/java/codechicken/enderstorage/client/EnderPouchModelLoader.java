@@ -1,28 +1,31 @@
 package codechicken.enderstorage.client;
 
+import codechicken.enderstorage.api.Colour;
 import codechicken.enderstorage.api.Frequency;
-import codechicken.enderstorage.client.model.ModelEnderPouch;
+import codechicken.enderstorage.client.model.EnderPouchModelBakery;
 import codechicken.enderstorage.reference.Reference;
 import codechicken.enderstorage.repack.covers1624.lib.util.ArrayUtils;
 import codechicken.enderstorage.util.LogHelper;
+import codechicken.lib.render.TextureUtils;
+import codechicken.lib.render.TransformUtils;
 import com.google.common.base.Function;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.resources.IResourceManager;
+import net.minecraft.client.resources.IResourceManagerReloadListener;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.client.model.ICustomModelLoader;
-import net.minecraftforge.client.model.IModel;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by covers1624 on 5/12/2016.
  */
-public class EnderPouchModelLoader implements ICustomModelLoader {
+public class EnderPouchModelLoader implements TextureUtils.IIconRegister, IResourceManagerReloadListener {
 
     public static final ImmutableList<String> bagModelVariants;
     public static final Map<String, IBakedModel> modelCache = new HashMap<String, IBakedModel>();
@@ -49,17 +52,6 @@ public class EnderPouchModelLoader implements ICustomModelLoader {
     }
 
     @Override
-    public boolean accepts(ResourceLocation modelLocation) {
-        return modelLocation.getResourceDomain().contains(Reference.MOD_ID.toLowerCase()) && modelLocation.getResourcePath().contains("enderPouch");
-    }
-
-    @Override
-    public IModel loadModel(ResourceLocation modelLocation) throws Exception {
-        //checkCacheGen();
-        return ModelEnderPouch.MODEL;
-    }
-
-    @Override
     public void onResourceManagerReload(IResourceManager resourceManager) {
         clearCache();
     }
@@ -69,50 +61,6 @@ public class EnderPouchModelLoader implements ICustomModelLoader {
             if (cacheGenerated) {
                 cacheGenerated = false;
                 modelCache.clear();
-            }
-        }
-    }
-
-    @Deprecated//TODO Make this trigger a regen if cached models on reload.
-    public static void checkCacheGen() {
-        synchronized (modelCache) {
-            if (!cacheGenerated) {
-                LogHelper.info("Starting EnderPouch Model generation.");
-                for (String variant : bagModelVariants) {
-                    Map<String, String> values = ArrayUtils.convertKeyValueArrayToMap(variant.split(","));
-                    boolean owned = Boolean.parseBoolean(values.get("owned"));
-                    boolean open = Boolean.parseBoolean(values.get("open"));
-                    String pouchPrefix = Reference.MOD_PREFIX + "items/pouch/";
-                    //button,colour.
-                    String buttonsPrefix = pouchPrefix + "%s/%s";
-                    ResourceLocation leftButton = new ResourceLocation(String.format(buttonsPrefix, "left", values.get("left")));
-                    ResourceLocation middleButton = new ResourceLocation(String.format(buttonsPrefix, "middle", values.get("middle")));
-                    ResourceLocation rightButton = new ResourceLocation(String.format(buttonsPrefix, "right", values.get("right")));
-                    ResourceLocation bagLocation;
-                    if (open) {
-                        if (owned) {
-                            bagLocation = new ResourceLocation(pouchPrefix + "owned_open");
-                        } else {
-                            bagLocation = new ResourceLocation(pouchPrefix + "open");
-                        }
-                    } else {
-                        if (owned) {
-                            bagLocation = new ResourceLocation(pouchPrefix + "owned_closed");
-                        } else {
-                            bagLocation = new ResourceLocation(pouchPrefix + "closed");
-                        }
-                    }
-                    Function<ResourceLocation, TextureAtlasSprite> bakedTextureGetter = new Function<ResourceLocation, TextureAtlasSprite>() {
-                        @Override
-                        public TextureAtlasSprite apply(ResourceLocation input) {
-                            return Minecraft.getMinecraft().getTextureMapBlocks().getAtlasSprite(input.toString());
-                        }
-                    };
-                    ModelEnderPouch correctModel = new ModelEnderPouch(bagLocation, leftButton, middleButton, rightButton);
-                    IBakedModel cachedModel = correctModel.bake(ModelEnderPouch.MODEL.getDefaultState(), DefaultVertexFormats.ITEM, bakedTextureGetter);
-                    modelCache.put(variant, cachedModel);
-                }
-                LogHelper.info("Finished EnderPouch Model generation.");
             }
         }
     }
@@ -162,7 +110,36 @@ public class EnderPouchModelLoader implements ICustomModelLoader {
                 return Minecraft.getMinecraft().getTextureMapBlocks().getAtlasSprite(input.toString());
             }
         };
-        ModelEnderPouch correctModel = new ModelEnderPouch(bagLocation, leftButton, middleButton, rightButton);
-        return correctModel.bake(ModelEnderPouch.MODEL.getDefaultState(), DefaultVertexFormats.ITEM, bakedTextureGetter);
+        EnderPouchModelBakery correctModel = new EnderPouchModelBakery(bagLocation, leftButton, middleButton, rightButton);
+        return correctModel.bake(TransformUtils.DEFAULT_ITEM, DefaultVertexFormats.ITEM, bakedTextureGetter);
     }
+
+    @Override
+    public void registerIcons(TextureMap textureMap) {
+        for (ResourceLocation location : getTextures()) {
+            textureMap.registerSprite(location);
+        }
+    }
+
+    public Collection<ResourceLocation> getTextures() {
+        ImmutableSet.Builder<ResourceLocation> builder = ImmutableSet.builder();
+        String pouchLocation = Reference.MOD_PREFIX + "items/pouch/";
+        builder.add(new ResourceLocation(pouchLocation + "closed"));
+        builder.add(new ResourceLocation(pouchLocation + "open"));
+        builder.add(new ResourceLocation(pouchLocation + "owned_closed"));
+        builder.add(new ResourceLocation(pouchLocation + "owned_open"));
+        builder.addAll(addAllColours(pouchLocation + "buttons/left/"));
+        builder.addAll(addAllColours(pouchLocation + "buttons/middle/"));
+        builder.addAll(addAllColours(pouchLocation + "buttons/right/"));
+        return builder.build();
+    }
+
+    private List<ResourceLocation> addAllColours(String locationParent) {
+        ArrayList<ResourceLocation> locations = new ArrayList<ResourceLocation>();
+        for (Colour colour : Colour.values()) {
+            locations.add(new ResourceLocation(locationParent + colour.getMinecraftName()));
+        }
+        return locations;
+    }
+
 }
