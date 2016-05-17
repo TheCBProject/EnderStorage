@@ -13,7 +13,7 @@ public class Reference {
 
     public static final String MOD_PREFIX = MOD_ID.toLowerCase() + ":";
 
-    public static final String VERSION = "${VERSION}";
+    public static final String VERSION = "${mod_version}";
     public static final String DEPENDENCIES = "required-after:CodeChickenCore@[" + CodeChickenCorePlugin.version + ",)";
 
     public static final String COMMON_PROXY = "codechicken.enderstorage.proxy.CommonProxy";

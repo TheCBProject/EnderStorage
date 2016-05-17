@@ -5,7 +5,6 @@ import codechicken.enderstorage.handler.ConfigurationHandler;
 import codechicken.enderstorage.manager.EnderStorageManager;
 import codechicken.enderstorage.proxy.CommonProxy;
 import codechicken.lib.config.ConfigFile;
-import covers1624.lib.network.PacketPipeline;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
@@ -22,8 +21,6 @@ public class EnderStorage {
 
     @Mod.Instance(MOD_NAME)
     public static EnderStorage instance;
-
-    public static final PacketPipeline packetPipeline = new PacketPipeline();
 
     public static ConfigFile config;
 

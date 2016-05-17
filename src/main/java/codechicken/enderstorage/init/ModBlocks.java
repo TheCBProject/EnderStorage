@@ -13,6 +13,8 @@ import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.item.Item;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.fml.common.registry.GameRegistry;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 /**
  * Created by covers1624 on 4/11/2016.
@@ -29,6 +31,7 @@ public class ModBlocks {
         GameRegistry.registerTileEntity(TileEnderTank.class, "Ender Tank");
     }
 
+    @SideOnly(Side.CLIENT)
     public static void registerModels() {
         for (int i = 0; i < VariantReference.enderBlockNamesList.size(); i++) {
             String variant = VariantReference.enderBlockNamesList.get(i);

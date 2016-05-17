@@ -8,6 +8,8 @@ import codechicken.lib.render.ModelRegistryHelper;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.fml.common.registry.GameRegistry;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 /**
  * Created by covers1624 on 4/11/2016.
@@ -21,6 +23,7 @@ public class ModItems {
         GameRegistry.register(enderPouch.setRegistryName("enderPouch"));
     }
 
+    @SideOnly(Side.CLIENT)
     public static void registerModels() {
         ModelLoader.setCustomModelResourceLocation(enderPouch, 0,new ModelResourceLocation(Reference.MOD_PREFIX + "enderPouch", "inventory"));
         ModelRegistryHelper.register(new ModelResourceLocation(Reference.MOD_PREFIX + "enderPouch", "inventory"), new OverrideBakedModel(BakedEnderPouchOverrideHandler.INSTANCE));

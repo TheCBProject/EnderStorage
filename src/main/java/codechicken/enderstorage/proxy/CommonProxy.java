@@ -1,7 +1,6 @@
 package codechicken.enderstorage.proxy;
 
 import codechicken.enderstorage.handler.EventHandler;
-import codechicken.enderstorage.init.EnderStorageRecipe;
 import codechicken.enderstorage.init.ModBlocks;
 import codechicken.enderstorage.init.ModItems;
 import codechicken.enderstorage.init.ModRecipes;

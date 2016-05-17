@@ -13,7 +13,7 @@ Supporters: Blkdragon112",
   "version": "${version}",
   "mcversion": "${mc_version}",
   "url": "http://www.minecraftforum.net/topic/909223",
-  "authorList": [ "ChickenBones" ],
+  "authorList": [ "ChickenBones, covers1624" ],
   "dependencies": [ "CodeChickenCore" ]
 }
 ]

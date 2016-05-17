@@ -14,8 +14,8 @@ buildscript {
 //add dependency repositories
 repositories {
 	maven {
-		name = "Covers1624 Repo"
-		url = "http://adel.podgeweb.com:1616/maven"
+		name = "CB Repo"
+		url = "http://chickenbones.net/maven"
 	}
 }
 
@@ -48,6 +48,8 @@ minecraft {
     version = config.mc_version + "-" + config.forge_version
     mappings = config.mappings
 	makeObfSourceJar = false
+    replace '${mod_version}', project.config.mod_version
+    replaceIn "Reference.java"
 	runDir = "run"
 }
 
@@ -95,7 +97,7 @@ artifacts {
 uploadArchives {
     repositories {
         mavenDeployer {
-            repository(url: "file:///var/www/maven")
+            repository(url: "file://${local_maven}")
             pom {
                 groupId = project.group
                 version = project.version
@@ -104,20 +106,20 @@ uploadArchives {
                     name project.archivesBaseName
                     packaging 'jar'
                     description 'EnderStorage'
-                    url 'https://github.com/covers1624/EnderStorage'
+                    url 'https://github.com/TheCBProject/EnderStorage'
                     scm {
-                        url 'https://github.com/covers1624/EnderStorage'
-                        connection 'scm:git:git@github.com:covers1624/EnderStorage.git'
-                        developerConnection 'scm:git:git@github.com:covers1624/EnderStorage.git'
+                        url 'https://github.com/TheCBProject/EnderStorage'
+                        connection 'scm:git:git@github.com:TheCBProject/EnderStorage.git'
+                        developerConnection 'scm:git:git@github.com:TheCBProject/EnderStorage.git'
                     }
                     issueManagement {
                         system 'github'
-                        url 'https://github.com/covers1624/EnderStorage/issues'
+                        url 'https://github.com/TheCBProject/EnderStorage/issues'
                     }
                     licenses {
                         license {
                             name 'License'
-                            url 'https://raw.githubusercontent.com/covers1624/EnderStorage/master/LICENSE.txt'
+                            url 'https://raw.githubusercontent.com/TheCBProject/EnderStorage/master/LICENSE.txt'
                             distribution 'repo'
                         }
                     }
@@ -125,6 +127,11 @@ uploadArchives {
 						developer {
                             id 'chicken-bones'
                             name 'chicken-bones'
+                            roles { role 'developer' }
+                        }
+                        developer {
+                            id 'covers1624'
+                            name 'covers1624'
                             roles { role 'developer' }
                         }
                     }
