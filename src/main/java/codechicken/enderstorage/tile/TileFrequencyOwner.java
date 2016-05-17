@@ -28,6 +28,9 @@ public abstract class TileFrequencyOwner extends TileEntity implements ITickable
 
     @Override
     public void validate() {
+        if (worldObj == null) {
+            return;
+        }
         super.validate();
         if (!(worldObj instanceof WorldServer) == worldObj.isRemote) {
             reloadStorage();
