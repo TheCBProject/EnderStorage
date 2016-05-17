@@ -15,6 +15,8 @@ import codechicken.lib.render.uv.UVTranslation;
 import codechicken.lib.vec.*;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.client.resources.DefaultPlayerSkin;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fluids.FluidStack;
 
@@ -58,7 +60,7 @@ public class RenderTileEnderTank extends TileEntitySpecialRenderer<TileEnderTank
     public void renderTileEntityAt(TileEnderTank enderTank, double x, double y, double z, float partialTicks, int breakProgress) {
 
         CCRenderState.reset();
-        CCRenderState.setBrightness(enderTank.getWorld(), enderTank.getPos());
+        //CCRenderState.setBrightness(enderTank.getWorld(), enderTank.getPos());
         renderTank(enderTank.rotation, (float) MathHelper.interpolate(enderTank.pressure_state.b_rotate, enderTank.pressure_state.a_rotate, partialTicks) * 0.01745F, enderTank.frequency, x, y, z, RenderUtils.getTimeOffset(enderTank.getPos()));
         renderLiquid(enderTank.liquid_state.c_liquid, x, y, z);
     }
@@ -68,13 +70,13 @@ public class RenderTileEnderTank extends TileEntitySpecialRenderer<TileEnderTank
         renderEndPortal.render(x, y, z, 0, info.entityX, info.entityY, info.entityZ, info.renderEngine);
         color(1, 1, 1, 1);
 
-        enableRescaleNormal();
+        //enableRescaleNormal();
         pushMatrix();
         translate(x + 0.5, y, z + 0.5);
         rotate(-90 * (rotation + 2), 0, 1, 0);
 
         CCRenderState.changeTexture("enderstorage:textures/endertank.png");
-        CCRenderState.startDrawing(4, POSITION_TEX_NORMAL);
+        CCRenderState.startDrawing(4, DefaultVertexFormats.BLOCK);
         CCRenderState.pullBuffer();
         tankModel.render();
         valveModel.render(new Rotation(valve, new Vector3(0, 0, 1)).at(new Vector3(0, 0.4165, 0)), new UVTranslation(0, freq.hasOwner() ? 13 / 64D : 0));
