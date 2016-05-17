@@ -9,7 +9,7 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLServerAboutToStartEvent;
+import net.minecraftforge.fml.common.event.FMLServerStartedEvent;
 
 import static codechicken.enderstorage.reference.Reference.*;
 
@@ -40,7 +40,7 @@ public class EnderStorage {
     }
 
     @Mod.EventHandler
-    public void preServerStart(FMLServerAboutToStartEvent event) {
+    public void preServerStart(FMLServerStartedEvent event) {
         EnderStorageManager.reloadManager(false);
     }
 
