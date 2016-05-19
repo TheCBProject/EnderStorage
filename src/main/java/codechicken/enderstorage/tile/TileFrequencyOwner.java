@@ -47,6 +47,9 @@ public abstract class TileFrequencyOwner extends TileEntity implements ITickable
 
     @Override
     public void update() {
+        if (worldObj == null){
+            return;
+        }
         if (getStorage().getChangeCount() > changeCount) {
             worldObj.updateComparatorOutputLevel(pos, getBlockType());
             changeCount = getStorage().getChangeCount();
