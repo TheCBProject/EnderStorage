@@ -47,7 +47,7 @@ public abstract class TileFrequencyOwner extends TileEntity implements ITickable
 
     @Override
     public void update() {
-        if (worldObj == null){
+        if (worldObj == null) {
             return;
         }
         if (getStorage().getChangeCount() > changeCount) {
@@ -60,6 +60,13 @@ public abstract class TileFrequencyOwner extends TileEntity implements ITickable
             IBlockState state = worldObj.getBlockState(pos);
             worldObj.notifyBlockUpdate(pos, state, state, 3);
             cache = frequency.copy();
+        }
+    }
+
+    @Override//TODO Remove when forge fixes their shit.
+    public void setWorldObj(World worldIn) {
+        if (!hasWorldObj()) {
+            worldObj = worldIn;
         }
     }
 
