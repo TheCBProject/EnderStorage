@@ -63,13 +63,6 @@ public abstract class TileFrequencyOwner extends TileEntity implements ITickable
         }
     }
 
-    @Override//TODO Remove when forge fixes their shit.
-    public void setWorldObj(World worldIn) {
-        if (!hasWorldObj()) {
-            worldObj = worldIn;
-        }
-    }
-
     public abstract void reloadStorage();
 
     public abstract AbstractEnderStorage getStorage();
