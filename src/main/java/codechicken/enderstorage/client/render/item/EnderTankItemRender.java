@@ -18,6 +18,7 @@ import net.minecraftforge.fluids.IFluidContainerItem;
 import org.apache.commons.lang3.tuple.Pair;
 
 import javax.vecmath.Matrix4f;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -46,7 +47,7 @@ public class EnderTankItemRender implements IItemRenderer {
 
     @Override
     public List<BakedQuad> getQuads(IBlockState state, EnumFacing side, long rand) {
-        return null;
+        return new ArrayList<BakedQuad>();
     }
 
     @Override
