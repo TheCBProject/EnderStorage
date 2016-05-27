@@ -57,13 +57,13 @@ processResources {
     // Redo task if any of these properties change
     inputs.property "version", project.version
     inputs.property "mc_version", config.mc_version
-	
+
     // Replace properties in info files
     from(sourceSets.main.resources.srcDirs) {
         include '*.info'
         expand 'version':project.version,'mc_version':config.mc_version
     }
-	
+
 	// Move access transformer to META-INF
 	rename '(.+_at.cfg)', 'META-INF/$1'
 }

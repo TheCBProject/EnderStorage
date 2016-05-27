@@ -3,7 +3,6 @@ package codechicken.enderstorage.client.render.tile;
 import codechicken.core.ClientUtils;
 import codechicken.core.fluid.FluidUtils;
 import codechicken.enderstorage.api.Frequency;
-import codechicken.enderstorage.client.RenderUtils;
 import codechicken.enderstorage.client.model.ButtonModelLibrary;
 import codechicken.enderstorage.client.render.RenderCustomEndPortal;
 import codechicken.enderstorage.tile.TileEnderTank;
@@ -11,12 +10,12 @@ import codechicken.lib.math.MathHelper;
 import codechicken.lib.render.CCModel;
 import codechicken.lib.render.CCModelLibrary;
 import codechicken.lib.render.CCRenderState;
+import codechicken.lib.render.RenderUtils;
 import codechicken.lib.render.uv.UVTranslation;
 import codechicken.lib.vec.*;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.client.resources.DefaultPlayerSkin;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fluids.FluidStack;
 
@@ -60,7 +59,7 @@ public class RenderTileEnderTank extends TileEntitySpecialRenderer<TileEnderTank
     public void renderTileEntityAt(TileEnderTank enderTank, double x, double y, double z, float partialTicks, int breakProgress) {
 
         CCRenderState.reset();
-        //CCRenderState.setBrightness(enderTank.getWorld(), enderTank.getPos());
+        CCRenderState.setBrightness(enderTank.getWorld(), enderTank.getPos());
         renderTank(enderTank.rotation, (float) MathHelper.interpolate(enderTank.pressure_state.b_rotate, enderTank.pressure_state.a_rotate, partialTicks) * 0.01745F, enderTank.frequency, x, y, z, RenderUtils.getTimeOffset(enderTank.getPos()));
         renderLiquid(enderTank.liquid_state.c_liquid, x, y, z);
     }
@@ -70,7 +69,7 @@ public class RenderTileEnderTank extends TileEntitySpecialRenderer<TileEnderTank
         renderEndPortal.render(x, y, z, 0, info.entityX, info.entityY, info.entityZ, info.renderEngine);
         color(1, 1, 1, 1);
 
-        //enableRescaleNormal();
+        enableRescaleNormal();
         pushMatrix();
         translate(x + 0.5, y, z + 0.5);
         rotate(-90 * (rotation + 2), 0, 1, 0);
@@ -95,7 +94,6 @@ public class RenderTileEnderTank extends TileEntitySpecialRenderer<TileEnderTank
         double time = ClientUtils.getRenderTime() + offset;
         Matrix4 pearlMat = RenderUtils.getMatrix(new Vector3(x + 0.5, y + 0.45 + RenderUtils.getPearlBob(time) * 2, z + 0.5), new Rotation(time / 3, new Vector3(0, 1, 0)), 0.04);
 
-        pushMatrix();
         disableLighting();
         CCRenderState.changeTexture("enderstorage:textures/hedronmap.png");
         CCRenderState.startDrawing(4, POSITION_TEX_NORMAL);
@@ -103,10 +101,9 @@ public class RenderTileEnderTank extends TileEntitySpecialRenderer<TileEnderTank
         CCModelLibrary.icosahedron4.render(pearlMat);
         CCRenderState.draw();
         enableLighting();
-        popMatrix();
     }
 
     public static void renderLiquid(FluidStack liquid, double x, double y, double z) {
-        RenderUtils.renderFluidCuboid(liquid, new Cuboid6(0.22, 0.12, 0.22, 0.78, 0.121 + 0.63, 0.78).add(new Vector3(x, y, z)), liquid.amount / (16D * FluidUtils.B), 0.75);
+        RenderUtils.renderFluidCuboidGL(liquid, new Cuboid6(0.22, 0.12, 0.22, 0.78, 0.121 + 0.63, 0.78).add(new Vector3(x, y, z)), liquid.amount / (16D * FluidUtils.B), 0.75);
     }
 }

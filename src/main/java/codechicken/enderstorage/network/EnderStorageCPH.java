@@ -12,7 +12,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.network.play.INetHandlerPlayClient;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.math.BlockPos;
 
 public class EnderStorageCPH implements IClientPacketHandler {
     public static final String channel = "ES";
@@ -41,14 +40,14 @@ public class EnderStorageCPH implements IClientPacketHandler {
     }
 
     private void handleTankTilePacket(WorldClient world, BlockCoord pos, PacketCustom packet) {
-        TileEntity tile = world.getTileEntity(new BlockPos(pos.x, pos.y, pos.z));
+        TileEntity tile = world.getTileEntity(pos.pos());
         if (tile instanceof TileEnderTank) {
             ((TileEnderTank) tile).sync(packet);
         }
     }
 
     private void handleTilePacket(WorldClient world, PacketCustom packet, BlockCoord pos) {
-        TileEntity tile = world.getTileEntity(new BlockPos(pos.x, pos.y, pos.z));
+        TileEntity tile = world.getTileEntity(pos.pos());
 
         if (tile instanceof TileFrequencyOwner) {
             ((TileFrequencyOwner) tile).handleDescriptionPacket(packet);
