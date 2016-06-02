@@ -4,6 +4,7 @@ import codechicken.enderstorage.manager.EnderStorageManager;
 import codechicken.enderstorage.misc.EnderDyeButton;
 import codechicken.enderstorage.misc.EnderKnobSlot;
 import codechicken.enderstorage.storage.EnderItemStorage;
+import codechicken.lib.data.MCDataHandler;
 import codechicken.lib.math.MathHelper;
 import codechicken.lib.packet.PacketCustom;
 import codechicken.lib.raytracer.IndexedCuboid6;
@@ -19,12 +20,14 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ITickable;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
 
+import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TileEnderChest extends TileFrequencyOwner implements IInventory, ITickable {
+public class TileEnderChest extends TileFrequencyOwner implements IInventory {
     public double a_lidAngle;
     public double b_lidAngle;
     public int c_numOpen;
@@ -52,12 +55,6 @@ public class TileEnderChest extends TileFrequencyOwner implements IInventory, IT
     public void update() {
         super.update();
 
-        //update compatiblity
-        //I assume this is a converter between different versions of EnderStorage??
-        //if (worldObj.getBlockMetadata(xCoord, yCoord, zCoord) != 0) {
-        //    rotation = worldObj.getBlockMetadata(xCoord, yCoord, zCoord);
-        //    worldObj.setBlockMetadataWithNotify(xCoord, yCoord, zCoord, 0, 3);
-        //}
         if (!worldObj.isRemote && (worldObj.getTotalWorldTime() % 20 == 0 || c_numOpen != storage.getNumOpen())) {
             c_numOpen = storage.getNumOpen();
             worldObj.addBlockEvent(getPos(), getBlockType(), 1, c_numOpen);
@@ -68,9 +65,9 @@ public class TileEnderChest extends TileFrequencyOwner implements IInventory, IT
         a_lidAngle = MathHelper.approachLinear(a_lidAngle, c_numOpen > 0 ? 1 : 0, 0.1);
 
         if (b_lidAngle >= 0.5 && a_lidAngle < 0.5) {
-            worldObj.playSound(null, getPos(), SoundEvents.block_chest_close, SoundCategory.BLOCKS, 0.5F, worldObj.rand.nextFloat() * 0.1F + 0.9F);
+            worldObj.playSound(null, getPos(), SoundEvents.BLOCK_CHEST_CLOSE, SoundCategory.BLOCKS, 0.5F, worldObj.rand.nextFloat() * 0.1F + 0.9F);
         } else if (b_lidAngle == 0 && a_lidAngle > 0) {
-            worldObj.playSound(null, getPos(), SoundEvents.block_chest_open, SoundCategory.BLOCKS, 0.5F, worldObj.rand.nextFloat() * 0.1F + 0.9F);
+            worldObj.playSound(null, getPos(), SoundEvents.BLOCK_CHEST_OPEN, SoundCategory.BLOCKS, 0.5F, worldObj.rand.nextFloat() * 0.1F + 0.9F);
         }
     }
 
@@ -121,6 +118,7 @@ public class TileEnderChest extends TileFrequencyOwner implements IInventory, IT
     }
 
     @Override
+    @Nonnull
     public String getName() {
         return "Ender Chest";
     }
@@ -136,13 +134,13 @@ public class TileEnderChest extends TileFrequencyOwner implements IInventory, IT
     }
 
     @Override
-    public void writeToPacket(PacketCustom packet) {
+    public void writeToPacket(MCDataHandler packet) {
         packet.writeByte(rotation);
     }
 
     @Override
-    public void handleDescriptionPacket(PacketCustom desc) {
-        super.handleDescriptionPacket(desc);
+    public void readFromPacket(MCDataHandler desc) {
+        super.readFromPacket(desc);
         rotation = desc.readUByte();
     }
 
@@ -152,9 +150,10 @@ public class TileEnderChest extends TileFrequencyOwner implements IInventory, IT
     }
 
     @Override
-    public void writeToNBT(NBTTagCompound tag) {
+    public NBTTagCompound writeToNBT(NBTTagCompound tag) {
         super.writeToNBT(tag);
         tag.setByte("rot", (byte) rotation);
+        return tag;
     }
 
     @Override
@@ -201,14 +200,16 @@ public class TileEnderChest extends TileFrequencyOwner implements IInventory, IT
     public boolean rotate() {
         if (!worldObj.isRemote) {
             rotation = (rotation + 1) % 4;
-            PacketCustom.sendToChunk(getDescriptionPacket(), worldObj, pos.getX() >> 4, pos.getZ() >> 4);
+            PacketCustom.sendToChunk(getUpdatePacket(), worldObj, pos.getX() >> 4, pos.getZ() >> 4);
         }
 
         return true;
     }
 
     @Override
-    public boolean isItemValidForSlot(int i, ItemStack itemstack) {
+    public boolean isItemValidForSlot(int i,
+            @Nonnull
+            ItemStack itemstack) {
         return true;
     }
 
@@ -224,8 +225,9 @@ public class TileEnderChest extends TileFrequencyOwner implements IInventory, IT
     }
 
     @Override
+    @Nonnull
     public ITextComponent getDisplayName() {
-        return null;
+        return new TextComponentString("");
     }
 
     @Override

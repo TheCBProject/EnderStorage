@@ -50,7 +50,8 @@ public class EnderStorageCPH implements IClientPacketHandler {
         TileEntity tile = world.getTileEntity(pos.pos());
 
         if (tile instanceof TileFrequencyOwner) {
-            ((TileFrequencyOwner) tile).handleDescriptionPacket(packet);
+            throw new RuntimeException("This is being called..");
+            //((TileFrequencyOwner) tile).readFromPacket(packet);
         }
     }
 }

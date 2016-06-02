@@ -2,12 +2,12 @@ package codechicken.enderstorage.client.gui;
 
 import codechicken.enderstorage.container.ContainerEnderItemStorage;
 import codechicken.enderstorage.storage.EnderItemStorage;
-import codechicken.lib.render.CCRenderState;
+import codechicken.lib.render.TextureUtils;
 import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.util.text.translation.I18n;
-import org.lwjgl.opengl.GL11;
 
 public class GuiEnderItemStorage extends GuiContainer {
     private String name;
@@ -37,8 +37,8 @@ public class GuiEnderItemStorage extends GuiContainer {
     }
 
     protected void drawGuiContainerBackgroundLayer(float f, int i, int j) {
-        GL11.glColor4f(1, 1, 1, 1);
-        CCRenderState.changeTexture(chestInv.getSize() == 0 ? "textures/gui/container/dispenser.png" : "textures/gui/container/generic_54.png");
+        GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+        TextureUtils.changeTexture(chestInv.getSize() == 0 ? "textures/gui/container/dispenser.png" : "textures/gui/container/generic_54.png");
         int x = (width - xSize) / 2;
         int y = (height - ySize) / 2;
 

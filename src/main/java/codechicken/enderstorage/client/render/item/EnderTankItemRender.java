@@ -28,7 +28,6 @@ public class EnderTankItemRender implements IItemRenderer {
     @Override
     public void renderItem(ItemStack item) {
         GlStateManager.pushMatrix();
-        //GlStateManager.disableLighting();
 
         Frequency frequency = Frequency.fromItemStack(item);
         FluidStack fluidStack = null;
@@ -39,9 +38,9 @@ public class EnderTankItemRender implements IItemRenderer {
         RenderTileEnderTank.renderTank(2, 0F, frequency, 0, 0, 0, 0);
         if (fluidStack != null) {
             //TODO
-            //RenderTileEnderTank.renderLiquid(fluidStack, 0, 0, 0);
+            RenderTileEnderTank.renderLiquid(fluidStack, 0, 0, 0);
         }
-        //GlStateManager.enableLighting();
+
         GlStateManager.popMatrix();
     }
 

@@ -3,6 +3,8 @@ package codechicken.enderstorage.tile;
 import codechicken.enderstorage.api.AbstractEnderStorage;
 import codechicken.enderstorage.api.Frequency;
 import codechicken.enderstorage.network.EnderStorageSPH;
+import codechicken.lib.data.MCDataHandler;
+import codechicken.lib.data.MCDataNBTWrapper;
 import codechicken.lib.packet.PacketCustom;
 import codechicken.lib.raytracer.IndexedCuboid6;
 import codechicken.lib.vec.Cuboid6;
@@ -11,7 +13,9 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.network.NetworkManager;
 import net.minecraft.network.Packet;
+import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ITickable;
 import net.minecraft.util.math.RayTraceResult;
@@ -73,12 +77,13 @@ public abstract class TileFrequencyOwner extends TileEntity implements ITickable
         //owner = tag.getString("owner");
     }
 
-    public void writeToNBT(NBTTagCompound tag) {
+    public NBTTagCompound writeToNBT(NBTTagCompound tag) {
         super.writeToNBT(tag);
         NBTTagCompound frequencyTag = new NBTTagCompound();
         frequency.writeNBT(frequencyTag);
         tag.setTag("Frequency", frequencyTag);
         //tag.setString("owner", owner);
+        return tag;
     }
 
     public boolean activate(EntityPlayer player, int subHit) {
@@ -102,21 +107,31 @@ public abstract class TileFrequencyOwner extends TileEntity implements ITickable
     }
 
     @Override
-    public final Packet getDescriptionPacket() {
-        PacketCustom packet = new PacketCustom(EnderStorageSPH.channel, 1);
-        packet.writeCoord(pos.getX(), pos.getY(), pos.getZ());
-        packet.writeNBTTagCompound(frequency.toNBT());
-        //packet.writeString(owner);
-        writeToPacket(packet);
-        return packet.toPacket();
+    public final SPacketUpdateTileEntity getUpdatePacket() {
+        MCDataNBTWrapper wrapper = new MCDataNBTWrapper();
+        wrapper.writeNBTTagCompound(frequency.toNBT());
+        writeToPacket(wrapper);
+        return new SPacketUpdateTileEntity(getPos(), 0, wrapper.build());
+        //PacketCustom packet = new PacketCustom(EnderStorageSPH.channel, 1);
+        //packet.writeCoord(pos.getX(), pos.getY(), pos.getZ());
+        //packet.writeNBTTagCompound(frequency.toNBT());
+        ////packet.writeString(owner);
+        //writeToPacket(packet);
+        //return packet.toPacket();
     }
 
-    public void writeToPacket(PacketCustom packet) {
+    public void writeToPacket(MCDataHandler handler) {
     }
 
-    public void handleDescriptionPacket(PacketCustom desc) {
+    public void readFromPacket(MCDataHandler desc) {
         frequency.readNBT(desc.readNBTTagCompound());
         //owner = desc.readString();
+    }
+
+    @Override
+    public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity pkt) {
+        MCDataNBTWrapper wrapper = new MCDataNBTWrapper(pkt.getNbtCompound());
+        readFromPacket(wrapper);
     }
 
     public int getLightValue() {

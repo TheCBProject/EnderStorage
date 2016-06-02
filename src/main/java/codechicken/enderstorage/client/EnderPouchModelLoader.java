@@ -19,6 +19,7 @@ import net.minecraft.client.resources.IResourceManager;
 import net.minecraft.client.resources.IResourceManagerReloadListener;
 import net.minecraft.util.ResourceLocation;
 
+import javax.annotation.Nonnull;
 import java.util.*;
 
 /**
@@ -51,7 +52,7 @@ public class EnderPouchModelLoader implements TextureUtils.IIconRegister, IResou
     }
 
     @Override
-    public void onResourceManagerReload(IResourceManager resourceManager) {
+    public void onResourceManagerReload(@Nonnull IResourceManager resourceManager) {
         clearCache();
     }
 

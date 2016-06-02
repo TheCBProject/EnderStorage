@@ -171,7 +171,7 @@ public final class Frequency implements Copyable<Frequency> {
         return frequency;
     }
 
-    public static ItemStack toItemStack(ItemStack stack, Frequency frequency){
+    public static ItemStack toItemStack(ItemStack stack, Frequency frequency) {
         return frequency.toItemStack(stack);
     }
 

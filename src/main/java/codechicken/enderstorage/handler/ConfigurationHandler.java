@@ -50,7 +50,7 @@ public class ConfigurationHandler {
         int meta;
         try {
             int pipeIndex = name.lastIndexOf("|");
-            item = Item.itemRegistry.getObject(new ResourceLocation(name.substring(0, pipeIndex)));
+            item = Item.REGISTRY.getObject(new ResourceLocation(name.substring(0, pipeIndex)));
             if (item == null) {
                 throw new Exception("Item does not exist!");
             }
@@ -63,7 +63,7 @@ public class ConfigurationHandler {
         } catch (Exception e) {
             tag.setValue("minecraft:diamond|0");
             LogHelper.error("Failed to parse PersonalItem config entry, It has been reset to default. Reason: %s", e.getMessage());
-            item = Items.diamond;
+            item = Items.DIAMOND;
             meta = 0;
         }
         personalItem = new ItemStack(item, 1, meta);

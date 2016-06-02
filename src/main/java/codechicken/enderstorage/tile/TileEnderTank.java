@@ -5,6 +5,8 @@ import codechicken.enderstorage.manager.EnderStorageManager;
 import codechicken.enderstorage.network.EnderStorageSPH;
 import codechicken.enderstorage.network.TankSynchroniser;
 import codechicken.enderstorage.storage.EnderLiquidStorage;
+import codechicken.lib.data.MCDataHandler;
+import codechicken.lib.data.MCDataNBTWrapper;
 import codechicken.lib.math.MathHelper;
 import codechicken.lib.packet.PacketCustom;
 import codechicken.lib.raytracer.IndexedCuboid6;
@@ -30,7 +32,7 @@ public class TileEnderTank extends TileFrequencyOwner implements IFluidHandler {
         @Override
         public void sendSyncPacket() {
             PacketCustom packet = new PacketCustom(EnderStorageSPH.channel, 5);
-            packet.writeCoord(pos.getX(), pos.getY(), pos.getZ());
+            packet.writePos(getPos());
             packet.writeFluidStack(s_liquid);
             packet.sendToChunk(worldObj, pos.getX() >> 4, pos.getZ() >> 4);
         }
@@ -68,7 +70,7 @@ public class TileEnderTank extends TileFrequencyOwner implements IFluidHandler {
 
         private void sendSyncPacket() {
             PacketCustom packet = new PacketCustom(EnderStorageSPH.channel, 6);
-            packet.writeCoord(pos.getX(), pos.getY(), pos.getZ());
+            packet.writePos(getPos());
             packet.writeBoolean(a_pressure);
             packet.sendToChunk(worldObj, pos.getX() >> 4, pos.getZ() >> 4);
         }
@@ -181,10 +183,11 @@ public class TileEnderTank extends TileFrequencyOwner implements IFluidHandler {
     }
 
     @Override
-    public void writeToNBT(NBTTagCompound tag) {
+    public NBTTagCompound writeToNBT(NBTTagCompound tag) {
         super.writeToNBT(tag);
         tag.setByte("rot", (byte) rotation);
         tag.setBoolean("ir", pressure_state.invert_redstone);
+        return tag;
     }
 
     @Override
@@ -195,15 +198,15 @@ public class TileEnderTank extends TileFrequencyOwner implements IFluidHandler {
     }
 
     @Override
-    public void writeToPacket(PacketCustom packet) {
+    public void writeToPacket(MCDataHandler packet) {
         packet.writeByte(rotation);
         packet.writeFluidStack(liquid_state.s_liquid);
         packet.writeBoolean(pressure_state.a_pressure);
     }
 
     @Override
-    public void handleDescriptionPacket(PacketCustom desc) {
-        super.handleDescriptionPacket(desc);
+    public void readFromPacket(MCDataHandler desc) {
+        super.readFromPacket(desc);
         rotation = desc.readUByte();
         liquid_state.s_liquid = desc.readFluidStack();
         pressure_state.a_pressure = desc.readBoolean();
@@ -263,7 +266,7 @@ public class TileEnderTank extends TileFrequencyOwner implements IFluidHandler {
     public boolean rotate() {
         if (!worldObj.isRemote) {
             rotation = (rotation + 1) % 4;
-            PacketCustom.sendToChunk(getDescriptionPacket(), worldObj, pos.getX() >> 4, pos.getZ() >> 4);
+            PacketCustom.sendToChunk(getUpdatePacket(), worldObj, pos.getX() >> 4, pos.getZ() >> 4);
         }
 
         return true;

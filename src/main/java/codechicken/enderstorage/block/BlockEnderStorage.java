@@ -7,11 +7,11 @@ import codechicken.enderstorage.repack.covers1624.lib.api.block.property.Propert
 import codechicken.enderstorage.tile.TileEnderChest;
 import codechicken.enderstorage.tile.TileEnderTank;
 import codechicken.enderstorage.tile.TileFrequencyOwner;
-import codechicken.enderstorage.util.LogHelper;
 import codechicken.lib.raytracer.IndexedCuboid6;
 import codechicken.lib.raytracer.RayTracer;
 import codechicken.lib.vec.BlockCoord;
 import codechicken.lib.vec.Vector3;
+import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.block.Block;
 import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.material.Material;
@@ -50,10 +50,10 @@ public class BlockEnderStorage extends Block implements ITileEntityProvider {
     public static final PropertyString VARIANTS = new PropertyString("type", enderBlockNamesList);
 
     public BlockEnderStorage() {
-        super(Material.rock);
+        super(Material.ROCK);
         setHardness(20F);
         setResistance(100F);
-        setCreativeTab(CreativeTabs.tabTransport);
+        setCreativeTab(CreativeTabs.TRANSPORTATION);
         setUnlocalizedName("enderStorage");
     }
 
@@ -74,12 +74,12 @@ public class BlockEnderStorage extends Block implements ITileEntityProvider {
         return EnumBlockRenderType.INVISIBLE;
     }
 
-    @Override
+    @Override//TODO
     public boolean isOpaqueCube(IBlockState state) {
         return false;
     }
 
-    @Override
+    @Override//TODO
     public boolean isNormalCube(IBlockState state) {
         return false;
     }
@@ -201,7 +201,7 @@ public class BlockEnderStorage extends Block implements ITileEntityProvider {
         ((TileFrequencyOwner) world.getTileEntity(pos)).onPlaced(placer);
     }
 
-    @Override
+    @Override//TODO
     public RayTraceResult collisionRayTrace(IBlockState state, World world, BlockPos pos, Vec3d start, Vec3d end) {
         TileFrequencyOwner tile = (TileFrequencyOwner) world.getTileEntity(pos);
         if (tile == null) {
@@ -217,7 +217,7 @@ public class BlockEnderStorage extends Block implements ITileEntityProvider {
         return hit;
     }
 
-    @Override
+    @Override//TODO
     public void addCollisionBoxToList(IBlockState state, World worldIn, BlockPos pos, AxisAlignedBB entityBox, List<AxisAlignedBB> collidingBoxes, Entity entityIn) {
         TileFrequencyOwner tile = (TileFrequencyOwner) worldIn.getTileEntity(pos);
         if (tile != null) {
@@ -259,7 +259,7 @@ public class BlockEnderStorage extends Block implements ITileEntityProvider {
         return enderBlockNamesList.indexOf(String.valueOf(state.getValue(VARIANTS)));
     }
 
-    @Override
+    @Override//TODO
     public IBlockState getStateFromMeta(int meta) {
         return getDefaultState().withProperty(VARIANTS, enderBlockNamesList.get(meta));
     }
@@ -270,12 +270,12 @@ public class BlockEnderStorage extends Block implements ITileEntityProvider {
         return tile.redstoneInteraction();
     }
 
-    @Override
+    @Override//TODO
     public boolean hasComparatorInputOverride(IBlockState state) {
         return true;
     }
 
-    @Override
+    @Override//TODO
     public int getComparatorInputOverride(IBlockState state, World world, BlockPos pos) {
         TileFrequencyOwner tile = (TileFrequencyOwner) world.getTileEntity(pos);
         return tile.comparatorInput();
@@ -287,9 +287,9 @@ public class BlockEnderStorage extends Block implements ITileEntityProvider {
         return tile.rotate();
     }
 
-    @Override
-    public boolean onBlockEventReceived(World worldIn, BlockPos pos, IBlockState state, int eventID, int eventParam) {
-        super.onBlockEventReceived(worldIn, pos, state, eventID, eventParam);
+    @Override//TODO
+    public boolean eventReceived(IBlockState state, World worldIn, BlockPos pos,  int eventID, int eventParam) {
+        super.eventReceived(state,worldIn, pos, eventID, eventParam);
         TileEntity tileentity = worldIn.getTileEntity(pos);
         return tileentity != null && tileentity.receiveClientEvent(eventID, eventParam);
     }

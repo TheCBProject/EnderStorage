@@ -25,7 +25,7 @@ public class ModItems {
 
     @SideOnly(Side.CLIENT)
     public static void registerModels() {
-        ModelLoader.setCustomModelResourceLocation(enderPouch, 0,new ModelResourceLocation(Reference.MOD_PREFIX + "enderPouch", "inventory"));
+        ModelLoader.setCustomModelResourceLocation(enderPouch, 0, new ModelResourceLocation(Reference.MOD_PREFIX + "enderPouch", "inventory"));
         ModelRegistryHelper.register(new ModelResourceLocation(Reference.MOD_PREFIX + "enderPouch", "inventory"), new OverrideBakedModel(BakedEnderPouchOverrideHandler.INSTANCE));
         /*ModelLoader.setCustomMeshDefinition(enderPouch, new ItemMeshDefinition() {
             @Override

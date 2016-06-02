@@ -19,7 +19,7 @@ import java.util.List;
 public class ItemEnderChestDummy extends ItemBlock {
 
     public ItemEnderChestDummy() {
-        super(Blocks.ender_chest);
+        super(Blocks.ENDER_CHEST);
     }
 
     @Override

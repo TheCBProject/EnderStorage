@@ -1,7 +1,5 @@
 package codechicken.enderstorage.repack.covers1624.lib.util;
 
-import codechicken.enderstorage.util.LogHelper;
-
 import java.util.HashMap;
 import java.util.Map;
 

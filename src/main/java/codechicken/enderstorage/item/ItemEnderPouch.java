@@ -5,7 +5,6 @@ import codechicken.enderstorage.handler.ConfigurationHandler;
 import codechicken.enderstorage.manager.EnderStorageManager;
 import codechicken.enderstorage.storage.EnderItemStorage;
 import codechicken.enderstorage.tile.TileEnderChest;
-import codechicken.enderstorage.util.LogHelper;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
@@ -25,7 +24,7 @@ public class ItemEnderPouch extends Item {
 
     public ItemEnderPouch() {
         setMaxStackSize(1);
-        setCreativeTab(CreativeTabs.tabDecorations);
+        setCreativeTab(CreativeTabs.TRANSPORTATION);
         setUnlocalizedName("enderpouch");
     }
 

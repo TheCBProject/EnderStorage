@@ -152,7 +152,12 @@ public class EnderStorageManager {
     }
 
     public static EnderStorageManager instance(boolean client) {
-        return client ? clientManager : serverManager;
+        EnderStorageManager manager  = client ? clientManager : serverManager;
+        if (manager == null){
+            reloadManager(client);
+            manager  = client ? clientManager : serverManager;
+        }
+        return manager;
     }
 
     public AbstractEnderStorage getStorage(Frequency freq, String type) {

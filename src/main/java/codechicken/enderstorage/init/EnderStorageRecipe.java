@@ -111,25 +111,25 @@ public class EnderStorageRecipe implements IRecipe {
     }
 
     public static void removeVanillaChest() {
-        GameDataManipulator.replaceItem(Block.getIdFromBlock(Blocks.ender_chest), new ItemEnderChestDummy());
+        GameDataManipulator.replaceItem(Block.getIdFromBlock(Blocks.ENDER_CHEST), new ItemEnderChestDummy());
         Iterator<IRecipe> iterator = CraftingManager.getInstance().getRecipeList().iterator();
         while (iterator.hasNext()) {
             ItemStack r = iterator.next().getRecipeOutput();
-            if (r != null && r.getItem() == Item.getItemFromBlock(Blocks.ender_chest)) {
+            if (r != null && r.getItem() == Item.getItemFromBlock(Blocks.ENDER_CHEST)) {
                 iterator.remove();
             }
         }
 
         if (!ConfigurationHandler.removeVanillaRecipe) {
-            CraftingManager.getInstance().addRecipe(new ItemStack(Blocks.ender_chest), "OOO", "OeO", "OOO", 'O', Blocks.obsidian, 'e', Items.ender_eye);
+            CraftingManager.getInstance().addRecipe(new ItemStack(Blocks.ENDER_CHEST), "OOO", "OeO", "OOO", 'O', Blocks.OBSIDIAN, 'e', Items.ENDER_EYE);
         }
     }
 
     private static void addNormalRecipes() {
         for (int i = 0; i < 16; i++) {
-            GameRegistry.addRecipe(new ItemStack(ModBlocks.blockEnderStorage, 1, EnderStorageManager.getFreqFromColours(i, i, i)), "bWb", "OCO", "bpb", 'b', Items.blaze_rod, 'p', Items.ender_pearl, 'O', Blocks.obsidian, 'C', Blocks.chest, 'W', new ItemStack(Blocks.wool, 1, i));
+            GameRegistry.addRecipe(new ItemStack(ModBlocks.blockEnderStorage, 1, EnderStorageManager.getFreqFromColours(i, i, i)), "bWb", "OCO", "bpb", 'b', Items.BLAZE_ROD, 'p', Items.ENDER_PEARL, 'O', Blocks.OBSIDIAN, 'C', Blocks.CHEST, 'W', new ItemStack(Blocks.WOOL, 1, i));
 
-            GameRegistry.addRecipe(new ItemStack(ModItems.enderPouch, 1, EnderStorageManager.getFreqFromColours(i, i, i)), "blb", "lpl", "bWb", 'b', Items.blaze_powder, 'p', Items.ender_pearl, 'l', Items.leather, 'W', new ItemStack(Blocks.wool, 1, i));
+            GameRegistry.addRecipe(new ItemStack(ModItems.enderPouch, 1, EnderStorageManager.getFreqFromColours(i, i, i)), "blb", "lpl", "bWb", 'b', Items.BLAZE_POWDER, 'p', Items.ENDER_PEARL, 'l', Items.LEATHER, 'W', new ItemStack(Blocks.WOOL, 1, i));
 
             GameRegistry.addRecipe(new ItemStack(ModBlocks.blockEnderStorage, 1, 1 << 12 | EnderStorageManager.getFreqFromColours(i, i, i)));
         }
@@ -139,7 +139,7 @@ public class EnderStorageRecipe implements IRecipe {
         if (item == null) {
             return -1;
         }
-        if (item.getItem() == Items.dye) {
+        if (item.getItem() == Items.DYE) {
             return item.getItemDamage();
         }
         for (int i = 0; i < 16; i++) {

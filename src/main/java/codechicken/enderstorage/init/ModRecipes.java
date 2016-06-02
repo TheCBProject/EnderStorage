@@ -17,13 +17,13 @@ public class ModRecipes {
     public static void init() {
         for (int i = 0; i < 16; i++) {
             Frequency frequency = new Frequency(i, i, i);
-            GameRegistry.addRecipe(frequency.toItemStack(new ItemStack(blockEnderStorage)), "bWb", "OCO", "bpb", 'b', Items.blaze_rod, 'p', Items.ender_pearl, 'O', Blocks.obsidian, 'C', Blocks.chest, 'W', new ItemStack(Blocks.wool, 1, i));
-            GameRegistry.addRecipe(frequency.toItemStack(new ItemStack(enderPouch)), "blb", "lpl", "bWb", 'b', Items.blaze_powder, 'p', Items.ender_pearl, 'l', Items.leather, 'W', new ItemStack(Blocks.wool, 1, i));
-            GameRegistry.addRecipe(frequency.toItemStack(new ItemStack(blockEnderStorage, 1, 1)), "bWb", "OCO", "bpb", 'b', Items.blaze_rod, 'p', Items.ender_pearl, 'O', Blocks.obsidian, 'C', Items.cauldron, 'W', new ItemStack(Blocks.wool, 1, i));
+            GameRegistry.addRecipe(frequency.toItemStack(new ItemStack(blockEnderStorage)), "bWb", "OCO", "bpb", 'b', Items.BLAZE_ROD, 'p', Items.ENDER_PEARL, 'O', Blocks.OBSIDIAN, 'C', Blocks.CHEST, 'W', new ItemStack(Blocks.WOOL, 1, i));
+            GameRegistry.addRecipe(frequency.toItemStack(new ItemStack(enderPouch)), "blb", "lpl", "bWb", 'b', Items.BLAZE_POWDER, 'p', Items.ENDER_PEARL, 'l', Items.LEATHER, 'W', new ItemStack(Blocks.WOOL, 1, i));
+            GameRegistry.addRecipe(frequency.toItemStack(new ItemStack(blockEnderStorage, 1, 1)), "bWb", "OCO", "bpb", 'b', Items.BLAZE_ROD, 'p', Items.ENDER_PEARL, 'O', Blocks.OBSIDIAN, 'C', Items.CAULDRON, 'W', new ItemStack(Blocks.WOOL, 1, i));
         }
-        //GameRegistry.addRecipe(new ItemStack(blockEnderStorage), "bWb", "OCO", "bpb", 'b', Items.blaze_rod, 'p', Items.ender_pearl, 'O', Blocks.obsidian, 'C', Blocks.chest, 'W', new ItemStack(Blocks.wool));
-        //GameRegistry.addRecipe(new ItemStack(enderPouch), "blb", "lpl", "bWb", 'b', Items.blaze_powder, 'p', Items.ender_pearl, 'l', Items.leather, 'W', new ItemStack(Blocks.wool));
-        //GameRegistry.addRecipe(new ItemStack(blockEnderStorage, 1, 1), "bWb", "OCO", "bpb", 'b', Items.blaze_rod, 'p', Items.ender_pearl, 'O', Blocks.obsidian, 'C', Items.cauldron, 'W', new ItemStack(Blocks.wool));
+        //GameRegistry.addRecipe(new ItemStack(blockEnderStorage), "bWb", "OCO", "bpb", 'b', Items.BLAZE_ROD, 'p', Items.ENDER_PEARL, 'O', Blocks.OBSIDIAN, 'C', Blocks.CHEST, 'W', new ItemStack(Blocks.WOOL));
+        //GameRegistry.addRecipe(new ItemStack(enderPouch), "blb", "lpl", "bWb", 'b', Items.BLAZE_POWDER, 'p', Items.ENDER_PEARL, 'l', Items.LEATHER, 'W', new ItemStack(Blocks.WOOL));
+        //GameRegistry.addRecipe(new ItemStack(blockEnderStorage, 1, 1), "bWb", "OCO", "bpb", 'b', Items.BLAZE_ROD, 'p', Items.ENDER_PEARL, 'O', Blocks.OBSIDIAN, 'C', Items.CAULDRON, 'W', new ItemStack(Blocks.WOOL));
     }
 
 }
