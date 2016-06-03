@@ -4,7 +4,6 @@ import codechicken.enderstorage.manager.EnderStorageManager;
 import codechicken.enderstorage.misc.EnderDyeButton;
 import codechicken.enderstorage.misc.EnderKnobSlot;
 import codechicken.enderstorage.storage.EnderItemStorage;
-import codechicken.lib.data.MCDataHandler;
 import codechicken.lib.math.MathHelper;
 import codechicken.lib.packet.PacketCustom;
 import codechicken.lib.raytracer.IndexedCuboid6;
@@ -17,7 +16,6 @@ import net.minecraft.inventory.Container;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.ITickable;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
@@ -134,14 +132,15 @@ public class TileEnderChest extends TileFrequencyOwner implements IInventory {
     }
 
     @Override
-    public void writeToPacket(MCDataHandler packet) {
-        packet.writeByte(rotation);
+    public void writeToPacket(NBTTagCompound tagCompound) {
+        super.writeToPacket(tagCompound);
+        tagCompound.setByte("rotation", (byte) rotation);
     }
 
     @Override
-    public void readFromPacket(MCDataHandler desc) {
-        super.readFromPacket(desc);
-        rotation = desc.readUByte();
+    public void readFromPacket(NBTTagCompound tagCompound) {
+        super.readFromPacket(tagCompound);
+        rotation = tagCompound.getByte("rotation");
     }
 
     @Override
@@ -207,9 +206,7 @@ public class TileEnderChest extends TileFrequencyOwner implements IInventory {
     }
 
     @Override
-    public boolean isItemValidForSlot(int i,
-            @Nonnull
-            ItemStack itemstack) {
+    public boolean isItemValidForSlot(int i, @Nonnull ItemStack itemstack) {
         return true;
     }
 
