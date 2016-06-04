@@ -104,7 +104,11 @@ public abstract class TileFrequencyOwner extends TileEntity implements ITickable
     @Override
     public final SPacketUpdateTileEntity getUpdatePacket() {
         NBTTagCompound tagCompound = new NBTTagCompound();
-        writeToPacket(tagCompound);
+        try {
+            writeToPacket(tagCompound);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         return new SPacketUpdateTileEntity(getPos(), 0, tagCompound);
     }
 
