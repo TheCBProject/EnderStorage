@@ -4,6 +4,8 @@ import codechicken.enderstorage.manager.EnderStorageManager;
 import codechicken.enderstorage.misc.EnderDyeButton;
 import codechicken.enderstorage.misc.EnderKnobSlot;
 import codechicken.enderstorage.storage.EnderItemStorage;
+import codechicken.lib.data.MCDataInput;
+import codechicken.lib.data.MCDataOutput;
 import codechicken.lib.math.MathHelper;
 import codechicken.lib.packet.PacketCustom;
 import codechicken.lib.raytracer.IndexedCuboid6;
@@ -132,15 +134,15 @@ public class TileEnderChest extends TileFrequencyOwner implements IInventory {
     }
 
     @Override
-    public void writeToPacket(NBTTagCompound tagCompound) {
-        super.writeToPacket(tagCompound);
-        tagCompound.setByte("rotation", (byte) rotation);
+    public void writeToPacket(MCDataOutput packet) {
+        super.writeToPacket(packet);
+        packet.writeByte(rotation);
     }
 
     @Override
-    public void readFromPacket(NBTTagCompound tagCompound) {
-        super.readFromPacket(tagCompound);
-        rotation = tagCompound.getByte("rotation");
+    public void readFromPacket(MCDataInput packet) {
+        super.readFromPacket(packet);
+        rotation = packet.readUByte();
     }
 
     @Override

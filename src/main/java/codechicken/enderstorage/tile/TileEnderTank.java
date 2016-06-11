@@ -5,7 +5,8 @@ import codechicken.enderstorage.manager.EnderStorageManager;
 import codechicken.enderstorage.network.EnderStorageSPH;
 import codechicken.enderstorage.network.TankSynchroniser;
 import codechicken.enderstorage.storage.EnderLiquidStorage;
-import codechicken.lib.data.NBTHelper;
+import codechicken.lib.data.MCDataInput;
+import codechicken.lib.data.MCDataOutput;
 import codechicken.lib.math.MathHelper;
 import codechicken.lib.packet.PacketCustom;
 import codechicken.lib.raytracer.IndexedCuboid6;
@@ -197,23 +198,19 @@ public class TileEnderTank extends TileFrequencyOwner implements IFluidHandler {
     }
 
     @Override
-    public void writeToPacket(NBTTagCompound tagCompound) {
-        super.writeToPacket(tagCompound);
-        //tagCompound.writeByte(rotation);
-        tagCompound.setByte("rotation", (byte) rotation);
-        NBTTagCompound fluidTag = new NBTTagCompound();
-        NBTHelper.writeFluidStack(fluidTag, liquid_state.s_liquid);
-        tagCompound.setTag("fluid", fluidTag);
-        tagCompound.setBoolean("pressure", pressure_state.a_pressure);
+    public void writeToPacket(MCDataOutput packet) {
+        super.writeToPacket(packet);
+        packet.writeByte(rotation);
+        packet.writeFluidStack(liquid_state.s_liquid);
+        packet.writeBoolean(pressure_state.a_pressure);
     }
 
     @Override
-    public void readFromPacket(NBTTagCompound tagCompound) {
-        super.readFromPacket(tagCompound);
-        //rotation = tagCompound.readUByte();
-        rotation = tagCompound.getByte("rotation");
-        liquid_state.s_liquid = NBTHelper.readFluidStack(tagCompound.getCompoundTag("fluid"));
-        pressure_state.a_pressure = tagCompound.getBoolean("pressure");
+    public void readFromPacket(MCDataInput packet) {
+        super.readFromPacket(packet);
+        rotation = packet.readUByte();
+        liquid_state.s_liquid = packet.readFluidStack();
+        pressure_state.a_pressure = packet.readBoolean();
         if (!described) {
             liquid_state.c_liquid = liquid_state.s_liquid;
             pressure_state.b_rotate = pressure_state.a_rotate = pressure_state.approachRotate();

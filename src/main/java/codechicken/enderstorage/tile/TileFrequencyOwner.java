@@ -2,6 +2,11 @@ package codechicken.enderstorage.tile;
 
 import codechicken.enderstorage.api.AbstractEnderStorage;
 import codechicken.enderstorage.api.Frequency;
+import codechicken.enderstorage.network.EnderStorageCPH;
+import codechicken.lib.data.MCDataInput;
+import codechicken.lib.data.MCDataOutput;
+import codechicken.lib.packet.ICustomPacketTile;
+import codechicken.lib.packet.PacketCustom;
 import codechicken.lib.raytracer.IndexedCuboid6;
 import codechicken.lib.vec.Cuboid6;
 import codechicken.lib.vec.IIndexedCuboidProvider;
@@ -18,7 +23,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 
-public abstract class TileFrequencyOwner extends TileEntity implements ITickable, IIndexedCuboidProvider {
+public abstract class TileFrequencyOwner extends TileEntity implements ITickable, IIndexedCuboidProvider, ICustomPacketTile {
     public static Cuboid6 selection_button = new Cuboid6(-1 / 16D, 0, -2 / 16D, 1 / 16D, 1 / 16D, 2 / 16D);
 
     public Frequency frequency = new Frequency();
@@ -103,28 +108,37 @@ public abstract class TileFrequencyOwner extends TileEntity implements ITickable
 
     @Override
     public final SPacketUpdateTileEntity getUpdatePacket() {
-        NBTTagCompound tagCompound = new NBTTagCompound();
-        try {
-            writeToPacket(tagCompound);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return new SPacketUpdateTileEntity(getPos(), 0, tagCompound);
+        PacketCustom packet = new PacketCustom(EnderStorageCPH.channel, 1);
+        writeToPacket(packet);
+        return packet.toTilePacket(getPos());
     }
 
-    public void writeToPacket(NBTTagCompound tagCompound) {
-        frequency.writeNBT(tagCompound);
+    @Override
+    public NBTTagCompound getUpdateTag() {
+        PacketCustom packet = new PacketCustom(EnderStorageCPH.channel, 1);
+        writeToPacket(packet);
+        return packet.toNBTTag(super.getUpdateTag());
     }
 
-    public void readFromPacket(NBTTagCompound tagCompound) {
-        frequency.readNBT(tagCompound);
+    public void writeToPacket(MCDataOutput packet) {
+        packet.writeNBTTagCompound(frequency.toNBT());
+    }
+
+    public void readFromPacket(MCDataInput packet) {
+        frequency.readNBT(packet.readNBTTagCompound());
         //owner = desc.readString();
     }
 
     @Override
     public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity pkt) {
-        readFromPacket(pkt.getNbtCompound());
+        readFromPacket(PacketCustom.fromTilePacket(pkt));
     }
+
+    @Override
+    public void handleUpdateTag(NBTTagCompound tag) {
+        readFromPacket(PacketCustom.fromNBTTag(tag));
+    }
+
 
     public int getLightValue() {
         return 0;
