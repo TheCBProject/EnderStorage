@@ -23,12 +23,17 @@ import static net.minecraft.client.renderer.GlStateManager.*;
 import static net.minecraft.client.renderer.vertex.DefaultVertexFormats.POSITION_TEX_NORMAL;
 
 public class RenderTileEnderTank extends TileEntitySpecialRenderer<TileEnderTank> {
-    static CCModel tankModel;
-    static CCModel valveModel;
-    static CCModel[] buttons;
-    static RenderCustomEndPortal renderEndPortal = new RenderCustomEndPortal(0.1205, 0.24, 0.76, 0.24, 0.76);
+    public static CCModel tankModel;
+    public static CCModel valveModel;
+    public static CCModel[] buttons;
+    public static RenderCustomEndPortal renderEndPortal = new RenderCustomEndPortal(0.1205, 0.24, 0.76, 0.24, 0.76);
+    private static boolean initialized = false;
 
-    static {
+    public static void loadModel() {
+        if (initialized) {
+            return;
+        }
+        initialized = true;
         Map<String, CCModel> models = CCOBJParser.parseObjModels(new ResourceLocation("enderstorage", "models/endertank.obj"), new SwapYZ());
         ArrayList<CCModel> tankParts = new ArrayList<CCModel>();
         tankParts.add(models.get("Blazerod1"));
@@ -54,7 +59,6 @@ public class RenderTileEnderTank extends TileEntitySpecialRenderer<TileEnderTank
 
     @Override
     public void renderTileEntityAt(TileEnderTank enderTank, double x, double y, double z, float partialTicks, int breakProgress) {
-
         CCRenderState.reset();
         CCRenderState.setBrightness(enderTank.getWorld(), enderTank.getPos());
         renderTank(enderTank.rotation, (float) MathHelper.interpolate(enderTank.pressure_state.b_rotate, enderTank.pressure_state.a_rotate, partialTicks) * 0.01745F, enderTank.frequency, x, y, z, RenderUtils.getTimeOffset(enderTank.getPos()));

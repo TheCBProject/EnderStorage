@@ -148,7 +148,9 @@ public final class Frequency implements Copyable<Frequency> {
 
     public NBTTagCompound toNBT() {
         NBTTagCompound tagCompound = new NBTTagCompound();
-        writeNBT(tagCompound);
+        NBTTagCompound frequencyTag = new NBTTagCompound();
+        writeNBT(frequencyTag);
+        tagCompound.setTag("Frequency", frequencyTag);
         return tagCompound;
     }
 

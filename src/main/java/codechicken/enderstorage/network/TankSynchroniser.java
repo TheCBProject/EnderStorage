@@ -6,6 +6,7 @@ import codechicken.core.fluid.FluidUtils;
 import codechicken.enderstorage.api.Frequency;
 import codechicken.enderstorage.manager.EnderStorageManager;
 import codechicken.enderstorage.storage.EnderLiquidStorage;
+import codechicken.enderstorage.util.LogHelper;
 import codechicken.lib.math.MathHelper;
 import codechicken.lib.packet.PacketCustom;
 import com.google.common.collect.Sets;
@@ -119,8 +120,8 @@ public class TankSynchroniser {
         private boolean client;
         private HashMap<String, PlayerItemTankState> tankStates = new HashMap<String, PlayerItemTankState>();
         //client
-        private HashSet<String> b_visible;
-        private HashSet<String> a_visible;
+        private HashSet<Frequency> b_visible;
+        private HashSet<Frequency> a_visible;
         //server
         private EntityPlayerMP player;
 
@@ -131,8 +132,8 @@ public class TankSynchroniser {
 
         public PlayerItemTankCache() {
             client = true;
-            a_visible = new HashSet<String>();
-            b_visible = new HashSet<String>();
+            a_visible = new HashSet<Frequency>();
+            b_visible = new HashSet<Frequency>();
         }
 
         public void track(Frequency freq, boolean t) {
@@ -162,25 +163,23 @@ public class TankSynchroniser {
             }
 
             if (client) {
-                Sets.SetView<String> new_visible = Sets.difference(a_visible, b_visible);
-                Sets.SetView<String> old_visible = Sets.difference(b_visible, a_visible);
+                Sets.SetView<Frequency> new_visible = Sets.difference(a_visible, b_visible);
+                Sets.SetView<Frequency> old_visible = Sets.difference(b_visible, a_visible);
 
                 if (!new_visible.isEmpty() || !old_visible.isEmpty()) {
                     PacketCustom packet = new PacketCustom(EnderStorageCPH.channel, 1);
                     packet.writeShort(new_visible.size());
-                    for (String s : new_visible) {
-                        packet.writeShort(splitKeyF(s));
-                        packet.writeString(splitKeyS(s));
+                    for (Frequency frequency : new_visible) {
+                        packet.writeNBTTagCompound(frequency.toNBT());
                     }
                     packet.writeShort(old_visible.size());
-                    for (String s : old_visible) {
-                        packet.writeShort(splitKeyF(s));
-                        packet.writeString(splitKeyS(s));
+                    for (Frequency frequency : old_visible) {
+                        packet.writeNBTTagCompound(frequency.toNBT());
                     }
                     packet.sendToServer();
                 }
 
-                HashSet<String> temp = b_visible;
+                HashSet<Frequency> temp = b_visible;
                 temp.clear();
                 b_visible = a_visible;
                 a_visible = temp;
@@ -189,7 +188,7 @@ public class TankSynchroniser {
 
         public FluidStack getLiquid(Frequency freq) {
             String key = key(freq);
-            a_visible.add(key);
+            a_visible.add(freq);
             PlayerItemTankState state = tankStates.get(key);
             return state == null ? FluidUtils.emptyFluid() : state.c_liquid;
         }
@@ -225,7 +224,7 @@ public class TankSynchroniser {
         clientState.sync(freq, liquid);
     }
 
-    public static FluidStack getClientLiquid(Frequency freq, String owner) {
+    public static FluidStack getClientLiquid(Frequency freq) {
         return clientState.getLiquid(freq);
     }
 

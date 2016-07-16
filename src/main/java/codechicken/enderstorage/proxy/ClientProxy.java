@@ -30,6 +30,7 @@ public class ClientProxy extends CommonProxy {
         TextureUtils.addIconRegister(loader);
         ModBlocks.registerModels();
         ModItems.registerModels();
+        RenderTileEnderTank.loadModel();
     }
 
     @Override
@@ -41,7 +42,5 @@ public class ClientProxy extends CommonProxy {
         PacketCustom.assignHandler(EnderStorageCPH.channel, new EnderStorageCPH());
         ClientRegistry.bindTileEntitySpecialRenderer(TileEnderChest.class, new RenderTileEnderChest());
         ClientRegistry.bindTileEntitySpecialRenderer(TileEnderTank.class, new RenderTileEnderTank());
-        //ForgeHooksClient.registerTESRItemStack(Item.getItemFromBlock(Blocks.ender_chest), 0, TileEnderChest.class);
-        //ForgeHooksClient.registerTESRItemStack(Item.getItemFromBlock(Blocks.ender_chest), 1, TileEnderTank.class);
     }
 }

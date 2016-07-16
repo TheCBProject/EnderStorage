@@ -4,6 +4,7 @@ import codechicken.enderstorage.api.Frequency;
 import codechicken.enderstorage.manager.EnderStorageManager;
 import codechicken.enderstorage.storage.EnderLiquidStorage;
 import codechicken.enderstorage.tile.TileFrequencyOwner;
+import codechicken.enderstorage.util.LogHelper;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
@@ -60,13 +61,15 @@ public class ItemEnderStorage extends ItemBlock implements IFluidContainerItem {
     }
 
     private EnderLiquidStorage getLiquidStorage(ItemStack stack) {
-        return (EnderLiquidStorage) EnderStorageManager.instance(FMLCommonHandler.instance().getEffectiveSide().isClient()).getStorage(getFreq(stack), "liquid");
+        return (EnderLiquidStorage) EnderStorageManager.instance(FMLCommonHandler.instance().getSide().isClient()).getStorage(getFreq(stack), "liquid");
     }
 
     @Override
     public FluidStack getFluid(ItemStack container) {
         if (getMetadata(container.getItemDamage()) == 1) {
-            return getLiquidStorage(container).getFluid();
+            FluidStack fluid = getLiquidStorage(container).getFluid();
+            LogHelper.info("Liquid{ Name: %s, Amount: %s }", fluid.getFluid().getName(), fluid.amount);
+            return fluid;
         }
 
         return null;
