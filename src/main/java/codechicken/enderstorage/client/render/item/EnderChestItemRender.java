@@ -13,6 +13,7 @@ import net.minecraft.client.renderer.block.model.ItemOverrideList;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
+import net.minecraftforge.client.model.IPerspectiveAwareModel;
 import org.apache.commons.lang3.tuple.Pair;
 
 import javax.vecmath.Matrix4f;
@@ -22,7 +23,7 @@ import java.util.List;
 /**
  * Created by covers1624 on 4/27/2016.
  */
-public class EnderChestItemRender implements IItemRenderer {
+public class EnderChestItemRender implements IItemRenderer, IPerspectiveAwareModel {
     @Override
     public void renderItem(ItemStack item) {
         GlStateManager.pushMatrix();

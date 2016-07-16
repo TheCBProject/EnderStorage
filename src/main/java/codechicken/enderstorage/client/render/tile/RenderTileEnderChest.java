@@ -9,6 +9,7 @@ import codechicken.enderstorage.tile.TileEnderChest;
 import codechicken.lib.render.CCModelLibrary;
 import codechicken.lib.render.CCRenderState;
 import codechicken.lib.render.RenderUtils;
+import codechicken.lib.render.TextureUtils;
 import codechicken.lib.vec.Matrix4;
 import codechicken.lib.vec.Rotation;
 import codechicken.lib.vec.Vector3;
@@ -30,10 +31,6 @@ public class RenderTileEnderChest extends TileEntitySpecialRenderer<TileEnderChe
 
     @Override
     public void renderTileEntityAt(TileEnderChest enderChest, double x, double y, double z, float partialTicks, int destroyStage) {
-
-        CCRenderState.reset();
-        CCRenderState.setBrightness(enderChest.getWorld(), enderChest.getPos());
-
         renderChest(enderChest.rotation, enderChest.frequency, x, y, z, RenderUtils.getTimeOffset(enderChest.getPos()), (float) enderChest.getRadianLidAngle(partialTicks));
     }
 
@@ -42,7 +39,7 @@ public class RenderTileEnderChest extends TileEntitySpecialRenderer<TileEnderChe
         renderEndPortal.render(x, y, z, 0, info.entityX, info.entityY, info.entityZ, info.renderEngine);
         GlStateManager.color(1, 1, 1, 1);
 
-        CCRenderState.changeTexture("enderstorage:textures/enderchest.png");
+        TextureUtils.changeTexture("enderstorage:textures/enderchest.png");
         GlStateManager.pushMatrix();
         GlStateManager.enableRescaleNormal();
         GlStateManager.color(1, 1, 1, 1);
@@ -64,18 +61,17 @@ public class RenderTileEnderChest extends TileEntitySpecialRenderer<TileEnderChe
         Matrix4 pearlMat = RenderUtils.getMatrix(new Vector3(x + 0.5, y + 0.2 + lidAngle * -0.5 + RenderUtils.getPearlBob(time), z + 0.5), new Rotation(time / 3, new Vector3(0, 1, 0)), 0.04);
 
         GlStateManager.disableLighting();
-        CCRenderState.changeTexture("enderstorage:textures/hedronmap.png");
+        TextureUtils.changeTexture("enderstorage:textures/hedronmap.png");
         GlStateManager.pushMatrix();
-        CCRenderState.startDrawing(4, DefaultVertexFormats.POSITION_TEX_NORMAL);
-        CCRenderState.pullBuffer();
-        CCModelLibrary.icosahedron4.render(pearlMat);
+        CCRenderState.startDrawing(7, DefaultVertexFormats.POSITION_TEX_COLOR_NORMAL);
+        CCModelLibrary.icosahedron7.render(pearlMat);
         CCRenderState.draw();
         GlStateManager.popMatrix();
         GlStateManager.enableLighting();
     }
 
     private static void renderButtons(Frequency freq, int rot, double lidAngle) {
-        CCRenderState.changeTexture("enderstorage:textures/buttons.png");
+        TextureUtils.changeTexture("enderstorage:textures/buttons.png");
 
         drawButton(0, freq.left, rot, lidAngle);
         drawButton(1, freq.middle, rot, lidAngle);

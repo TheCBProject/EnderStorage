@@ -9,3 +9,10 @@ EnderPouches are a mobile type of EnderStorage. You can use an EnderPouch on any
 EnderTanks are a stationary type of EnderStorage. You can use dye on the wool pads on top of the tank to alter its color code. EnderTanks work as a tank to store liquids. Right clicking on the dial on the front will change it between input (blue) and output (orange) mode.
 
 Current recommended and latest builds can be found at http://chickenbones.net/Pages/links.html
+
+Current maven: http://chickenbones.net/maven/
+
+Join us on IRC:
+- Server: Esper.net
+- Channel: #ChickenBones
+

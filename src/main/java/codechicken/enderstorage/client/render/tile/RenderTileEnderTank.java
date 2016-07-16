@@ -7,10 +7,7 @@ import codechicken.enderstorage.client.model.ButtonModelLibrary;
 import codechicken.enderstorage.client.render.RenderCustomEndPortal;
 import codechicken.enderstorage.tile.TileEnderTank;
 import codechicken.lib.math.MathHelper;
-import codechicken.lib.render.CCModel;
-import codechicken.lib.render.CCModelLibrary;
-import codechicken.lib.render.CCRenderState;
-import codechicken.lib.render.RenderUtils;
+import codechicken.lib.render.*;
 import codechicken.lib.render.uv.UVTranslation;
 import codechicken.lib.vec.*;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
@@ -32,7 +29,7 @@ public class RenderTileEnderTank extends TileEntitySpecialRenderer<TileEnderTank
     static RenderCustomEndPortal renderEndPortal = new RenderCustomEndPortal(0.1205, 0.24, 0.76, 0.24, 0.76);
 
     static {
-        Map<String, CCModel> models = CCModel.parseObjModels(new ResourceLocation("enderstorage", "models/endertank.obj"), new SwapYZ());
+        Map<String, CCModel> models = CCOBJParser.parseObjModels(new ResourceLocation("enderstorage", "models/endertank.obj"), new SwapYZ());
         ArrayList<CCModel> tankParts = new ArrayList<CCModel>();
         tankParts.add(models.get("Blazerod1"));
         tankParts.add(models.get("Blazerod2"));
@@ -74,16 +71,14 @@ public class RenderTileEnderTank extends TileEntitySpecialRenderer<TileEnderTank
         translate(x + 0.5, y, z + 0.5);
         rotate(-90 * (rotation + 2), 0, 1, 0);
 
-        CCRenderState.changeTexture("enderstorage:textures/endertank.png");
+        TextureUtils.changeTexture("enderstorage:textures/endertank.png");
         CCRenderState.startDrawing(4, DefaultVertexFormats.BLOCK);
-        CCRenderState.pullBuffer();
         tankModel.render();
         valveModel.render(new Rotation(valve, new Vector3(0, 0, 1)).at(new Vector3(0, 0.4165, 0)), new UVTranslation(0, freq.hasOwner() ? 13 / 64D : 0));
         CCRenderState.draw();
 
-        CCRenderState.changeTexture("enderstorage:textures/buttons.png");
+        TextureUtils.changeTexture("enderstorage:textures/buttons.png");
         CCRenderState.startDrawing(7, POSITION_TEX_NORMAL);
-        CCRenderState.pullBuffer();
         int[] colours = freq.toArray();
         for (int i = 0; i < 3; i++) {
             buttons[i].render(new UVTranslation(0.25 * (colours[i] % 4), 0.25 * (colours[i] / 4)));
@@ -95,9 +90,8 @@ public class RenderTileEnderTank extends TileEntitySpecialRenderer<TileEnderTank
         Matrix4 pearlMat = RenderUtils.getMatrix(new Vector3(x + 0.5, y + 0.45 + RenderUtils.getPearlBob(time) * 2, z + 0.5), new Rotation(time / 3, new Vector3(0, 1, 0)), 0.04);
 
         disableLighting();
-        CCRenderState.changeTexture("enderstorage:textures/hedronmap.png");
+        TextureUtils.changeTexture("enderstorage:textures/hedronmap.png");
         CCRenderState.startDrawing(4, POSITION_TEX_NORMAL);
-        CCRenderState.pullBuffer();
         CCModelLibrary.icosahedron4.render(pearlMat);
         CCRenderState.draw();
         enableLighting();
