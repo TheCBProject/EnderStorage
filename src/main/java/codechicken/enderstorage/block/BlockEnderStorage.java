@@ -148,6 +148,9 @@ public class BlockEnderStorage extends Block implements ITileEntityProvider {
         if (subHitResult != null) {
             hit = subHitResult;
         }
+        if (hit == null){
+            return false;
+        }
         if (hit.subHit == 4) {
             ItemStack item = player.inventory.getCurrentItem();
             if (player.isSneaking() && tile.frequency.hasOwner()) {
@@ -155,11 +158,11 @@ public class BlockEnderStorage extends Block implements ITileEntityProvider {
                     return false;
                 }
 
-                tile.frequency.setOwner(null);
+                tile.setFreq(tile.frequency.copy().setOwner(null));
                 return true;
             } else if (item != null && areStacksSameTypeCrafting(item, ConfigurationHandler.personalItem)) {
                 if (!tile.frequency.hasOwner()) {
-                    tile.frequency.setOwner(player.getDisplayNameString());
+                    tile.setFreq(tile.frequency.copy().setOwner(player.getDisplayNameString()));
                     if (!player.capabilities.isCreativeMode) {
                         item.stackSize--;
                     }

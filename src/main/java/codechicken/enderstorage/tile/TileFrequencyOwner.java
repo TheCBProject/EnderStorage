@@ -27,7 +27,6 @@ public abstract class TileFrequencyOwner extends TileEntity implements ITickable
     public static Cuboid6 selection_button = new Cuboid6(-1 / 16D, 0, -2 / 16D, 1 / 16D, 1 / 16D, 2 / 16D);
 
     public Frequency frequency = new Frequency();
-    private Frequency cache = new Frequency();
     private int changeCount;
 
     @Override
@@ -57,13 +56,6 @@ public abstract class TileFrequencyOwner extends TileEntity implements ITickable
         if (getStorage().getChangeCount() > changeCount) {
             worldObj.updateComparatorOutputLevel(pos, getBlockType());
             changeCount = getStorage().getChangeCount();
-        }
-        if (!cache.equals(frequency)) {
-            reloadStorage();
-            markDirty();
-            IBlockState state = worldObj.getBlockState(pos);
-            worldObj.notifyBlockUpdate(pos, state, state, 3);
-            cache = frequency.copy();
         }
     }
 
@@ -138,7 +130,6 @@ public abstract class TileFrequencyOwner extends TileEntity implements ITickable
     public void handleUpdateTag(NBTTagCompound tag) {
         readFromPacket(PacketCustom.fromNBTTag(tag));
     }
-
 
     public int getLightValue() {
         return 0;
