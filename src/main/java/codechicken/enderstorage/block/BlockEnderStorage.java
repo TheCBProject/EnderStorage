@@ -129,9 +129,7 @@ public class BlockEnderStorage extends Block implements ITileEntityProvider {
         if (ConfigurationHandler.anarchyMode) {
             freq.setOwner(null);
         }
-        NBTTagCompound frequencyTag = new NBTTagCompound();
-        freq.writeNBT(frequencyTag);
-        stack.getTagCompound().setTag("Frequency", frequencyTag);
+        stack.getTagCompound().setTag("Frequency", freq.toNBT());
         return stack;
     }
 
@@ -173,7 +171,7 @@ public class BlockEnderStorage extends Block implements ITileEntityProvider {
             ItemStack item = player.inventory.getCurrentItem();
             int dye = EnderStorageRecipe.getDyeType(item);
             if (dye != -1) {
-                int[] colours = tile.frequency.toArray();//TODO Rewrite this to remove array stuff.
+                int[] colours = tile.frequency.toArray();
                 if (colours[hit.subHit - 1] == (~dye & 0xF)) {
                     return false;
                 }

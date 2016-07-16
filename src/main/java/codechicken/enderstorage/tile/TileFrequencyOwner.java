@@ -46,6 +46,9 @@ public abstract class TileFrequencyOwner extends TileEntity implements ITickable
         markDirty();
         IBlockState state = worldObj.getBlockState(pos);
         worldObj.notifyBlockUpdate(pos, state, state, 3);
+        if (!worldObj.isRemote) {
+            sendUpdatePacket();
+        }
     }
 
     @Override
@@ -71,9 +74,7 @@ public abstract class TileFrequencyOwner extends TileEntity implements ITickable
 
     public NBTTagCompound writeToNBT(NBTTagCompound tag) {
         super.writeToNBT(tag);
-        NBTTagCompound frequencyTag = new NBTTagCompound();
-        frequency.writeNBT(frequencyTag);
-        tag.setTag("Frequency", frequencyTag);
+        tag.setTag("Frequency", frequency.toNBT());
         //tag.setString("owner", owner);
         return tag;
     }
@@ -85,9 +86,9 @@ public abstract class TileFrequencyOwner extends TileEntity implements ITickable
     public void onPlaced(EntityLivingBase entity) {
     }
 
-    //public boolean invincible() {
-    //    return false;
-    //}
+    protected void sendUpdatePacket() {
+        PacketCustom.sendToAllAround(getUpdatePacket(), getPos().getX(), getPos().getY(), getPos().getZ(), 48, worldObj.provider.getDimension());
+    }
 
     public RayTraceResult rayTrace(World world, Vec3d vec3d, Vec3d vec3d1, RayTraceResult fullBlock) {
         return fullBlock;
