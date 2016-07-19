@@ -10,6 +10,7 @@ import codechicken.lib.math.MathHelper;
 import codechicken.lib.render.*;
 import codechicken.lib.render.uv.UVTranslation;
 import codechicken.lib.vec.*;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
@@ -19,7 +20,6 @@ import net.minecraftforge.fluids.FluidStack;
 import java.util.ArrayList;
 import java.util.Map;
 
-import static net.minecraft.client.renderer.GlStateManager.*;
 import static net.minecraft.client.renderer.vertex.DefaultVertexFormats.POSITION_TEX_NORMAL;
 
 public class RenderTileEnderTank extends TileEntitySpecialRenderer<TileEnderTank> {
@@ -60,7 +60,7 @@ public class RenderTileEnderTank extends TileEntitySpecialRenderer<TileEnderTank
     @Override
     public void renderTileEntityAt(TileEnderTank enderTank, double x, double y, double z, float partialTicks, int breakProgress) {
         CCRenderState.reset();
-        CCRenderState.setBrightness(enderTank.getWorld(), enderTank.getPos());
+        //CCRenderState.setBrightness(enderTank.getWorld(), enderTank.getPos());
         renderTank(enderTank.rotation, (float) MathHelper.interpolate(enderTank.pressure_state.b_rotate, enderTank.pressure_state.a_rotate, partialTicks) * 0.01745F, enderTank.frequency, x, y, z, RenderUtils.getTimeOffset(enderTank.getPos()));
         renderLiquid(enderTank.liquid_state.c_liquid, x, y, z);
     }
@@ -68,12 +68,12 @@ public class RenderTileEnderTank extends TileEntitySpecialRenderer<TileEnderTank
     public static void renderTank(int rotation, float valve, Frequency freq, double x, double y, double z, int offset) {
         TileEntityRendererDispatcher info = TileEntityRendererDispatcher.instance;
         renderEndPortal.render(x, y, z, 0, info.entityX, info.entityY, info.entityZ, info.renderEngine);
-        color(1, 1, 1, 1);
+        GlStateManager.color(1, 1, 1, 1);
 
-        enableRescaleNormal();
-        pushMatrix();
-        translate(x + 0.5, y, z + 0.5);
-        rotate(-90 * (rotation + 2), 0, 1, 0);
+        //GlStateManager.enableRescaleNormal();
+        GlStateManager.pushMatrix();
+        GlStateManager.translate(x + 0.5, y, z + 0.5);
+        GlStateManager.rotate(-90 * (rotation + 2), 0, 1, 0);
 
         TextureUtils.changeTexture("enderstorage:textures/endertank.png");
         CCRenderState.startDrawing(4, DefaultVertexFormats.BLOCK);
@@ -88,17 +88,18 @@ public class RenderTileEnderTank extends TileEntitySpecialRenderer<TileEnderTank
             buttons[i].render(new UVTranslation(0.25 * (colours[i] % 4), 0.25 * (colours[i] / 4)));
         }
         CCRenderState.draw();
-        popMatrix();
+        GlStateManager.popMatrix();
 
         double time = ClientUtils.getRenderTime() + offset;
         Matrix4 pearlMat = RenderUtils.getMatrix(new Vector3(x + 0.5, y + 0.45 + RenderUtils.getPearlBob(time) * 2, z + 0.5), new Rotation(time / 3, new Vector3(0, 1, 0)), 0.04);
 
-        disableLighting();
+        GlStateManager.disableLighting();
         TextureUtils.changeTexture("enderstorage:textures/hedronmap.png");
         CCRenderState.startDrawing(4, POSITION_TEX_NORMAL);
         CCModelLibrary.icosahedron4.render(pearlMat);
         CCRenderState.draw();
-        enableLighting();
+        GlStateManager.enableLighting();
+        //GlStateManager.disableRescaleNormal();
     }
 
     public static void renderLiquid(FluidStack liquid, double x, double y, double z) {

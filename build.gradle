@@ -97,42 +97,44 @@ artifacts {
 uploadArchives {
     repositories {
         mavenDeployer {
-            repository(url: "file://${local_maven}")
-            pom {
-                groupId = project.group
-                version = project.version
-                artifactId = project.archivesBaseName
-                project {
-                    name project.archivesBaseName
-                    packaging 'jar'
-                    description 'EnderStorage'
-                    url 'https://github.com/TheCBProject/EnderStorage'
-                    scm {
+            if (project.hasProperty("local_maven")) {
+                repository(url: "file://${local_maven}")
+                pom {
+                    groupId = project.group
+                    version = project.version
+                    artifactId = project.archivesBaseName
+                    project {
+                        name project.archivesBaseName
+                        packaging 'jar'
+                        description 'EnderStorage'
                         url 'https://github.com/TheCBProject/EnderStorage'
-                        connection 'scm:git:git@github.com:TheCBProject/EnderStorage.git'
-                        developerConnection 'scm:git:git@github.com:TheCBProject/EnderStorage.git'
-                    }
-                    issueManagement {
-                        system 'github'
-                        url 'https://github.com/TheCBProject/EnderStorage/issues'
-                    }
-                    licenses {
-                        license {
-                            name 'License'
-                            url 'https://raw.githubusercontent.com/TheCBProject/EnderStorage/master/LICENSE.txt'
-                            distribution 'repo'
+                        scm {
+                            url 'https://github.com/TheCBProject/EnderStorage'
+                            connection 'scm:git:git@github.com:TheCBProject/EnderStorage.git'
+                            developerConnection 'scm:git:git@github.com:TheCBProject/EnderStorage.git'
                         }
-                    }
-                    developers {
-						developer {
-                            id 'chicken-bones'
-                            name 'chicken-bones'
-                            roles { role 'developer' }
+                        issueManagement {
+                            system 'github'
+                            url 'https://github.com/TheCBProject/EnderStorage/issues'
                         }
-                        developer {
-                            id 'covers1624'
-                            name 'covers1624'
-                            roles { role 'developer' }
+                        licenses {
+                            license {
+                                name 'License'
+                                url 'https://raw.githubusercontent.com/TheCBProject/EnderStorage/master/LICENSE.txt'
+                                distribution 'repo'
+                            }
+                        }
+                        developers {
+                            developer {
+                                id 'chicken-bones'
+                                name 'chicken-bones'
+                                roles { role 'developer' }
+                            }
+                            developer {
+                                id 'covers1624'
+                                name 'covers1624'
+                                roles { role 'developer' }
+                            }
                         }
                     }
                 }
