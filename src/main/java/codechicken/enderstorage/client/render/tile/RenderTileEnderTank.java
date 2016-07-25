@@ -20,6 +20,7 @@ import net.minecraftforge.fluids.FluidStack;
 import java.util.ArrayList;
 import java.util.Map;
 
+import static net.minecraft.client.renderer.vertex.DefaultVertexFormats.POSITION_TEX_COLOR_NORMAL;
 import static net.minecraft.client.renderer.vertex.DefaultVertexFormats.POSITION_TEX_NORMAL;
 
 public class RenderTileEnderTank extends TileEntitySpecialRenderer<TileEnderTank> {
@@ -70,19 +71,18 @@ public class RenderTileEnderTank extends TileEntitySpecialRenderer<TileEnderTank
         renderEndPortal.render(x, y, z, 0, info.entityX, info.entityY, info.entityZ, info.renderEngine);
         GlStateManager.color(1, 1, 1, 1);
 
-        //GlStateManager.enableRescaleNormal();
         GlStateManager.pushMatrix();
         GlStateManager.translate(x + 0.5, y, z + 0.5);
         GlStateManager.rotate(-90 * (rotation + 2), 0, 1, 0);
 
         TextureUtils.changeTexture("enderstorage:textures/endertank.png");
-        CCRenderState.startDrawing(4, DefaultVertexFormats.BLOCK);
+        CCRenderState.startDrawing(4, POSITION_TEX_COLOR_NORMAL);
         tankModel.render();
         valveModel.render(new Rotation(valve, new Vector3(0, 0, 1)).at(new Vector3(0, 0.4165, 0)), new UVTranslation(0, freq.hasOwner() ? 13 / 64D : 0));
         CCRenderState.draw();
 
         TextureUtils.changeTexture("enderstorage:textures/buttons.png");
-        CCRenderState.startDrawing(7, POSITION_TEX_NORMAL);
+        CCRenderState.startDrawing(7, POSITION_TEX_COLOR_NORMAL);
         int[] colours = freq.toArray();
         for (int i = 0; i < 3; i++) {
             buttons[i].render(new UVTranslation(0.25 * (colours[i] % 4), 0.25 * (colours[i] / 4)));
@@ -95,11 +95,10 @@ public class RenderTileEnderTank extends TileEntitySpecialRenderer<TileEnderTank
 
         GlStateManager.disableLighting();
         TextureUtils.changeTexture("enderstorage:textures/hedronmap.png");
-        CCRenderState.startDrawing(4, POSITION_TEX_NORMAL);
+        CCRenderState.startDrawing(4, POSITION_TEX_COLOR_NORMAL);
         CCModelLibrary.icosahedron4.render(pearlMat);
         CCRenderState.draw();
         GlStateManager.enableLighting();
-        //GlStateManager.disableRescaleNormal();
     }
 
     public static void renderLiquid(FluidStack liquid, double x, double y, double z) {

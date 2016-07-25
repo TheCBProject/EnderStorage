@@ -1,7 +1,7 @@
 package codechicken.enderstorage.proxy;
 
 import codechicken.core.CCUpdateChecker;
-import codechicken.enderstorage.client.EnderPouchModelLoader;
+import codechicken.enderstorage.client.EnderStorageBakedModelProvider;
 import codechicken.enderstorage.client.render.tile.RenderTileEnderChest;
 import codechicken.enderstorage.client.render.tile.RenderTileEnderTank;
 import codechicken.enderstorage.handler.ConfigurationHandler;
@@ -10,10 +10,8 @@ import codechicken.enderstorage.init.ModItems;
 import codechicken.enderstorage.network.EnderStorageCPH;
 import codechicken.enderstorage.tile.TileEnderChest;
 import codechicken.enderstorage.tile.TileEnderTank;
+import codechicken.lib.model.loader.CCBakedModelLoader;
 import codechicken.lib.packet.PacketCustom;
-import codechicken.lib.render.TextureUtils;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.resources.IReloadableResourceManager;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 
 /**
@@ -24,10 +22,7 @@ public class ClientProxy extends CommonProxy {
     @Override
     public void preInit() {
         super.preInit();
-        //ModelLoaderRegistry.registerLoader(new EnderPouchModelLoader());
-        EnderPouchModelLoader loader = new EnderPouchModelLoader();
-        ((IReloadableResourceManager) Minecraft.getMinecraft().getResourceManager()).registerReloadListener(loader);
-        TextureUtils.addIconRegister(loader);
+        CCBakedModelLoader.registerLoader(EnderStorageBakedModelProvider.INSTANCE);
         ModBlocks.registerModels();
         ModItems.registerModels();
         RenderTileEnderTank.loadModel();
