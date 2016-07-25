@@ -178,6 +178,8 @@ public class TileEnderChest extends TileFrequencyOwner implements IInventory {
     public List<IndexedCuboid6> getIndexedCuboids() {
         List<IndexedCuboid6> cuboids = new ArrayList<IndexedCuboid6>();
 
+        cuboids.add((IndexedCuboid6)getBlockBounds().copy().add(new Vector3(getPos())));
+
         // Remove other boxes if the chest has lid open.
         if (getRadianLidAngle(0) < 0) {
             return cuboids;

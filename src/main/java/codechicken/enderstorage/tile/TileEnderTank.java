@@ -235,6 +235,9 @@ public class TileEnderTank extends TileFrequencyOwner implements IFluidHandler {
     @Override
     public List<IndexedCuboid6> getIndexedCuboids() {
         ArrayList<IndexedCuboid6> cuboids = new ArrayList<IndexedCuboid6>();
+
+        cuboids.add((IndexedCuboid6)getBlockBounds().copy().add(new Vector3(getPos())));
+
         for (int i = 0; i < 4; i++) {
             cuboids.add(new IndexedCuboid6(i + 1, selectionBoxes[i].copy().apply(Rotation.quarterRotations[rotation ^ 2].at(center)).add(new Vector3(getPos()))));
         }
