@@ -5,6 +5,7 @@ import codechicken.enderstorage.handler.ConfigurationHandler;
 import codechicken.enderstorage.manager.EnderStorageManager;
 import codechicken.enderstorage.storage.EnderItemStorage;
 import codechicken.enderstorage.tile.TileEnderChest;
+import codechicken.enderstorage.util.LogHelper;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
@@ -78,7 +79,9 @@ public class ItemEnderPouch extends Item {
         if (world.isRemote || player.isSneaking()) {
             return new ActionResult<ItemStack>(EnumActionResult.PASS, stack);
         }
-        ((EnderItemStorage) EnderStorageManager.instance(world.isRemote).getStorage(Frequency.fromItemStack(stack), "item")).openSMPGui(player, stack.getUnlocalizedName() + ".name");
+        Frequency frequency = Frequency.fromItemStack(stack);
+        LogHelper.info(frequency.toString());
+        ((EnderItemStorage) EnderStorageManager.instance(world.isRemote).getStorage(frequency, "item")).openSMPGui(player, stack.getUnlocalizedName() + ".name");
         return new ActionResult<ItemStack>(EnumActionResult.SUCCESS, stack);
     }
 
