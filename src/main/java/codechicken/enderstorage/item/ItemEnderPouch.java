@@ -26,7 +26,7 @@ public class ItemEnderPouch extends Item {
     public ItemEnderPouch() {
         setMaxStackSize(1);
         setCreativeTab(CreativeTabs.TRANSPORTATION);
-        setUnlocalizedName("enderpouch");
+        setUnlocalizedName("enderPouch");
     }
 
     @Override
