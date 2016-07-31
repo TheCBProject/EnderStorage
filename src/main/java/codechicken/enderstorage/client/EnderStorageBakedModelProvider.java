@@ -13,8 +13,10 @@ import codechicken.lib.model.bakery.SimplePerspectiveAwareLayerModelBakery;
 import codechicken.lib.model.loader.IBakedModelLoader;
 import codechicken.lib.render.TransformUtils;
 import com.google.common.collect.ImmutableList.Builder;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
 
 import java.util.ArrayList;
@@ -44,6 +46,11 @@ public class EnderStorageBakedModelProvider implements IBakedModelLoader {
                 EnderItemStorage storage = (EnderItemStorage) EnderStorageManager.instance(true).getStorage(frequency, "item");
                 return frequency.toModelLoc() + ",open=" + (storage.openCount() > 0);
             }
+            return null;
+        }
+
+        @Override
+        public String createKey(IBlockState state, EnumFacing face) {
             return null;
         }
     }
