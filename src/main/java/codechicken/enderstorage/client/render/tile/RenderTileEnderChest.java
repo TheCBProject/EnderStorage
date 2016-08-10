@@ -1,6 +1,5 @@
 package codechicken.enderstorage.client.render.tile;
 
-import codechicken.core.ClientUtils;
 import codechicken.enderstorage.api.Frequency;
 import codechicken.enderstorage.client.model.ModelEnderChest;
 import codechicken.enderstorage.client.render.RenderCustomEndPortal;
@@ -10,6 +9,7 @@ import codechicken.lib.render.CCModelLibrary;
 import codechicken.lib.render.CCRenderState;
 import codechicken.lib.render.RenderUtils;
 import codechicken.lib.render.TextureUtils;
+import codechicken.lib.util.ClientUtils;
 import codechicken.lib.vec.Matrix4;
 import codechicken.lib.vec.Rotation;
 import codechicken.lib.vec.Vector3;

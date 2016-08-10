@@ -10,7 +10,6 @@ import codechicken.lib.math.MathHelper;
 import codechicken.lib.packet.PacketCustom;
 import codechicken.lib.raytracer.IndexedCuboid6;
 import codechicken.lib.vec.Cuboid6;
-import codechicken.lib.vec.Vector3;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.SoundEvents;
@@ -174,15 +173,10 @@ public class TileEnderChest extends TileFrequencyOwner implements IInventory {
     }
 
     @Override
-    public IndexedCuboid6 getBlockBounds() {
-        return new IndexedCuboid6(0, new Cuboid6(pos.getX() + 1 / 16D, pos.getY(), pos.getZ() + 1 / 16D, pos.getX() + 15 / 16D, pos.getY() + 14 / 16D, pos.getZ() + 15 / 16D).sub(Vector3.fromTile(this)));
-    }
-
-    @Override
     public List<IndexedCuboid6> getIndexedCuboids() {
         List<IndexedCuboid6> cuboids = new ArrayList<IndexedCuboid6>();
 
-        cuboids.add((IndexedCuboid6)getBlockBounds().copy().add(new Vector3(getPos())));
+        cuboids.add(new IndexedCuboid6(0, new Cuboid6(1 / 16D, 0, 1 / 16D, 15 / 16D, 14 / 16D, 15 / 16D)));
 
         // Remove other boxes if the chest has lid open.
         if (getRadianLidAngle(0) < 0) {
@@ -195,11 +189,11 @@ public class TileEnderChest extends TileFrequencyOwner implements IInventory {
             ebutton.rotate(0, 0.5625, 0.0625, 1, 0, 0, 0);
             ebutton.rotateMeta(rotation);
 
-            cuboids.add(new IndexedCuboid6(button + 1, new Cuboid6(ebutton.getMin(), ebutton.getMax()).add(new Vector3(getPos()))));
+            cuboids.add(new IndexedCuboid6(button + 1, new Cuboid6(ebutton.getMin(), ebutton.getMax())));
         }
 
-        //Lock Button.
-        cuboids.add(new IndexedCuboid6(4, new Cuboid6(new EnderKnobSlot(rotation).getSelectionBB()).add(new Vector3(getPos()))));
+        //Lock Button.//TODO Latch seems a bit weird with raytracing, Might be something to look into.
+        cuboids.add(new IndexedCuboid6(4, new Cuboid6(new EnderKnobSlot(rotation).getSelectionBB())));
         return cuboids;
     }
 
@@ -276,7 +270,7 @@ public class TileEnderChest extends TileFrequencyOwner implements IInventory {
     @SuppressWarnings("unchecked")
     @Override
     public <T> T getCapability(Capability<T> capability, EnumFacing facing) {
-        if (capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY){
+        if (capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
             return (T) new InvWrapper(this);
         }
         return super.getCapability(capability, facing);

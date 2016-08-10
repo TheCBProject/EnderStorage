@@ -1,6 +1,5 @@
 package codechicken.enderstorage.client.render.tile;
 
-import codechicken.core.ClientUtils;
 import codechicken.core.fluid.FluidUtils;
 import codechicken.enderstorage.api.Frequency;
 import codechicken.enderstorage.client.model.ButtonModelLibrary;
@@ -9,11 +8,11 @@ import codechicken.enderstorage.tile.TileEnderTank;
 import codechicken.lib.math.MathHelper;
 import codechicken.lib.render.*;
 import codechicken.lib.render.uv.UVTranslation;
+import codechicken.lib.util.ClientUtils;
 import codechicken.lib.vec.*;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fluids.FluidStack;
 
@@ -21,7 +20,6 @@ import java.util.ArrayList;
 import java.util.Map;
 
 import static net.minecraft.client.renderer.vertex.DefaultVertexFormats.POSITION_TEX_COLOR_NORMAL;
-import static net.minecraft.client.renderer.vertex.DefaultVertexFormats.POSITION_TEX_NORMAL;
 
 public class RenderTileEnderTank extends TileEntitySpecialRenderer<TileEnderTank> {
     public static CCModel tankModel;

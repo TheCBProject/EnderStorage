@@ -3,22 +3,18 @@ package codechicken.enderstorage.block;
 import codechicken.enderstorage.api.Frequency;
 import codechicken.enderstorage.handler.ConfigurationHandler;
 import codechicken.enderstorage.init.EnderStorageRecipe;
-import codechicken.enderstorage.repack.covers1624.lib.api.block.property.PropertyString;
 import codechicken.enderstorage.tile.TileEnderChest;
 import codechicken.enderstorage.tile.TileEnderTank;
 import codechicken.enderstorage.tile.TileFrequencyOwner;
-import codechicken.lib.raytracer.IndexedCuboid6;
+import codechicken.lib.block.property.PropertyString;
 import codechicken.lib.raytracer.RayTracer;
-import codechicken.lib.vec.BlockCoord;
-import codechicken.lib.vec.Vector3;
-import mcp.MethodsReturnNonnullByDefault;
+import codechicken.lib.util.ItemUtils;
 import net.minecraft.block.Block;
 import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
@@ -34,8 +30,8 @@ import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
-import net.minecraftforge.oredict.OreDictionary;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -46,7 +42,6 @@ import static codechicken.enderstorage.reference.VariantReference.enderBlockName
  */
 public class BlockEnderStorage extends Block implements ITileEntityProvider {
 
-    private RayTracer rayTracer = new RayTracer();
     public static final PropertyString VARIANTS = new PropertyString("type", enderBlockNamesList);
 
     public BlockEnderStorage() {
@@ -139,14 +134,10 @@ public class BlockEnderStorage extends Block implements ITileEntityProvider {
             return true;
         }
         TileFrequencyOwner tile = (TileFrequencyOwner) world.getTileEntity(pos);
+
         //Normal block trace.
         RayTraceResult hit = RayTracer.retraceBlock(world, player, pos);
-        RayTraceResult subHitResult = rayTracer.rayTraceCuboids(new Vector3(RayTracer.getStartVec(player)), new Vector3(RayTracer.getEndVec(player)), tile.getIndexedCuboids(), new BlockCoord(pos));
-        //Try for a sub hit.
-        if (subHitResult != null) {
-            hit = subHitResult;
-        }
-        if (hit == null){
+        if (hit == null) {
             return false;
         }
         if (hit.subHit == 4) {
@@ -158,7 +149,7 @@ public class BlockEnderStorage extends Block implements ITileEntityProvider {
 
                 tile.setFreq(tile.frequency.copy().setOwner(null));
                 return true;
-            } else if (item != null && areStacksSameTypeCrafting(item, ConfigurationHandler.personalItem)) {
+            } else if (item != null && ItemUtils.areStacksSameTypeCrafting(item, ConfigurationHandler.personalItem)) {
                 if (!tile.frequency.hasOwner()) {
                     tile.setFreq(tile.frequency.copy().setOwner(player.getDisplayNameString()));
                     if (!player.capabilities.isCreativeMode) {
@@ -186,51 +177,25 @@ public class BlockEnderStorage extends Block implements ITileEntityProvider {
         return tile.activate(player, hit.subHit);
     }
 
-    /**
-     * {@link ItemStack}s with damage -1 are wildcards allowing all damages. Eg all colours of wool are allowed to create Beds.
-     *
-     * @param stack1 The {@link ItemStack} being compared.
-     * @param stack2 The {@link ItemStack} to compare to.
-     * @return whether the two items are the same from the perspective of a crafting inventory.
-     *///TODO Move to lib.
-    public static boolean areStacksSameTypeCrafting(ItemStack stack1, ItemStack stack2) {
-        return stack1 != null && stack2 != null && stack1.getItem() == stack2.getItem() && (stack1.getItemDamage() == stack2.getItemDamage() || stack1.getItemDamage() == OreDictionary.WILDCARD_VALUE || stack2.getItemDamage() == OreDictionary.WILDCARD_VALUE || stack1.getItem().isDamageable());
-    }
-
     @Override
     public void onBlockPlacedBy(World world, BlockPos pos, IBlockState state, EntityLivingBase placer, ItemStack stack) {
         ((TileFrequencyOwner) world.getTileEntity(pos)).onPlaced(placer);
     }
 
-    @Override//TODO
+    @Override
     public RayTraceResult collisionRayTrace(IBlockState state, World world, BlockPos pos, Vec3d start, Vec3d end) {
         TileFrequencyOwner tile = (TileFrequencyOwner) world.getTileEntity(pos);
-        if (tile == null) {
-            return null;
-        }
-
-        List<IndexedCuboid6> cuboids = tile.getIndexedCuboids();
-        cuboids.add(tile.getBlockBounds());
-        RayTraceResult hit = null;//rayTracer.rayTraceCuboids(new Vector3(start), new Vector3(end), cuboids, new BlockCoord(pos));
-        if (hit == null) {
-            return super.collisionRayTrace(state, world, pos, start, end);
-        }
-        return hit;
-    }
-
-    @Override//TODO
-    public void addCollisionBoxToList(IBlockState state, World worldIn, BlockPos pos, AxisAlignedBB entityBox, List<AxisAlignedBB> collidingBoxes, Entity entityIn) {
-        TileFrequencyOwner tile = (TileFrequencyOwner) worldIn.getTileEntity(pos);
         if (tile != null) {
-            addCollisionBoxToList(pos, entityBox, collidingBoxes, tile.getBlockBounds().aabb());
+            return RayTracer.rayTraceCuboidsClosest(start, end, tile.getIndexedCuboids(), pos);
         }
+        return super.collisionRayTrace(state, world, pos, start, end);
     }
 
     @Override
     public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
         TileFrequencyOwner tile = (TileFrequencyOwner) source.getTileEntity(pos);
-        if (tile != null) {
-            return tile.getBlockBounds().aabb();
+        if (tile != null && !tile.getIndexedCuboids().isEmpty()) {
+            return tile.getIndexedCuboids().get(0).aabb();
         }
         return super.getBoundingBox(state, source, pos);
     }
@@ -268,7 +233,7 @@ public class BlockEnderStorage extends Block implements ITileEntityProvider {
     @Override
     public boolean canConnectRedstone(IBlockState state, IBlockAccess world, BlockPos pos, EnumFacing side) {
         TileFrequencyOwner tile = (TileFrequencyOwner) world.getTileEntity(pos);
-        return tile.redstoneInteraction();
+        return tile != null && tile.redstoneInteraction();
     }
 
     @Override//TODO
@@ -289,8 +254,8 @@ public class BlockEnderStorage extends Block implements ITileEntityProvider {
     }
 
     @Override//TODO
-    public boolean eventReceived(IBlockState state, World worldIn, BlockPos pos,  int eventID, int eventParam) {
-        super.eventReceived(state,worldIn, pos, eventID, eventParam);
+    public boolean eventReceived(IBlockState state, World worldIn, BlockPos pos, int eventID, int eventParam) {
+        super.eventReceived(state, worldIn, pos, eventID, eventParam);
         TileEntity tileentity = worldIn.getTileEntity(pos);
         return tileentity != null && tileentity.receiveClientEvent(eventID, eventParam);
     }

@@ -7,9 +7,8 @@ import codechicken.lib.data.MCDataInput;
 import codechicken.lib.data.MCDataOutput;
 import codechicken.lib.packet.ICustomPacketTile;
 import codechicken.lib.packet.PacketCustom;
-import codechicken.lib.raytracer.IndexedCuboid6;
+import codechicken.lib.raytracer.ICuboidProvider;
 import codechicken.lib.vec.Cuboid6;
-import codechicken.lib.vec.IIndexedCuboidProvider;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
@@ -23,7 +22,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 
-public abstract class TileFrequencyOwner extends TileEntity implements ITickable, IIndexedCuboidProvider, ICustomPacketTile {
+public abstract class TileFrequencyOwner extends TileEntity implements ICuboidProvider, ITickable, ICustomPacketTile {
     public static Cuboid6 selection_button = new Cuboid6(-1 / 16D, 0, -2 / 16D, 1 / 16D, 1 / 16D, 2 / 16D);
 
     public Frequency frequency = new Frequency();
@@ -92,11 +91,6 @@ public abstract class TileFrequencyOwner extends TileEntity implements ITickable
 
     public RayTraceResult rayTrace(World world, Vec3d vec3d, Vec3d vec3d1, RayTraceResult fullBlock) {
         return fullBlock;
-    }
-
-    @Override
-    public IndexedCuboid6 getBlockBounds() {
-        return new IndexedCuboid6(0, new Cuboid6(0, 0, 0, 1, 1, 1));
     }
 
     @Override

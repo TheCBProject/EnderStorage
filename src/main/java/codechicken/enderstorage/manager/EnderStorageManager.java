@@ -152,10 +152,10 @@ public class EnderStorageManager {
     }
 
     public static EnderStorageManager instance(boolean client) {
-        EnderStorageManager manager  = client ? clientManager : serverManager;
-        if (manager == null){
+        EnderStorageManager manager = client ? clientManager : serverManager;
+        if (manager == null) {
             reloadManager(client);
-            manager  = client ? clientManager : serverManager;
+            manager = client ? clientManager : serverManager;
         }
         return manager;
     }

@@ -1,14 +1,13 @@
 package codechicken.enderstorage.network;
 
-import codechicken.core.ClientUtils;
 import codechicken.core.ServerUtils;
 import codechicken.core.fluid.FluidUtils;
 import codechicken.enderstorage.api.Frequency;
 import codechicken.enderstorage.manager.EnderStorageManager;
 import codechicken.enderstorage.storage.EnderLiquidStorage;
-import codechicken.enderstorage.util.LogHelper;
 import codechicken.lib.math.MathHelper;
 import codechicken.lib.packet.PacketCustom;
+import codechicken.lib.util.ClientUtils;
 import com.google.common.collect.Sets;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraftforge.event.world.WorldEvent;

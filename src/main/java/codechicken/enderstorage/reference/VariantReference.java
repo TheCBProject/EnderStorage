@@ -1,6 +1,6 @@
 package codechicken.enderstorage.reference;
 
-import codechicken.enderstorage.repack.covers1624.lib.util.ArrayUtils;
+import codechicken.lib.util.ArrayUtils;
 import com.google.common.collect.Lists;
 
 import java.util.List;
