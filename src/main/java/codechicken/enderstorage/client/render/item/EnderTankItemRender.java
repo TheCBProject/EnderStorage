@@ -30,7 +30,6 @@ import java.util.List;
 public class EnderTankItemRender implements IItemRenderer, IPerspectiveAwareModel {
     @Override
     public void renderItem(ItemStack item) {
-        RenderHelper.enableGUIStandardItemLighting();
         GlStateManager.pushMatrix();
         Frequency frequency = Frequency.fromItemStack(item);
         FluidStack fluidStack = TankSynchroniser.getClientLiquid(frequency);
@@ -40,7 +39,6 @@ public class EnderTankItemRender implements IItemRenderer, IPerspectiveAwareMode
         }
 
         GlStateManager.popMatrix();
-        RenderHelper.enableGUIStandardItemLighting();
     }
 
     @Override
