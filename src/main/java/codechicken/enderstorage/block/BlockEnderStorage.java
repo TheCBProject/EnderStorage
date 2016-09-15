@@ -6,6 +6,7 @@ import codechicken.enderstorage.init.EnderStorageRecipe;
 import codechicken.enderstorage.tile.TileEnderChest;
 import codechicken.enderstorage.tile.TileEnderTank;
 import codechicken.enderstorage.tile.TileFrequencyOwner;
+import codechicken.enderstorage.util.LogHelper;
 import codechicken.lib.block.property.PropertyString;
 import codechicken.lib.raytracer.RayTracer;
 import codechicken.lib.util.ItemUtils;
@@ -179,6 +180,7 @@ public class BlockEnderStorage extends Block implements ITileEntityProvider {
                 return true;
             }
         }
+        LogHelper.info(tile.frequency.toString());
         return tile.activate(player, hit.subHit);
     }
 
