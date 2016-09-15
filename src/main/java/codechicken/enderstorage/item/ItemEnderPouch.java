@@ -85,11 +85,6 @@ public class ItemEnderPouch extends Item {
         return new ActionResult<ItemStack>(EnumActionResult.SUCCESS, stack);
     }
 
-    @Deprecated
-    public String getOwner(ItemStack stack) {
-        return EnderStorageManager.getOwner(stack);
-    }
-
     /*@Override
     public int getRenderPasses(int metadata){
         return 4;

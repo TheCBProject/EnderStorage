@@ -39,6 +39,7 @@ public class EnderTankItemRender implements IItemRenderer, IPerspectiveAwareMode
         }
 
         GlStateManager.popMatrix();
+        GlStateManager.enableRescaleNormal();
     }
 
     @Override

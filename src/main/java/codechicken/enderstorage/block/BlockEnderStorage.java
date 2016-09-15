@@ -74,6 +74,11 @@ public class BlockEnderStorage extends Block implements ITileEntityProvider {
         return false;
     }
 
+    @Override
+    public boolean isFullCube(IBlockState state) {
+        return false;
+    }
+
     @Override//TODO
     public boolean isNormalCube(IBlockState state) {
         return false;
