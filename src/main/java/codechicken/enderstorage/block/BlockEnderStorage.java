@@ -69,7 +69,7 @@ public class BlockEnderStorage extends Block implements ITileEntityProvider {
         return EnumBlockRenderType.INVISIBLE;
     }
 
-    @Override//TODO
+    @Override
     public boolean isOpaqueCube(IBlockState state) {
         return false;
     }
@@ -79,7 +79,7 @@ public class BlockEnderStorage extends Block implements ITileEntityProvider {
         return false;
     }
 
-    @Override//TODO
+    @Override
     public boolean isNormalCube(IBlockState state) {
         return false;
     }
@@ -183,7 +183,6 @@ public class BlockEnderStorage extends Block implements ITileEntityProvider {
                 return true;
             }
         }
-        LogHelper.info(owner.frequency.toString());
         return owner.activate(player, hit.subHit);
     }
 
@@ -241,7 +240,7 @@ public class BlockEnderStorage extends Block implements ITileEntityProvider {
         return enderBlockNamesList.indexOf(String.valueOf(state.getValue(VARIANTS)));
     }
 
-    @Override//TODO
+    @Override
     public IBlockState getStateFromMeta(int meta) {
         return getDefaultState().withProperty(VARIANTS, enderBlockNamesList.get(meta));
     }
@@ -257,7 +256,7 @@ public class BlockEnderStorage extends Block implements ITileEntityProvider {
         return getMetaFromState(state) == 0;
     }
 
-    @Override//TODO
+    @Override
     public int getComparatorInputOverride(IBlockState state, World world, BlockPos pos) {
         TileEntity tile = world.getTileEntity(pos);
         return tile instanceof  TileFrequencyOwner ? ((TileFrequencyOwner)tile).comparatorInput() : 0;
@@ -269,7 +268,7 @@ public class BlockEnderStorage extends Block implements ITileEntityProvider {
         return tile instanceof TileFrequencyOwner && ((TileFrequencyOwner) tile).rotate();
     }
 
-    @Override//TODO
+    @Override
     public boolean eventReceived(IBlockState state, World worldIn, BlockPos pos, int eventID, int eventParam) {
         super.eventReceived(state, worldIn, pos, eventID, eventParam);
         TileEntity tileentity = worldIn.getTileEntity(pos);

@@ -7,11 +7,11 @@ import codechicken.enderstorage.tile.TileEnderTank;
 import codechicken.enderstorage.tile.TileFrequencyOwner;
 import codechicken.lib.packet.PacketCustom;
 import codechicken.lib.packet.PacketCustom.IClientPacketHandler;
-import codechicken.lib.vec.BlockCoord;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.network.play.INetHandlerPlayClient;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.math.BlockPos;
 
 public class EnderStorageCPH implements IClientPacketHandler {
     public static final String channel = "ES";
@@ -20,7 +20,7 @@ public class EnderStorageCPH implements IClientPacketHandler {
     public void handlePacket(PacketCustom packet, Minecraft mc, INetHandlerPlayClient handler) {
         switch (packet.getType()) {
         case 1:
-            handleTilePacket(mc.theWorld, packet, packet.readCoord());
+            handleTilePacket(mc.theWorld, packet, packet.readPos());
             break;
         case 2:
             int windowID = packet.readUByte();
@@ -34,24 +34,23 @@ public class EnderStorageCPH implements IClientPacketHandler {
             break;
         case 5:
         case 6:
-            handleTankTilePacket(mc.theWorld, packet.readCoord(), packet);
+            handleTankTilePacket(mc.theWorld, packet.readPos(), packet);
             break;
         }
     }
 
-    private void handleTankTilePacket(WorldClient world, BlockCoord pos, PacketCustom packet) {
-        TileEntity tile = world.getTileEntity(pos.pos());
+    private void handleTankTilePacket(WorldClient world, BlockPos pos, PacketCustom packet) {
+        TileEntity tile = world.getTileEntity(pos);
         if (tile instanceof TileEnderTank) {
             ((TileEnderTank) tile).sync(packet);
         }
     }
 
-    private void handleTilePacket(WorldClient world, PacketCustom packet, BlockCoord pos) {
-        TileEntity tile = world.getTileEntity(pos.pos());
+    private void handleTilePacket(WorldClient world, PacketCustom packet, BlockPos pos) {
+        TileEntity tile = world.getTileEntity(pos);
 
         if (tile instanceof TileFrequencyOwner) {
-            throw new RuntimeException("This is being called..");
-            //((TileFrequencyOwner) tile).readFromPacket(packet);
+            ((TileFrequencyOwner) tile).readFromPacket(packet);
         }
     }
 }

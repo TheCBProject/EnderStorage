@@ -1,12 +1,12 @@
 package codechicken.enderstorage.client;
 
-import codechicken.enderstorage.api.Colour;
 import codechicken.enderstorage.api.Frequency;
 import codechicken.enderstorage.init.ModItems;
 import codechicken.enderstorage.manager.EnderStorageManager;
 import codechicken.enderstorage.reference.Reference;
 import codechicken.enderstorage.storage.EnderItemStorage;
 import codechicken.enderstorage.util.LogHelper;
+import codechicken.lib.colour.EnumColour;
 import codechicken.lib.model.bakery.SimplePerspectiveAwareLayerModelBakery;
 import codechicken.lib.model.loader.IBakedModelLoader;
 import codechicken.lib.render.TransformUtils;
@@ -72,7 +72,7 @@ public class EnderStorageBakedModelProvider implements IBakedModelLoader {
 
     private List<ResourceLocation> addAllColours(String locationParent) {
         ArrayList<ResourceLocation> locations = new ArrayList<ResourceLocation>();
-        for (Colour colour : Colour.values()) {
+        for (EnumColour colour : EnumColour.values()) {
             locations.add(new ResourceLocation(locationParent + colour.getMinecraftName()));
         }
         return locations;

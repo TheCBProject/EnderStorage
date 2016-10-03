@@ -1,11 +1,12 @@
 package codechicken.enderstorage.api;
 
+import codechicken.lib.colour.EnumColour;
 import codechicken.lib.util.Copyable;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.text.translation.I18n;
 
-import static codechicken.enderstorage.api.Colour.*;
+import static codechicken.lib.colour.EnumColour.*;
 
 /**
  * Created by covers1624 on 4/26/2016.
@@ -13,7 +14,7 @@ import static codechicken.enderstorage.api.Colour.*;
 public final class Frequency implements Copyable<Frequency> {
 
     //public static final String[] colours = new String[] { "white", "orange", "magenta", "light_blue", "yellow", "lime", "pink", "gray", "light_gray", "cyan", "purple", "blue", "brown", "green", "red", "black" };
-    public static final Colour[] colours = new Colour[] { WHITE, ORANGE, MAGENTA, LIGHT_BLUE, YELLOW, LIME, PINK, GRAY, LIGHT_GRAY, CYAN, PURPLE, BLUE, BROWN, GREEN, RED, BLACK };
+    public static final EnumColour[] colours = new EnumColour[] { WHITE, ORANGE, MAGENTA, LIGHT_BLUE, YELLOW, LIME, PINK, GRAY, LIGHT_GRAY, CYAN, PURPLE, BLUE, BROWN, GREEN, RED, BLACK };
 
     public int left;
     public int middle;
@@ -94,15 +95,15 @@ public final class Frequency implements Copyable<Frequency> {
         return colours[right].getMinecraftName();
     }
 
-    public Colour getLeftRaw() {
+    public EnumColour getLeftRaw() {
         return colours[left];
     }
 
-    public Colour getMiddleRaw() {
+    public EnumColour getMiddleRaw() {
         return colours[middle];
     }
 
-    public Colour getRightRaw() {
+    public EnumColour getRightRaw() {
         return colours[right];
     }
 
@@ -154,8 +155,8 @@ public final class Frequency implements Copyable<Frequency> {
 
     public static Frequency fromNBT(NBTTagCompound tagCompound) {
         NBTTagCompound frequencyTag = tagCompound;
-        if (frequencyTag.hasKey("Frequency")) {
-            frequencyTag = frequencyTag.getCompoundTag("Frequency");
+        if (tagCompound.hasKey("Frequency")) {
+            frequencyTag = tagCompound.getCompoundTag("Frequency");
         }
         return new Frequency().readNBT(frequencyTag);
     }

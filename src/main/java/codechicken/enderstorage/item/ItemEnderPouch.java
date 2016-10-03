@@ -36,10 +36,6 @@ public class ItemEnderPouch extends Item {
             list.add(freq.owner);
         }
         list.add(String.format("%s/%s/%s", freq.getLocalizedLeft(), freq.getLocalizedMiddle(), freq.getLocalizedRight()));
-
-        //if (stack.hasTagCompound() && !stack.getTagCompound().getString("owner").equals("global")) {
-        //    list.add(stack.getTagCompound().getString("owner"));
-        //}
     }
 
     @Override
@@ -62,11 +58,6 @@ public class ItemEnderPouch extends Item {
 
             frequency.writeNBT(frequencyTag);
             stack.getTagCompound().setTag("Frequency", frequencyTag);
-            //if (!ConfigurationHandler.anarchyMode || chest.owner.equals(player.getDisplayNameString())) {
-            //    stack.getTagCompound().setString("owner", chest.owner);
-            //} else {
-            //    stack.getTagCompound().setString("owner", "global");
-            //}
 
             return EnumActionResult.SUCCESS;
         }
@@ -80,46 +71,7 @@ public class ItemEnderPouch extends Item {
             return new ActionResult<ItemStack>(EnumActionResult.PASS, stack);
         }
         Frequency frequency = Frequency.fromItemStack(stack);
-        LogHelper.info(frequency.toString());
         ((EnderItemStorage) EnderStorageManager.instance(world.isRemote).getStorage(frequency, "item")).openSMPGui(player, stack.getUnlocalizedName() + ".name");
         return new ActionResult<ItemStack>(EnumActionResult.SUCCESS, stack);
     }
-
-    /*@Override
-    public int getRenderPasses(int metadata){
-        return 4;
-    }
-
-    @Override
-    public IIcon getIcon(ItemStack stack, int renderPass){
-        return spriteSheet.getSprite(getIconIndex(stack, renderPass));
-    }
-
-    public int getIconIndex(ItemStack stack, int renderPass) {
-        if (renderPass == 0) {
-            int i = 0;
-            if (((EnderItemStorage) EnderStorageManager.instance(true).getStorage(getOwner(stack), Frequency.fromItemStack(stack), "item")).openCount() > 0) {
-                i |= 1;
-            }
-            if (!getOwner(stack).equals("global")) {
-                i |= 2;
-            }
-            return i;
-        }
-
-        return renderPass * 16 + EnderStorageManager.getColourFromFreq(stack.getItemDamage() & 0xFFF, renderPass - 1);
-    }
-
-    public boolean requiresMultipleRenderPasses() {
-        return true;
-    }
-
-    @Override
-    public void registerIcons(IIconRegister register){
-        spriteSheet = SpriteSheetManager.getSheet(new ResourceLocation("enderstorage", "textures/enderpouch.png"));
-        spriteSheet.requestIndicies(0, 1, 2, 3);
-        for(int i = 16; i < 64; i++)
-            spriteSheet.requestIndicies(i);
-        spriteSheet.registerIcons(register);
-    }*/
 }

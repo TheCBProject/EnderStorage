@@ -43,14 +43,14 @@ public class GuiEnderItemStorage extends GuiContainer {
         int y = (height - ySize) / 2;
 
         switch (chestInv.getSize()) {
-        case 0:
-        case 2:
-            drawTexturedModalRect(x, y, 0, 0, xSize, ySize);
-            break;
-        case 1:
-            drawTexturedModalRect(x, y, 0, 0, xSize, 71);
-            drawTexturedModalRect(x, y + 71, 0, 126, xSize, 96);
-            break;
+            case 0:
+            case 2:
+                drawTexturedModalRect(x, y, 0, 0, xSize, ySize);
+                break;
+            case 1:
+                drawTexturedModalRect(x, y, 0, 0, xSize, 71);
+                drawTexturedModalRect(x, y + 71, 0, 126, xSize, 96);
+                break;
 
         }
     }
