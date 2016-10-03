@@ -15,6 +15,8 @@ import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -22,13 +24,13 @@ import java.util.Map;
 
 public class TankSynchroniser {
     public static abstract class TankState {
-        public EnderLiquidStorage storage;
+        public Frequency frequency;
         public FluidStack c_liquid = FluidUtils.emptyFluid();
         public FluidStack s_liquid = FluidUtils.emptyFluid();
         public FluidStack f_liquid = FluidUtils.emptyFluid();
 
-        public void reloadStorage(EnderLiquidStorage storage) {
-            this.storage = storage;
+        public void setFrequency(Frequency frequency){
+            this.frequency = frequency;
         }
 
         public void update(boolean client) {
@@ -47,7 +49,7 @@ public class TankSynchroniser {
 
                 a_liquid = c_liquid;
             } else {
-                s_liquid = storage.getFluid();
+                s_liquid = getStorage(false).getFluid();
                 b_liquid = s_liquid.copy();
                 if (!s_liquid.isFluidEqual(c_liquid)) {
                     sendSyncPacket();
@@ -75,6 +77,11 @@ public class TankSynchroniser {
                 f_liquid = c_liquid.copy();
             }
         }
+
+        //SERVER SIDE ONLY!
+        public EnderLiquidStorage getStorage(boolean client){
+            return (EnderLiquidStorage) EnderStorageManager.instance(client).getStorage(frequency, "liquid");
+        }
     }
 
     public static class PlayerItemTankState extends TankState {
@@ -83,7 +90,7 @@ public class TankSynchroniser {
 
         public PlayerItemTankState(EntityPlayerMP player, EnderLiquidStorage storage) {
             this.player = player;
-            reloadStorage(storage);
+            setFrequency(storage.freq);
             tracking = true;
         }
 
@@ -97,7 +104,7 @@ public class TankSynchroniser {
             }
 
             PacketCustom packet = new PacketCustom(EnderStorageSPH.channel, 4);
-            packet.writeNBTTagCompound(storage.freq.toNBT());
+            packet.writeNBTTagCompound(getStorage(false).freq.toNBT());
             //packet.writeString(storage.owner);
             packet.writeFluidStack(s_liquid);
             packet.sendToPlayer(player);

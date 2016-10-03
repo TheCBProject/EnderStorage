@@ -4,6 +4,7 @@ import codechicken.enderstorage.manager.EnderStorageManager;
 import codechicken.enderstorage.misc.EnderDyeButton;
 import codechicken.enderstorage.misc.EnderKnobSlot;
 import codechicken.enderstorage.storage.EnderItemStorage;
+import codechicken.enderstorage.util.LogHelper;
 import codechicken.lib.data.MCDataInput;
 import codechicken.lib.data.MCDataOutput;
 import codechicken.lib.math.MathHelper;
@@ -36,6 +37,7 @@ public class TileEnderChest extends TileFrequencyOwner implements IInventory {
     public int c_numOpen;
     public int rotation;
 
+    @Deprecated
     private EnderItemStorage storage;
     public static EnderDyeButton[] buttons;
 
@@ -58,8 +60,8 @@ public class TileEnderChest extends TileFrequencyOwner implements IInventory {
     public void update() {
         super.update();
 
-        if (!worldObj.isRemote && (worldObj.getTotalWorldTime() % 20 == 0 || c_numOpen != storage.getNumOpen())) {
-            c_numOpen = storage.getNumOpen();
+        if (!worldObj.isRemote && (worldObj.getTotalWorldTime() % 20 == 0 || c_numOpen != getStorage().getNumOpen())) {
+            c_numOpen = getStorage().getNumOpen();
             worldObj.addBlockEvent(getPos(), getBlockType(), 1, c_numOpen);
             worldObj.notifyNeighborsOfStateChange(pos, getBlockType());
         }
@@ -91,33 +93,34 @@ public class TileEnderChest extends TileFrequencyOwner implements IInventory {
         return a * 3.141593 * -0.5;
     }
 
+    @Deprecated
     public void reloadStorage() {
         storage = (EnderItemStorage) EnderStorageManager.instance(worldObj.isRemote).getStorage(frequency, "item");
     }
 
     @Override
     public EnderItemStorage getStorage() {
-        return storage;
+        return (EnderItemStorage) EnderStorageManager.instance(worldObj.isRemote).getStorage(frequency, "item");
     }
 
     @Override
     public int getSizeInventory() {
-        return storage.getSizeInventory();
+        return getStorage().getSizeInventory();
     }
 
     @Override
     public ItemStack getStackInSlot(int slot) {
-        return storage.getStackInSlot(slot);
+        return getStorage().getStackInSlot(slot);
     }
 
     @Override
     public ItemStack decrStackSize(int slot, int count) {
-        return storage.decrStackSize(slot, count);
+        return getStorage().decrStackSize(slot, count);
     }
 
     @Override
     public void setInventorySlotContents(int slot, ItemStack itemStack) {
-        storage.setInventorySlotContents(slot, itemStack);
+        getStorage().setInventorySlotContents(slot, itemStack);
     }
 
     @Override
@@ -168,7 +171,7 @@ public class TileEnderChest extends TileFrequencyOwner implements IInventory {
 
     @Override
     public boolean activate(EntityPlayer player, int subHit) {
-        storage.openSMPGui(player, "tile.enderChest.name");
+        getStorage().openSMPGui(player, "tile.enderChest.name");
         return true;
     }
 
@@ -217,7 +220,6 @@ public class TileEnderChest extends TileFrequencyOwner implements IInventory {
         return Container.calcRedstoneFromInventory(this);
     }
 
-    //region Unused
     @Override
     public boolean hasCustomName() {
         return true;
@@ -259,8 +261,6 @@ public class TileEnderChest extends TileFrequencyOwner implements IInventory {
     @Override
     public void clear() {
     }
-
-    //endregion
 
     @Override
     public boolean hasCapability(Capability<?> capability, EnumFacing facing) {

@@ -1,6 +1,7 @@
 package codechicken.enderstorage.tile;
 
 import codechicken.core.fluid.FluidUtils;
+import codechicken.enderstorage.api.Frequency;
 import codechicken.enderstorage.manager.EnderStorageManager;
 import codechicken.enderstorage.network.EnderStorageSPH;
 import codechicken.enderstorage.network.TankSynchroniser;
@@ -96,7 +97,6 @@ public class TileEnderTank extends TileFrequencyOwner implements IFluidHandler {
     public EnderTankState liquid_state = new EnderTankState();
     public PressureState pressure_state = new PressureState();
 
-    private EnderLiquidStorage storage;
     private boolean described;
 
     @Override
@@ -130,41 +130,42 @@ public class TileEnderTank extends TileFrequencyOwner implements IFluidHandler {
         }
     }
 
-    public void reloadStorage() {
-        storage = (EnderLiquidStorage) EnderStorageManager.instance(worldObj.isRemote).getStorage(frequency, "liquid");
+    @Override
+    public void setFreq(Frequency frequency) {
+        super.setFreq(frequency);
         if (!worldObj.isRemote) {
-            liquid_state.reloadStorage(storage);
+            liquid_state.setFrequency(frequency);
         }
     }
 
     @Override
     public EnderLiquidStorage getStorage() {
-        return storage;
+        return (EnderLiquidStorage) EnderStorageManager.instance(worldObj.isRemote).getStorage(frequency, "liquid");
     }
 
     @Override
     public int fill(EnumFacing from, FluidStack resource, boolean doFill) {
-        return storage.fill(from, resource, doFill);
+        return getStorage().fill(from, resource, doFill);
     }
 
     @Override
     public FluidStack drain(EnumFacing from, int maxDrain, boolean doDrain) {
-        return storage.drain(from, maxDrain, doDrain);
+        return getStorage().drain(from, maxDrain, doDrain);
     }
 
     @Override
     public FluidStack drain(EnumFacing from, FluidStack resource, boolean doDrain) {
-        return storage.drain(from, resource, doDrain);
+        return getStorage().drain(from, resource, doDrain);
     }
 
     @Override
     public boolean canDrain(EnumFacing from, Fluid fluid) {
-        return storage.canDrain(from, fluid);
+        return getStorage().canDrain(from, fluid);
     }
 
     @Override
     public boolean canFill(EnumFacing from, Fluid fluid) {
-        return storage.canFill(from, fluid);
+        return getStorage().canFill(from, fluid);
     }
 
     @Override
@@ -172,8 +173,7 @@ public class TileEnderTank extends TileFrequencyOwner implements IFluidHandler {
         if (worldObj.isRemote) {
             return new FluidTankInfo[] { new FluidTankInfo(liquid_state.s_liquid, EnderLiquidStorage.CAPACITY) };
         }
-
-        return storage.getTankInfo(from);
+        return getStorage().getTankInfo(from);
     }
 
     @Override
@@ -193,6 +193,7 @@ public class TileEnderTank extends TileFrequencyOwner implements IFluidHandler {
     @Override
     public void readFromNBT(NBTTagCompound tag) {
         super.readFromNBT(tag);
+        liquid_state.setFrequency(frequency);
         rotation = tag.getByte("rot");
         pressure_state.invert_redstone = tag.getBoolean("ir");
     }
@@ -208,6 +209,7 @@ public class TileEnderTank extends TileFrequencyOwner implements IFluidHandler {
     @Override
     public void readFromPacket(MCDataInput packet) {
         super.readFromPacket(packet);
+        liquid_state.setFrequency(frequency);
         rotation = packet.readUByte();
         liquid_state.s_liquid = packet.readFluidStack();
         pressure_state.a_pressure = packet.readBoolean();
@@ -224,7 +226,7 @@ public class TileEnderTank extends TileFrequencyOwner implements IFluidHandler {
             pressure_state.invert();
             return true;
         }
-        return FluidUtils.fillTankWithContainer(this, player) || FluidUtils.emptyTankIntoContainer(this, player, storage.getFluid());
+        return FluidUtils.fillTankWithContainer(this, player) || FluidUtils.emptyTankIntoContainer(this, player, getStorage().getFluid());
     }
 
     @Override
@@ -273,7 +275,7 @@ public class TileEnderTank extends TileFrequencyOwner implements IFluidHandler {
 
     @Override
     public int comparatorInput() {
-        FluidTankInfo tank = storage.getTankInfo(null)[0];
+        FluidTankInfo tank = getStorage().getTankInfo(null)[0];
         return tank.fluid.amount * 14 / tank.capacity + (tank.fluid.amount > 0 ? 1 : 0);
     }
 }

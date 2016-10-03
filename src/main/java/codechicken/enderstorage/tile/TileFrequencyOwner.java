@@ -28,20 +28,8 @@ public abstract class TileFrequencyOwner extends TileEntity implements ICuboidPr
     public Frequency frequency = new Frequency();
     private int changeCount;
 
-    @Override
-    public void validate() {
-        if (worldObj == null) {
-            return;
-        }
-        super.validate();
-        if (!(worldObj instanceof WorldServer) == worldObj.isRemote) {
-            reloadStorage();
-        }
-    }
-
     public void setFreq(Frequency frequency) {
         this.frequency = frequency;
-        reloadStorage();
         markDirty();
         IBlockState state = worldObj.getBlockState(pos);
         worldObj.notifyBlockUpdate(pos, state, state, 3);
@@ -49,32 +37,24 @@ public abstract class TileFrequencyOwner extends TileEntity implements ICuboidPr
             sendUpdatePacket();
         }
     }
-
     @Override
     public void update() {
-        if (worldObj == null) {
-            return;
-        }
         if (getStorage().getChangeCount() > changeCount) {
             worldObj.updateComparatorOutputLevel(pos, getBlockType());
             changeCount = getStorage().getChangeCount();
         }
     }
 
-    public abstract void reloadStorage();
-
     public abstract AbstractEnderStorage getStorage();
 
     public void readFromNBT(NBTTagCompound tag) {
         super.readFromNBT(tag);
         frequency.readNBT(tag.getCompoundTag("Frequency"));
-        //owner = tag.getString("owner");
     }
 
     public NBTTagCompound writeToNBT(NBTTagCompound tag) {
         super.writeToNBT(tag);
         tag.setTag("Frequency", frequency.toNBT());
-        //tag.setString("owner", owner);
         return tag;
     }
 
@@ -86,25 +66,27 @@ public abstract class TileFrequencyOwner extends TileEntity implements ICuboidPr
     }
 
     protected void sendUpdatePacket() {
-        PacketCustom.sendToAllAround(getUpdatePacket(), getPos().getX(), getPos().getY(), getPos().getZ(), 48, worldObj.provider.getDimension());
+        writeToCCPacket().sendToChunk(worldObj, getPos().getX() >> 4, getPos().getZ() >> 4);
     }
 
     public RayTraceResult rayTrace(World world, Vec3d vec3d, Vec3d vec3d1, RayTraceResult fullBlock) {
         return fullBlock;
     }
 
-    @Override
-    public final SPacketUpdateTileEntity getUpdatePacket() {
+    public PacketCustom writeToCCPacket() {
         PacketCustom packet = new PacketCustom(EnderStorageCPH.channel, 1);
         writeToPacket(packet);
-        return packet.toTilePacket(getPos());
+        return packet;
+    }
+
+    @Override
+    public final SPacketUpdateTileEntity getUpdatePacket() {
+        return writeToCCPacket().toTilePacket(getPos());
     }
 
     @Override
     public NBTTagCompound getUpdateTag() {
-        PacketCustom packet = new PacketCustom(EnderStorageCPH.channel, 1);
-        writeToPacket(packet);
-        return packet.toNBTTag(super.getUpdateTag());
+        return writeToCCPacket().toNBTTag(super.getUpdateTag());
     }
 
     public void writeToPacket(MCDataOutput packet) {
@@ -113,7 +95,6 @@ public abstract class TileFrequencyOwner extends TileEntity implements ICuboidPr
 
     public void readFromPacket(MCDataInput packet) {
         frequency.readNBT(packet.readNBTTagCompound());
-        //owner = desc.readString();
     }
 
     @Override
