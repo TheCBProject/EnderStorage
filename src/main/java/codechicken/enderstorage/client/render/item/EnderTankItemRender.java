@@ -3,7 +3,6 @@ package codechicken.enderstorage.client.render.item;
 import codechicken.enderstorage.api.Frequency;
 import codechicken.enderstorage.client.render.tile.RenderTileEnderTank;
 import codechicken.enderstorage.network.TankSynchroniser;
-import codechicken.enderstorage.util.LogHelper;
 import codechicken.lib.render.CCRenderState;
 import codechicken.lib.render.IItemRenderer;
 import codechicken.lib.render.RenderUtils;
@@ -20,8 +19,6 @@ import net.minecraft.util.EnumFacing;
 import net.minecraftforge.client.model.IPerspectiveAwareModel;
 import net.minecraftforge.fluids.FluidStack;
 import org.apache.commons.lang3.tuple.Pair;
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL12;
 
 import javax.vecmath.Matrix4f;
 import java.util.ArrayList;
@@ -42,9 +39,11 @@ public class EnderTankItemRender implements IItemRenderer, IPerspectiveAwareMode
         if (fluidStack != null && RenderUtils.shouldRenderFluid(fluidStack)) {
             RenderTileEnderTank.renderLiquid(fluidStack, 0, 0, 0);
         }
-        //GlStateManager.alphaFunc(516, 0.1F);
-        //GlStateManager.enableBlend();
-        //GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
+        //Fixes issues with inventory rendering.
+        //The Portal renderer modifies blend and disables it.
+        //Vanillas inventory relies on the fact that items don't modify gl so it never bothers to set it again.
+        GlStateManager.enableBlend();
+        GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
         GlStateManager.popMatrix();
     }
 

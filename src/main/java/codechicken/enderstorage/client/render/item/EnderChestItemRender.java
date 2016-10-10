@@ -31,6 +31,11 @@ public class EnderChestItemRender implements IItemRenderer, IPerspectiveAwareMod
         Frequency frequency = Frequency.fromItemStack(item);
         RenderTileEnderChest.renderChest(2, frequency, 0, 0, 0, 0, 0F);
 
+        //Fixes issues with inventory rendering.
+        //The Portal renderer modifies blend and disables it.
+        //Vanillas inventory relies on the fact that items don't modify gl so it never bothers to set it again.
+        GlStateManager.enableBlend();
+        GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
         GlStateManager.popMatrix();
     }
 
