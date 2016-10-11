@@ -8,7 +8,7 @@ import codechicken.enderstorage.tile.TileEnderChest;
 import codechicken.lib.render.CCModelLibrary;
 import codechicken.lib.render.CCRenderState;
 import codechicken.lib.render.RenderUtils;
-import codechicken.lib.render.TextureUtils;
+import codechicken.lib.texture.TextureUtils;
 import codechicken.lib.util.ClientUtils;
 import codechicken.lib.vec.Matrix4;
 import codechicken.lib.vec.Rotation;
@@ -63,9 +63,10 @@ public class RenderTileEnderChest extends TileEntitySpecialRenderer<TileEnderChe
         GlStateManager.disableLighting();
         TextureUtils.changeTexture("enderstorage:textures/hedronmap.png");
         GlStateManager.pushMatrix();
-        CCRenderState.startDrawing(7, DefaultVertexFormats.POSITION_TEX_COLOR_NORMAL);
-        CCModelLibrary.icosahedron7.render(pearlMat);
-        CCRenderState.draw();
+        CCRenderState ccrs = CCRenderState.instance();
+        ccrs.startDrawing(7, DefaultVertexFormats.POSITION_TEX_COLOR_NORMAL);
+        CCModelLibrary.icosahedron7.render(ccrs, pearlMat);
+        ccrs.draw();
         GlStateManager.popMatrix();
         GlStateManager.enableLighting();
     }

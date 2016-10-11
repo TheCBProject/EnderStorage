@@ -3,7 +3,7 @@ package codechicken.enderstorage.init;
 import codechicken.enderstorage.item.ItemEnderPouch;
 import codechicken.enderstorage.reference.Reference;
 import codechicken.lib.model.CCOverrideBakedModel;
-import codechicken.lib.render.ModelRegistryHelper;
+import codechicken.lib.model.ModelRegistryHelper;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.fml.common.registry.GameRegistry;

@@ -2,7 +2,7 @@ package codechicken.enderstorage.client.gui;
 
 import codechicken.enderstorage.container.ContainerEnderItemStorage;
 import codechicken.enderstorage.storage.EnderItemStorage;
-import codechicken.lib.render.TextureUtils;
+import codechicken.lib.texture.TextureUtils;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.player.InventoryPlayer;

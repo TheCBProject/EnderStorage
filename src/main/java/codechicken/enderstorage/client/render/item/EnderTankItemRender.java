@@ -4,9 +4,9 @@ import codechicken.enderstorage.api.Frequency;
 import codechicken.enderstorage.client.render.tile.RenderTileEnderTank;
 import codechicken.enderstorage.network.TankSynchroniser;
 import codechicken.lib.render.CCRenderState;
-import codechicken.lib.render.IItemRenderer;
+import codechicken.lib.render.item.IItemRenderer;
 import codechicken.lib.render.RenderUtils;
-import codechicken.lib.render.TransformUtils;
+import codechicken.lib.util.TransformUtils;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.block.model.BakedQuad;
@@ -31,11 +31,12 @@ public class EnderTankItemRender implements IItemRenderer, IPerspectiveAwareMode
     @Override
     public void renderItem(ItemStack item) {
         GlStateManager.pushMatrix();
-        CCRenderState.reset();
-        CCRenderState.pullLightmap();
+        CCRenderState ccrs = CCRenderState.instance();
+        ccrs.reset();
+        ccrs.pullLightmap();
         Frequency frequency = Frequency.fromItemStack(item);
         FluidStack fluidStack = TankSynchroniser.getClientLiquid(frequency);
-        RenderTileEnderTank.renderTank(2, 0F, frequency, 0, 0, 0, 0);
+        RenderTileEnderTank.renderTank(ccrs, 2, 0F, frequency, 0, 0, 0, 0);
         if (fluidStack != null && RenderUtils.shouldRenderFluid(fluidStack)) {
             RenderTileEnderTank.renderLiquid(fluidStack, 0, 0, 0);
         }

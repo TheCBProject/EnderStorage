@@ -7,7 +7,8 @@ import codechicken.enderstorage.client.render.RenderCustomEndPortal;
 import codechicken.enderstorage.tile.TileEnderTank;
 import codechicken.lib.math.MathHelper;
 import codechicken.lib.render.*;
-import codechicken.lib.render.uv.UVTranslation;
+import codechicken.lib.texture.TextureUtils;
+import codechicken.lib.vec.uv.UVTranslation;
 import codechicken.lib.util.ClientUtils;
 import codechicken.lib.vec.*;
 import net.minecraft.client.renderer.GlStateManager;
@@ -58,13 +59,14 @@ public class RenderTileEnderTank extends TileEntitySpecialRenderer<TileEnderTank
 
     @Override
     public void renderTileEntityAt(TileEnderTank enderTank, double x, double y, double z, float partialTicks, int breakProgress) {
-        CCRenderState.reset();
+        CCRenderState ccrs = CCRenderState.instance();
+        ccrs.reset();
         //CCRenderState.setBrightness(enderTank.getWorld(), enderTank.getPos());
-        renderTank(enderTank.rotation, (float) MathHelper.interpolate(enderTank.pressure_state.b_rotate, enderTank.pressure_state.a_rotate, partialTicks) * 0.01745F, enderTank.frequency, x, y, z, RenderUtils.getTimeOffset(enderTank.getPos()));
+        renderTank(ccrs, enderTank.rotation, (float) MathHelper.interpolate(enderTank.pressure_state.b_rotate, enderTank.pressure_state.a_rotate, partialTicks) * 0.01745F, enderTank.frequency, x, y, z, RenderUtils.getTimeOffset(enderTank.getPos()));
         renderLiquid(enderTank.liquid_state.c_liquid, x, y, z);
     }
 
-    public static void renderTank(int rotation, float valve, Frequency freq, double x, double y, double z, int offset) {
+    public static void renderTank(CCRenderState ccrs, int rotation, float valve, Frequency freq, double x, double y, double z, int offset) {
         TileEntityRendererDispatcher info = TileEntityRendererDispatcher.instance;
         renderEndPortal.render(x, y, z, 0, info.entityX, info.entityY, info.entityZ, info.renderEngine);
         GlStateManager.color(1, 1, 1, 1);
@@ -74,18 +76,18 @@ public class RenderTileEnderTank extends TileEntitySpecialRenderer<TileEnderTank
         GlStateManager.rotate(-90 * (rotation + 2), 0, 1, 0);
 
         TextureUtils.changeTexture("enderstorage:textures/endertank.png");
-        CCRenderState.startDrawing(4, POSITION_TEX_COLOR_NORMAL);
-        tankModel.render();
-        valveModel.render(new Rotation(valve, new Vector3(0, 0, 1)).at(new Vector3(0, 0.4165, 0)), new UVTranslation(0, freq.hasOwner() ? 13 / 64D : 0));
-        CCRenderState.draw();
+        ccrs.startDrawing(4, POSITION_TEX_COLOR_NORMAL);
+        tankModel.render(ccrs);
+        valveModel.render(ccrs, new Rotation(valve, new Vector3(0, 0, 1)).at(new Vector3(0, 0.4165, 0)), new UVTranslation(0, freq.hasOwner() ? 13 / 64D : 0));
+        ccrs.draw();
 
         TextureUtils.changeTexture("enderstorage:textures/buttons.png");
-        CCRenderState.startDrawing(7, POSITION_TEX_COLOR_NORMAL);
+        ccrs.startDrawing(7, POSITION_TEX_COLOR_NORMAL);
         int[] colours = freq.toArray();
         for (int i = 0; i < 3; i++) {
-            buttons[i].render(new UVTranslation(0.25 * (colours[i] % 4), 0.25 * (colours[i] / 4)));
+            buttons[i].render(ccrs, new UVTranslation(0.25 * (colours[i] % 4), 0.25 * (colours[i] / 4)));
         }
-        CCRenderState.draw();
+        ccrs.draw();
         GlStateManager.popMatrix();
 
         double time = ClientUtils.getRenderTime() + offset;
@@ -93,9 +95,9 @@ public class RenderTileEnderTank extends TileEntitySpecialRenderer<TileEnderTank
 
         GlStateManager.disableLighting();
         TextureUtils.changeTexture("enderstorage:textures/hedronmap.png");
-        CCRenderState.startDrawing(4, POSITION_TEX_COLOR_NORMAL);
-        CCModelLibrary.icosahedron4.render(pearlMat);
-        CCRenderState.draw();
+        ccrs.startDrawing(4, POSITION_TEX_COLOR_NORMAL);
+        CCModelLibrary.icosahedron4.render(ccrs, pearlMat);
+        ccrs.draw();
         GlStateManager.enableLighting();
     }
 

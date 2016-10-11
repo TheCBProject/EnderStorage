@@ -9,7 +9,7 @@ import codechicken.enderstorage.util.LogHelper;
 import codechicken.lib.colour.EnumColour;
 import codechicken.lib.model.bakery.SimplePerspectiveAwareLayerModelBakery;
 import codechicken.lib.model.loader.IBakedModelLoader;
-import codechicken.lib.render.TransformUtils;
+import codechicken.lib.util.TransformUtils;
 import codechicken.lib.util.ArrayUtils;
 import com.google.common.collect.ImmutableList.Builder;
 import net.minecraft.block.state.IBlockState;

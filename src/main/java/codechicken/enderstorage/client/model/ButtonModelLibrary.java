@@ -2,7 +2,7 @@ package codechicken.enderstorage.client.model;
 
 import codechicken.enderstorage.tile.TileFrequencyOwner;
 import codechicken.lib.render.CCModel;
-import codechicken.lib.render.Vertex5;
+import codechicken.lib.vec.Vertex5;
 import codechicken.lib.vec.Vector3;
 
 public class ButtonModelLibrary {
