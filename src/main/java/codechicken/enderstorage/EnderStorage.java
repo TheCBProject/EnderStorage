@@ -1,9 +1,9 @@
 package codechicken.enderstorage;
 
-import codechicken.core.launch.CodeChickenCorePlugin;
 import codechicken.enderstorage.handler.ConfigurationHandler;
 import codechicken.enderstorage.manager.EnderStorageManager;
 import codechicken.enderstorage.proxy.CommonProxy;
+import codechicken.lib.CodeChickenLib;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
@@ -12,7 +12,7 @@ import net.minecraftforge.fml.common.event.FMLServerStartedEvent;
 
 import static codechicken.enderstorage.reference.Reference.*;
 
-@Mod(modid = MOD_ID, name = MOD_NAME, dependencies = DEPENDENCIES, acceptedMinecraftVersions = CodeChickenCorePlugin.mcVersion)
+@Mod(modid = MOD_ID, name = MOD_NAME, dependencies = DEPENDENCIES, acceptedMinecraftVersions = CodeChickenLib.mcVersion)
 public class EnderStorage {
 
     @SidedProxy(clientSide = CLIENT_PROXY, serverSide = COMMON_PROXY)
