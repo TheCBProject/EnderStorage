@@ -1,7 +1,6 @@
 package codechicken.enderstorage.storage;
 
-import codechicken.core.IGuiPacketSender;
-import codechicken.core.ServerUtils;
+import codechicken.lib.gui.IGuiPacketSender;
 import codechicken.enderstorage.api.AbstractEnderStorage;
 import codechicken.enderstorage.api.Frequency;
 import codechicken.enderstorage.client.gui.GuiEnderItemStorage;
@@ -11,6 +10,7 @@ import codechicken.enderstorage.network.EnderStorageSPH;
 import codechicken.lib.inventory.InventoryUtils;
 import codechicken.lib.packet.PacketCustom;
 import codechicken.lib.util.ClientUtils;
+import codechicken.lib.util.ServerUtils;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.player.InventoryPlayer;

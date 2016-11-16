@@ -1,6 +1,5 @@
 package codechicken.enderstorage.network;
 
-import codechicken.core.ServerUtils;
 import codechicken.core.fluid.FluidUtils;
 import codechicken.enderstorage.api.Frequency;
 import codechicken.enderstorage.manager.EnderStorageManager;
@@ -8,6 +7,7 @@ import codechicken.enderstorage.storage.EnderLiquidStorage;
 import codechicken.lib.math.MathHelper;
 import codechicken.lib.packet.PacketCustom;
 import codechicken.lib.util.ClientUtils;
+import codechicken.lib.util.ServerUtils;
 import com.google.common.collect.Sets;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraftforge.event.world.WorldEvent;
@@ -15,8 +15,6 @@ import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.util.HashMap;
 import java.util.HashSet;
