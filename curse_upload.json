@@ -2,5 +2,15 @@
   "archivesBase" : "codechicken.EnderStorage",
   "displayName" : "Ender Storage",
   "projectId" : "245174",
-  "uploadSRC" : false
+  "uploadSRC" : false,
+  "relations" : [
+    {
+      "slug" : "codechicken-lib-1-8",
+      "type" : "requiredLibrary"
+    },
+    {
+      "slug" : "codechicken-core-1-8",
+      "type" : "requiredLibrary"
+    }
+  ]
 }
