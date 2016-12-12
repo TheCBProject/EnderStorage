@@ -37,8 +37,6 @@ public class TileEnderChest extends TileFrequencyOwner implements IInventory {
     public int c_numOpen;
     public int rotation;
 
-    @Deprecated
-    private EnderItemStorage storage;
     public static EnderDyeButton[] buttons;
 
     static {
@@ -91,11 +89,6 @@ public class TileEnderChest extends TileFrequencyOwner implements IInventory {
         a = 1.0F - a;
         a = 1.0F - a * a * a;
         return a * 3.141593 * -0.5;
-    }
-
-    @Deprecated
-    public void reloadStorage() {
-        storage = (EnderItemStorage) EnderStorageManager.instance(worldObj.isRemote).getStorage(frequency, "item");
     }
 
     @Override

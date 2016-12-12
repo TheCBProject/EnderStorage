@@ -1,6 +1,5 @@
 package codechicken.enderstorage.init;
 
-import codechicken.core.featurehack.GameDataManipulator;
 import codechicken.enderstorage.handler.ConfigurationHandler;
 import codechicken.enderstorage.item.ItemEnderChestDummy;
 import codechicken.enderstorage.manager.EnderStorageManager;
@@ -110,8 +109,8 @@ public class EnderStorageRecipe implements IRecipe {
         return instance;
     }
 
-    public static void removeVanillaChest() {
-        GameDataManipulator.replaceItem(Block.getIdFromBlock(Blocks.ENDER_CHEST), new ItemEnderChestDummy());
+    public static void removeVanillaChest() {//TODO
+        //GameDataManipulator.replaceItem(Block.getIdFromBlock(Blocks.ENDER_CHEST), new ItemEnderChestDummy());
         Iterator<IRecipe> iterator = CraftingManager.getInstance().getRecipeList().iterator();
         while (iterator.hasNext()) {
             ItemStack r = iterator.next().getRecipeOutput();
