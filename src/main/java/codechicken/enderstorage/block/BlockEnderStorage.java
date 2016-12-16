@@ -183,7 +183,7 @@ public class BlockEnderStorage extends Block implements ITileEntityProvider {
                 return true;
             }
         }
-        return owner.activate(player, hit.subHit);
+        return owner.activate(player, hit.subHit, heldItem);
     }
 
     @Override

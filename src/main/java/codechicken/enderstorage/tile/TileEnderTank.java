@@ -14,23 +14,25 @@ import codechicken.lib.raytracer.IndexedCuboid6;
 import codechicken.lib.vec.*;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.FluidTankInfo;
-import net.minecraftforge.fluids.IFluidHandler;
+import net.minecraftforge.fluids.FluidUtil;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
-import net.minecraftforge.fluids.capability.wrappers.FluidHandlerWrapper;
+import net.minecraftforge.fluids.capability.FluidTankProperties;
+import net.minecraftforge.fluids.capability.IFluidHandler;
+import net.minecraftforge.fluids.capability.IFluidTankProperties;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
 import static codechicken.lib.vec.Vector3.center;
 
-public class TileEnderTank extends TileFrequencyOwner implements IFluidHandler {
+public class TileEnderTank extends TileFrequencyOwner {
 
     public class EnderTankState extends TankSynchroniser.TankState {
         @Override
@@ -116,19 +118,20 @@ public class TileEnderTank extends TileFrequencyOwner implements IFluidHandler {
 
     private void ejectLiquid() {
         for (EnumFacing side : EnumFacing.values()) {
+
             TileEntity tile = worldObj.getTileEntity(getPos().offset(side));
-            if (!(tile instanceof IFluidHandler)) {
+            if (tile == null || !tile.hasCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, side.getOpposite())) {
                 continue;
             }
 
-            IFluidHandler c = (IFluidHandler) tile;
-            FluidStack liquid = drain(null, 100, false);
+            IFluidHandler c = tile.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, side.getOpposite());
+            FluidStack liquid = getStorage().drain(100, false);
             if (liquid == null) {
                 continue;
             }
-            int qty = c.fill(side.getOpposite(), liquid, true);
+            int qty = c.fill(liquid, true);
             if (qty > 0) {
-                drain(null, qty, true);
+                getStorage().drain(qty, true);
             }
         }
     }
@@ -144,39 +147,6 @@ public class TileEnderTank extends TileFrequencyOwner implements IFluidHandler {
     @Override
     public EnderLiquidStorage getStorage() {
         return (EnderLiquidStorage) EnderStorageManager.instance(worldObj.isRemote).getStorage(frequency, "liquid");
-    }
-
-    @Override
-    public int fill(EnumFacing from, FluidStack resource, boolean doFill) {
-        return getStorage().fill(from, resource, doFill);
-    }
-
-    @Override
-    public FluidStack drain(EnumFacing from, int maxDrain, boolean doDrain) {
-        return getStorage().drain(from, maxDrain, doDrain);
-    }
-
-    @Override
-    public FluidStack drain(EnumFacing from, FluidStack resource, boolean doDrain) {
-        return getStorage().drain(from, resource, doDrain);
-    }
-
-    @Override
-    public boolean canDrain(EnumFacing from, Fluid fluid) {
-        return getStorage().canDrain(from, fluid);
-    }
-
-    @Override
-    public boolean canFill(EnumFacing from, Fluid fluid) {
-        return getStorage().canFill(from, fluid);
-    }
-
-    @Override
-    public FluidTankInfo[] getTankInfo(EnumFacing from) {
-        if (worldObj.isRemote) {
-            return new FluidTankInfo[] { new FluidTankInfo(liquid_state.s_liquid, EnderLiquidStorage.CAPACITY) };
-        }
-        return getStorage().getTankInfo(from);
     }
 
     @Override
@@ -224,12 +194,12 @@ public class TileEnderTank extends TileFrequencyOwner implements IFluidHandler {
     }
 
     @Override
-    public boolean activate(EntityPlayer player, int subHit) {
+    public boolean activate(EntityPlayer player, int subHit, ItemStack stack) {
         if (subHit == 4) {
             pressure_state.invert();
             return true;
         }
-        return FluidUtils.fillTankWithContainer(this, player) || FluidUtils.emptyTankIntoContainer(this, player, getStorage().getFluid());
+        return FluidUtil.interactWithFluidHandler(stack, getStorage(), player);
     }
 
     @Override
@@ -278,22 +248,48 @@ public class TileEnderTank extends TileFrequencyOwner implements IFluidHandler {
 
     @Override
     public int comparatorInput() {
-        FluidTankInfo tank = getStorage().getTankInfo(null)[0];
-        return tank.fluid.amount * 14 / tank.capacity + (tank.fluid.amount > 0 ? 1 : 0);
+        IFluidTankProperties tank = getStorage().getTankProperties()[0];
+        FluidStack fluid = tank.getContents();
+        if (fluid == null) {
+            fluid = FluidUtils.emptyFluid();
+        }
+        return fluid.amount * 14 / tank.getCapacity() + (fluid.amount > 0 ? 1 : 0);
     }
 
     @Override
     public boolean hasCapability(Capability<?> capability, EnumFacing facing) {
-        if (capability == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY) {
-            return true;
-        }
-        return super.hasCapability(capability, facing);
+        return capability == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY || super.hasCapability(capability, facing);
     }
 
     @Override
     public <T> T getCapability(Capability<T> capability, EnumFacing facing) {
         if (capability == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY) {
-            return (T) new FluidHandlerWrapper(this, facing);
+            return CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY.cast(new IFluidHandler() {
+                @Override
+                public IFluidTankProperties[] getTankProperties() {
+                    if (worldObj.isRemote) {
+                        return new IFluidTankProperties[] { new FluidTankProperties(liquid_state.s_liquid, EnderLiquidStorage.CAPACITY) };
+                    }
+                    return getStorage().getTankProperties();
+                }
+
+                @Override
+                public int fill(FluidStack resource, boolean doFill) {
+                    return getStorage().fill(resource, doFill);
+                }
+
+                @Nullable
+                @Override
+                public FluidStack drain(FluidStack resource, boolean doDrain) {
+                    return getStorage().drain(resource, doDrain);
+                }
+
+                @Nullable
+                @Override
+                public FluidStack drain(int maxDrain, boolean doDrain) {
+                    return getStorage().drain(maxDrain, doDrain);
+                }
+            });
         }
         return super.getCapability(capability, facing);
     }

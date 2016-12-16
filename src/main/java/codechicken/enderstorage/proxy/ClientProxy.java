@@ -2,6 +2,7 @@ package codechicken.enderstorage.proxy;
 
 import codechicken.core.CCUpdateChecker;
 import codechicken.enderstorage.client.EnderStorageBakedModelProvider;
+import codechicken.enderstorage.client.render.entity.TankLayerRenderer;
 import codechicken.enderstorage.client.render.tile.RenderTileEnderChest;
 import codechicken.enderstorage.client.render.tile.RenderTileEnderTank;
 import codechicken.enderstorage.handler.ConfigurationHandler;
@@ -12,6 +13,8 @@ import codechicken.enderstorage.tile.TileEnderChest;
 import codechicken.enderstorage.tile.TileEnderTank;
 import codechicken.lib.model.loader.CCBakedModelLoader;
 import codechicken.lib.packet.PacketCustom;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.entity.RenderPlayer;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 
 /**
@@ -37,5 +40,9 @@ public class ClientProxy extends CommonProxy {
         PacketCustom.assignHandler(EnderStorageCPH.channel, new EnderStorageCPH());
         ClientRegistry.bindTileEntitySpecialRenderer(TileEnderChest.class, new RenderTileEnderChest());
         ClientRegistry.bindTileEntitySpecialRenderer(TileEnderTank.class, new RenderTileEnderTank());
+
+        for (RenderPlayer renderPlayer : Minecraft.getMinecraft().getRenderManager().getSkinMap().values()) {
+            renderPlayer.addLayer(new TankLayerRenderer());
+        }
     }
 }

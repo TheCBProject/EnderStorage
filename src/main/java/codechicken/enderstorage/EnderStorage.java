@@ -12,7 +12,7 @@ import net.minecraftforge.fml.common.event.FMLServerStartedEvent;
 
 import static codechicken.enderstorage.reference.Reference.*;
 
-@Mod(modid = MOD_ID, name = MOD_NAME, dependencies = DEPENDENCIES, acceptedMinecraftVersions = CodeChickenLib.mcVersion)
+@Mod(modid = MOD_ID, name = MOD_NAME, dependencies = DEPENDENCIES, acceptedMinecraftVersions = CodeChickenLib.mcVersion, certificateFingerprint = "f1850c39b2516232a2108a7bd84d1cb5df93b261")
 public class EnderStorage {
 
     @SidedProxy(clientSide = CLIENT_PROXY, serverSide = COMMON_PROXY)

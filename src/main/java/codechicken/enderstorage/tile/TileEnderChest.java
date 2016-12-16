@@ -163,7 +163,7 @@ public class TileEnderChest extends TileFrequencyOwner implements IInventory {
     }
 
     @Override
-    public boolean activate(EntityPlayer player, int subHit) {
+    public boolean activate(EntityPlayer player, int subHit, ItemStack stack) {
         getStorage().openSMPGui(player, "tile.enderChest.name");
         return true;
     }

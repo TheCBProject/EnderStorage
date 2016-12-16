@@ -12,6 +12,7 @@ import codechicken.lib.vec.Cuboid6;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
@@ -58,7 +59,7 @@ public abstract class TileFrequencyOwner extends TileEntity implements ICuboidPr
         return tag;
     }
 
-    public boolean activate(EntityPlayer player, int subHit) {
+    public boolean activate(EntityPlayer player, int subHit, ItemStack stack) {
         return false;
     }
 

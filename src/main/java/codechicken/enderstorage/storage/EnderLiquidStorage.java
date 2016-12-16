@@ -6,11 +6,10 @@ import codechicken.enderstorage.api.AbstractEnderStorage;
 import codechicken.enderstorage.api.Frequency;
 import codechicken.enderstorage.manager.EnderStorageManager;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.EnumFacing;
-import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.FluidTankInfo;
-import net.minecraftforge.fluids.IFluidHandler;
+import net.minecraftforge.fluids.capability.FluidTankProperties;
+import net.minecraftforge.fluids.capability.IFluidHandler;
+import net.minecraftforge.fluids.capability.IFluidTankProperties;
 
 public class EnderLiquidStorage extends AbstractEnderStorage implements IFluidHandler {
     public static final int CAPACITY = 16 * FluidUtils.B;
@@ -54,32 +53,22 @@ public class EnderLiquidStorage extends AbstractEnderStorage implements IFluidHa
     }
 
     @Override
-    public int fill(EnumFacing from, FluidStack resource, boolean doFill) {
+    public int fill(FluidStack resource, boolean doFill) {
         return tank.fill(resource, doFill);
     }
 
     @Override
-    public FluidStack drain(EnumFacing from, FluidStack resource, boolean doDrain) {
+    public FluidStack drain(FluidStack resource, boolean doDrain) {
         return tank.drain(resource, doDrain);
     }
 
     @Override
-    public FluidStack drain(EnumFacing from, int maxDrain, boolean doDrain) {
+    public FluidStack drain(int maxDrain, boolean doDrain) {
         return tank.drain(maxDrain, doDrain);
     }
 
     @Override
-    public boolean canFill(EnumFacing from, Fluid fluid) {
-        return true;
-    }
-
-    @Override
-    public boolean canDrain(EnumFacing from, Fluid fluid) {
-        return true;
-    }
-
-    @Override
-    public FluidTankInfo[] getTankInfo(EnumFacing from) {
-        return new FluidTankInfo[] { tank.getInfo() };
+    public IFluidTankProperties[] getTankProperties() {
+        return new IFluidTankProperties[] {new FluidTankProperties(tank.getInfo().fluid, tank.getInfo().capacity)};
     }
 }

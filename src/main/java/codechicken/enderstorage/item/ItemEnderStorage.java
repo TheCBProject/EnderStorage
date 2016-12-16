@@ -10,18 +10,23 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.IFluidContainerItem;
+import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 
+import javax.annotation.Nullable;
 import java.util.List;
 
 import static codechicken.enderstorage.reference.VariantReference.enderBlockNames;
 
-public class ItemEnderStorage extends ItemBlock implements IFluidContainerItem {
+public class ItemEnderStorage extends ItemBlock {
     public ItemEnderStorage(Block block) {
         super(block);
         setHasSubtypes(true);
@@ -65,40 +70,20 @@ public class ItemEnderStorage extends ItemBlock implements IFluidContainerItem {
     }
 
     @Override
-    public FluidStack getFluid(ItemStack container) {
-        if (getMetadata(container.getItemDamage()) == 1) {
-            FluidStack fluid = getLiquidStorage(container).getFluid();
-            LogHelper.info("Liquid{ Name: %s, Amount: %s }", fluid.getFluid().getName(), fluid.amount);
-            return fluid;
+    public ICapabilityProvider initCapabilities(final ItemStack stack, NBTTagCompound nbt) {
+        if (getMetadata(stack) == 1) {
+            return new ICapabilityProvider() {
+                @Override
+                public boolean hasCapability(Capability<?> capability, @Nullable EnumFacing facing) {
+                    return capability == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY;
+                }
+
+                @Override
+                public <T> T getCapability(Capability<T> capability, @Nullable EnumFacing facing) {
+                    return CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY.cast(capability == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY ? getLiquidStorage(stack) : null);
+                }
+            };
         }
-
-        return null;
-    }
-
-    @Override
-    public int getCapacity(ItemStack container) {
-        if (getMetadata(container.getItemDamage()) == 1) {
-            return EnderLiquidStorage.CAPACITY;
-        }
-
-        return 0;
-    }
-
-    @Override
-    public int fill(ItemStack container, FluidStack resource, boolean doFill) {
-        if (getMetadata(container.getItemDamage()) == 1) {
-            return getLiquidStorage(container).fill(null, resource, doFill);
-        }
-
-        return 0;
-    }
-
-    @Override
-    public FluidStack drain(ItemStack container, int maxDrain, boolean doDrain) {
-        if (getMetadata(container.getItemDamage()) == 1) {
-            return getLiquidStorage(container).drain(null, maxDrain, doDrain);
-        }
-
         return null;
     }
 }
