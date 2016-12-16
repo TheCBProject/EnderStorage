@@ -27,6 +27,7 @@ public class EnderStorage {
 
     @Mod.EventHandler
     public void preInit(FMLPreInitializationEvent event) {
+        FingerprintChecker.runFingerprintChecks();
         ConfigurationHandler.init(event.getSuggestedConfigurationFile());
         proxy.preInit();
     }
