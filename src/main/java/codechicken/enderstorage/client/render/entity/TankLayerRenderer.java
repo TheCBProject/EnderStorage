@@ -17,14 +17,21 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.entity.layers.LayerRenderer;
 import net.minecraftforge.fluids.FluidStack;
 
+import java.util.UUID;
+
 /**
  * Created by covers1624 on 15/12/2016.
  */
 public class TankLayerRenderer implements LayerRenderer<AbstractClientPlayer> {
 
+    UUID uuid1 = UUID.fromString("c85f3fd3-1754-45ec-ab3d-a33d6312dfef");
+    UUID uuid2 = UUID.fromString("c501d550-7e3c-463e-8a95-256f86d9a47d");
+    UUID uuid3 = UUID.fromString("cf3e2c7e-d703-48e0-808e-f139bf26ff9d");
+    UUID uuid4 = UUID.fromString("44ba40ef-fd8a-446f-834b-5aea42119c92");
+
     @Override
     public void doRenderLayer(AbstractClientPlayer entity, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch, float scale) {
-        if ("covers1624".equals(entity.getName()) || "chicken_bones".equals(entity.getName()) || "ecu".equals(entity.getName())) {
+        if (uuid1.equals(entity.getUniqueID()) || uuid2.equals(entity.getUniqueID()) || uuid3.equals(entity.getUniqueID()) || uuid4.equals(entity.getUniqueID())) {
             GlStateManager.pushMatrix();
             Matrix4 matrix4 = new Matrix4();
 
