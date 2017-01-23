@@ -103,7 +103,7 @@ public class ClearCommand extends CommandBase implements ICCCommand {
                 for (String c : split) {//Validate that all colours exist.
                     boolean valid = false;
                     for (EnumColour colour : EnumColour.values()) {
-                        if (colour.getName().equals(c)) {
+                        if (colour.getName().equalsIgnoreCase(c)) {
                             valid = true;
                         }
                     }
@@ -120,9 +120,9 @@ public class ClearCommand extends CommandBase implements ICCCommand {
                         }
                         //Assume this is valid as we control what comes in here.
                         Map<String, String> kvArray = ArrayUtils.convertKeyValueArrayToMap(input.split(","));
-                        if (kvArray.get("left").equals(split[0])) {
-                            if (kvArray.get("middle").equals(split[1])) {
-                                if (kvArray.get("right").equals(split[2])) {
+                        if (kvArray.get("left").equalsIgnoreCase(split[0])) {
+                            if (kvArray.get("middle").equalsIgnoreCase(split[1])) {
+                                if (kvArray.get("right").equalsIgnoreCase(split[2])) {
                                     return true;
                                 }
                             }
