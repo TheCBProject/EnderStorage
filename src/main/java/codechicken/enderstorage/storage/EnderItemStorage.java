@@ -1,12 +1,12 @@
 package codechicken.enderstorage.storage;
 
-import codechicken.lib.gui.IGuiPacketSender;
 import codechicken.enderstorage.api.AbstractEnderStorage;
 import codechicken.enderstorage.api.Frequency;
 import codechicken.enderstorage.client.gui.GuiEnderItemStorage;
 import codechicken.enderstorage.container.ContainerEnderItemStorage;
 import codechicken.enderstorage.manager.EnderStorageManager;
 import codechicken.enderstorage.network.EnderStorageSPH;
+import codechicken.lib.gui.IGuiPacketSender;
 import codechicken.lib.inventory.InventoryUtils;
 import codechicken.lib.packet.PacketCustom;
 import codechicken.lib.util.ClientUtils;
@@ -33,6 +33,14 @@ public class EnderItemStorage extends AbstractEnderStorage implements IInventory
         super(manager, freq);
         size = configSize;
         empty();
+    }
+
+    @Override
+    public void clearStorage() {
+        synchronized (this) {
+            empty();
+            super.clearStorage();
+        }
     }
 
     public void loadFromTag(NBTTagCompound tag) {
@@ -201,7 +209,7 @@ public class EnderItemStorage extends AbstractEnderStorage implements IInventory
         }
     }
 
-    @SideOnly(Side.CLIENT)
+    @SideOnly (Side.CLIENT)
     public void openClientGui(int windowID, InventoryPlayer playerInv, String name, int size) {
         this.size = size;
         empty();

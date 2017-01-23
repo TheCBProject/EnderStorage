@@ -34,6 +34,11 @@ public abstract class AbstractEnderStorage {
         return changeCount;
     }
 
+    //TODO 1.11, abstract.
+    public void clearStorage() {
+    	setDirty();
+    }
+
     public abstract String type();
 
     public abstract NBTTagCompound saveToTag();

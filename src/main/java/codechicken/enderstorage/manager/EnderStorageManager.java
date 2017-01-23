@@ -4,6 +4,7 @@ import codechicken.enderstorage.api.AbstractEnderStorage;
 import codechicken.enderstorage.api.EnderStoragePlugin;
 import codechicken.enderstorage.api.Frequency;
 import codechicken.lib.config.ConfigFile;
+import com.google.common.collect.ImmutableMap;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompressedStreamTools;
@@ -187,12 +188,12 @@ public class EnderStorageManager {
     @Deprecated
     public static int getColourFromFreq(int freq, int colour) {
         switch (colour) {
-        case 0:
-            return freq >> 8 & 0xF;
-        case 1:
-            return freq >> 4 & 0xF;
-        case 2:
-            return freq & 0xF;
+            case 0:
+                return freq >> 8 & 0xF;
+            case 1:
+                return freq >> 4 & 0xF;
+            case 2:
+                return freq & 0xF;
         }
         return 0;
     }
@@ -241,6 +242,24 @@ public class EnderStorageManager {
         if (clientManager != null) {
             clientManager.storageList.put(plugin.identifier(), new ArrayList<AbstractEnderStorage>());
         }
+    }
+
+    public static EnderStoragePlugin getPlugin(String identifier) {
+        return plugins.get(identifier);
+    }
+
+    public static Map<String, EnderStoragePlugin> getPlugins() {
+        return ImmutableMap.copyOf(plugins);
+    }
+
+    public List<String> getValidKeys(String identifer) {
+        List<String> list = new ArrayList<String>();
+        for (String key : saveTag.getKeySet()) {
+            if (key.endsWith(",type=" + identifer)) {
+                list.add(key.replace(",type=" + identifer, ""));
+            }
+        }
+        return list;
     }
 
     public void requestSave(AbstractEnderStorage storage) {

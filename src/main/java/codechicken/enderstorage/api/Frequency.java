@@ -14,6 +14,7 @@ import static codechicken.lib.colour.EnumColour.*;
 public final class Frequency implements Copyable<Frequency> {
 
     //public static final String[] colours = new String[] { "white", "orange", "magenta", "light_blue", "yellow", "lime", "pink", "gray", "light_gray", "cyan", "purple", "blue", "brown", "green", "red", "black" };
+    @Deprecated
     public static final EnumColour[] colours = new EnumColour[] { WHITE, ORANGE, MAGENTA, LIGHT_BLUE, YELLOW, LIME, PINK, GRAY, LIGHT_GRAY, CYAN, PURPLE, BLUE, BROWN, GREEN, RED, BLACK };
 
     public int left;
@@ -34,6 +35,34 @@ public final class Frequency implements Copyable<Frequency> {
 
     public Frequency(int left, int middle, int right) {
         this(left, middle, right, null);
+    }
+
+    public Frequency(EnumColour left, EnumColour middle, EnumColour right, String owner) {
+        this(left.ordinal(), middle.ordinal(), right.ordinal(), owner);
+    }
+
+    public Frequency(EnumColour left, EnumColour middle, EnumColour right) {
+        this(left, middle, right, null);
+    }
+
+    public static Frequency fromString(String left, String middle, String right, String owner) {
+        EnumColour c1 = EnumColour.fromName(left);
+        EnumColour c2 = EnumColour.fromName(middle);
+        EnumColour c3 = EnumColour.fromName(right);
+        if (c1 == null) {
+            throw new RuntimeException(left + " is an invalid colour!");
+        }
+        if (c2 == null) {
+            throw new RuntimeException(middle + " is an invalid colour!");
+        }
+        if (c3 == null) {
+            throw new RuntimeException(right + " is an invalid colour!");
+        }
+        return new Frequency(c1, c2, c3, owner);
+    }
+
+    public static Frequency fromString(String left, String middle, String right) {
+        return fromString(left, middle, right, null);
     }
 
     public Frequency setLeft(int left) {
@@ -84,27 +113,27 @@ public final class Frequency implements Copyable<Frequency> {
     }
 
     public String getLeft() {
-        return colours[left].getMinecraftName();
+        return EnumColour.values()[left].getMinecraftName();
     }
 
     public String getMiddle() {
-        return colours[middle].getMinecraftName();
+        return EnumColour.values()[middle].getMinecraftName();
     }
 
     public String getRight() {
-        return colours[right].getMinecraftName();
+        return EnumColour.values()[right].getMinecraftName();
     }
 
     public EnumColour getLeftRaw() {
-        return colours[left];
+        return EnumColour.values()[left];
     }
 
     public EnumColour getMiddleRaw() {
-        return colours[middle];
+        return EnumColour.values()[middle];
     }
 
     public EnumColour getRightRaw() {
-        return colours[right];
+        return EnumColour.values()[right];
     }
 
     public String getLocalizedLeft() {

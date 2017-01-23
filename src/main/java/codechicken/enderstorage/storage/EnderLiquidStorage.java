@@ -32,6 +32,12 @@ public class EnderLiquidStorage extends AbstractEnderStorage implements IFluidHa
         tank = new Tank(CAPACITY);
     }
 
+    @Override
+    public void clearStorage() {
+        tank = new Tank(CAPACITY);
+        super.clearStorage();
+    }
+
     public void loadFromTag(NBTTagCompound tag) {
         tank.fromTag(tag.getCompoundTag("tank"));
     }
@@ -69,6 +75,6 @@ public class EnderLiquidStorage extends AbstractEnderStorage implements IFluidHa
 
     @Override
     public IFluidTankProperties[] getTankProperties() {
-        return new IFluidTankProperties[] {new FluidTankProperties(tank.getInfo().fluid, tank.getInfo().capacity)};
+        return new IFluidTankProperties[] { new FluidTankProperties(tank.getInfo().fluid, tank.getInfo().capacity) };
     }
 }
