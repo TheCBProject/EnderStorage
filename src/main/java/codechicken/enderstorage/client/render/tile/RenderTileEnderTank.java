@@ -60,13 +60,13 @@ public class RenderTileEnderTank extends TileEntitySpecialRenderer<TileEnderTank
     @Override
     public void renderTileEntityAt(TileEnderTank enderTank, double x, double y, double z, float partialTicks, int breakProgress) {
         CCRenderState ccrs = CCRenderState.instance();
-        ccrs.reset();
         //CCRenderState.setBrightness(enderTank.getWorld(), enderTank.getPos());
         renderTank(ccrs, enderTank.rotation, (float) MathHelper.interpolate(enderTank.pressure_state.b_rotate, enderTank.pressure_state.a_rotate, partialTicks) * 0.01745F, enderTank.frequency, x, y, z, RenderUtils.getTimeOffset(enderTank.getPos()));
         renderLiquid(enderTank.liquid_state.c_liquid, x, y, z);
     }
 
     public static void renderTank(CCRenderState ccrs, int rotation, float valve, Frequency freq, double x, double y, double z, int offset) {
+        ccrs.reset();
         TileEntityRendererDispatcher info = TileEntityRendererDispatcher.instance;
         renderEndPortal.render(x, y, z, 0, info.entityX, info.entityY, info.entityZ, info.renderEngine);
         GlStateManager.color(1, 1, 1, 1);
@@ -99,6 +99,7 @@ public class RenderTileEnderTank extends TileEntitySpecialRenderer<TileEnderTank
         CCModelLibrary.icosahedron4.render(ccrs, pearlMat);
         ccrs.draw();
         GlStateManager.enableLighting();
+        ccrs.reset();
     }
 
     public static void renderLiquid(FluidStack liquid, double x, double y, double z) {

@@ -1,10 +1,17 @@
 package codechicken.enderstorage.init;
 
+import codechicken.enderstorage.api.Frequency;
 import codechicken.enderstorage.item.ItemEnderPouch;
+import codechicken.enderstorage.manager.EnderStorageManager;
 import codechicken.enderstorage.reference.Reference;
+import codechicken.enderstorage.storage.EnderItemStorage;
 import codechicken.lib.model.CCOverrideBakedModel;
 import codechicken.lib.model.ModelRegistryHelper;
+import codechicken.lib.model.blockbakery.BlockBakery;
+import codechicken.lib.model.blockbakery.CCBakeryModel;
+import codechicken.lib.model.blockbakery.IItemStackKeyGenerator;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
+import net.minecraft.item.ItemStack;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
@@ -25,35 +32,15 @@ public class ModItems {
     @SideOnly(Side.CLIENT)
     public static void registerModels() {
         ModelLoader.setCustomModelResourceLocation(enderPouch, 0, new ModelResourceLocation(Reference.MOD_PREFIX + "enderPouch", "inventory"));
-        ModelRegistryHelper.register(new ModelResourceLocation(Reference.MOD_PREFIX + "enderPouch", "inventory"), new CCOverrideBakedModel());
-        /*ModelLoader.setCustomMeshDefinition(enderPouch, new ItemMeshDefinition() {
+        ModelRegistryHelper.register(new ModelResourceLocation(Reference.MOD_PREFIX + "enderPouch", "inventory"), new CCBakeryModel(""));
+        BlockBakery.registerItemKeyGenerator(enderPouch, new IItemStackKeyGenerator() {
             @Override
-            public ModelResourceLocation getModelLocation(ItemStack stack) {
+            public String generateKey(ItemStack stack) {
                 Frequency frequency = Frequency.fromItemStack(stack);
-                EnderItemStorage storage = (EnderItemStorage) EnderStorageManager.instance(true).getStorage(frequency, "item");
-                return new ModelResourceLocation(Reference.MOD_PREFIX + "enderPouch", frequency.toModelLoc() + ",open" + (storage.openCount() > 0));
+                boolean open = ((EnderItemStorage) EnderStorageManager.instance(true).getStorage(frequency, "item")).openCount() > 0;
+                return BlockBakery.defaultItemKeyGenerator.generateKey(stack) + "|" + frequency.toModelLoc() + "|" + open;
             }
         });
-        ArrayList<ModelResourceLocation> modelLocations = new ArrayList<ModelResourceLocation>();
-        for (int l = 0; l < 16; l++) {
-            for (int m = 0; m < 16; m++) {
-                for (int r = 0; r < 16; r++) {
-                    for (int ow = 0; ow < 2; ow++) {
-                        for (int op = 0; op < 2; op++) {
-                            Frequency frequency = new Frequency(l, m, r);
-                            if ((ow != 0)) {
-                                frequency.setOwner("dummy");
-                            }
-                            boolean open = (op != 0);
-                            ModelResourceLocation location = new ModelResourceLocation(Reference.MOD_PREFIX + "enderPouch", frequency.toModelLoc() + ",open=" + open);
-                            modelLocations.add(location);
-                        }
-                    }
-                }
-            }
-        }
-        ModelBakery.registerItemVariants(enderPouch, modelLocations.toArray(new ModelResourceLocation[modelLocations.size()]));
-        */
     }
 
 }
