@@ -5,6 +5,7 @@ import codechicken.enderstorage.manager.EnderStorageManager;
 import codechicken.enderstorage.reference.Reference;
 import codechicken.enderstorage.storage.EnderItemStorage;
 import codechicken.lib.colour.EnumColour;
+import codechicken.lib.model.PerspectiveAwareModelProperties;
 import codechicken.lib.model.bakery.ItemModelBakery;
 import codechicken.lib.model.blockbakery.IItemBakery;
 import codechicken.lib.texture.TextureUtils.IIconRegister;
@@ -44,11 +45,16 @@ public class EnderPouchBakery implements IItemBakery, IIconRegister {
     }
 
     @Override
+    public PerspectiveAwareModelProperties getModelProperties(ItemStack stack) {
+        return PerspectiveAwareModelProperties.DEFAULT_ITEM;
+    }
+
+    @Override
     public void registerIcons(TextureMap map) {
 
         String POUCH_PREFIX = Reference.MOD_PREFIX + "items/pouch/";
         String BUTTONS_PREFIX = POUCH_PREFIX + "buttons/";
-        String[] position_prefixes = {"left/", "middle/", "right/"};
+        String[] position_prefixes = { "left/", "middle/", "right/" };
 
         BAG_TEXTURES = new TextureAtlasSprite[2][2];
         COLOUR_TEXTURES = new TextureAtlasSprite[3][16];
@@ -59,7 +65,7 @@ public class EnderPouchBakery implements IItemBakery, IIconRegister {
         BAG_TEXTURES[1][1] = register(map, POUCH_PREFIX + "owned_open");
 
         for (int i = 0; i < 3; i++) {
-            for(EnumColour colour : EnumColour.values()) {
+            for (EnumColour colour : EnumColour.values()) {
                 COLOUR_TEXTURES[i][colour.ordinal()] = register(map, BUTTONS_PREFIX + position_prefixes[i] + colour.getMinecraftName());
             }
         }
