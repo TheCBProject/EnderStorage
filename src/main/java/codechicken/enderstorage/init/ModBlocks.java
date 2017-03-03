@@ -4,7 +4,6 @@ import codechicken.enderstorage.block.BlockEnderStorage;
 import codechicken.enderstorage.client.render.item.EnderChestItemRender;
 import codechicken.enderstorage.client.render.item.EnderTankItemRender;
 import codechicken.enderstorage.item.ItemEnderStorage;
-import codechicken.enderstorage.reference.Reference;
 import codechicken.enderstorage.reference.VariantReference;
 import codechicken.enderstorage.tile.TileEnderChest;
 import codechicken.enderstorage.tile.TileEnderTank;
@@ -24,6 +23,7 @@ public class ModBlocks {
     public static BlockEnderStorage blockEnderStorage;
 
     public static void init() {
+
         blockEnderStorage = new BlockEnderStorage();
         GameRegistry.register(blockEnderStorage.setRegistryName("enderStorage"));
         GameRegistry.register(new ItemEnderStorage(blockEnderStorage).setRegistryName("enderStorage"));
@@ -31,16 +31,17 @@ public class ModBlocks {
         GameRegistry.registerTileEntity(TileEnderTank.class, "Ender Tank");
     }
 
-    @SideOnly(Side.CLIENT)
+    @SideOnly (Side.CLIENT)
     public static void registerModels() {
+
         for (int i = 0; i < VariantReference.enderBlockNamesList.size(); i++) {
             String variant = VariantReference.enderBlockNamesList.get(i);
-            ModelResourceLocation location = new ModelResourceLocation(Reference.MOD_PREFIX + "enderStorage", "type=" + variant);
+            ModelResourceLocation location = new ModelResourceLocation("enderstorage:enderStorage", "type=" + variant);
             ModelLoader.setCustomModelResourceLocation(Item.getItemFromBlock(blockEnderStorage), i, location);
         }
 
-        ModelRegistryHelper.register(new ModelResourceLocation(Reference.MOD_PREFIX + "enderStorage", "type=enderChest"), new EnderChestItemRender());
-        ModelRegistryHelper.register(new ModelResourceLocation(Reference.MOD_PREFIX + "enderStorage", "type=enderTank"), new EnderTankItemRender());
+        ModelRegistryHelper.register(new ModelResourceLocation("enderstorage:enderStorage", "type=enderChest"), new EnderChestItemRender());
+        ModelRegistryHelper.register(new ModelResourceLocation("enderstorage:enderStorage", "type=enderTank"), new EnderTankItemRender());
     }
 
 }

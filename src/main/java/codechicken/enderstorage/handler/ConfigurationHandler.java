@@ -30,6 +30,7 @@ public class ConfigurationHandler {
     //TODO public static boolean enableChestInventoryLid;
 
     public static void init(File file) {
+
         if (!initialized) {
             config = new ConfigFile(file).setComment("EnderStorage Configuration File\n" + "Deleting any element will restore it to it's default value");
             initialized = true;
@@ -38,6 +39,7 @@ public class ConfigurationHandler {
     }
 
     public static void loadConfig() {
+
         clientCheckUpdates = config.getTag("clientUpdateCheck").getBooleanValue(true);
         disableVanillaEnderChest = config.getTag("disableVanilla").setComment("Set to true to make the vanilla EnderChest un-placeable.").getBooleanValue(true);
         removeVanillaRecipe = config.getTag("disableVanillaRecipe").setComment("Set to true to make the vanilla EnderChest un-craftable").getBooleanValue(false);

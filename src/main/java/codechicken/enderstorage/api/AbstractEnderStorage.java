@@ -4,17 +4,20 @@ import codechicken.enderstorage.manager.EnderStorageManager;
 import net.minecraft.nbt.NBTTagCompound;
 
 public abstract class AbstractEnderStorage {
+
     public final EnderStorageManager manager;
     public final Frequency freq;
     private boolean dirty;
     private int changeCount;
 
     public AbstractEnderStorage(EnderStorageManager manager, Frequency freq) {
+
         this.manager = manager;
         this.freq = freq;
     }
 
     public void setDirty() {
+
         if (manager.client) {
             return;
         }
@@ -27,17 +30,16 @@ public abstract class AbstractEnderStorage {
     }
 
     public void setClean() {
+
         dirty = false;
     }
 
     public int getChangeCount() {
+
         return changeCount;
     }
 
-    //TODO 1.11, abstract.
-    public void clearStorage() {
-    	setDirty();
-    }
+    public abstract void clearStorage();
 
     public abstract String type();
 

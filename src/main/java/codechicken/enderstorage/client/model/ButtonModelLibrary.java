@@ -2,10 +2,11 @@ package codechicken.enderstorage.client.model;
 
 import codechicken.enderstorage.tile.TileFrequencyOwner;
 import codechicken.lib.render.CCModel;
-import codechicken.lib.vec.Vertex5;
 import codechicken.lib.vec.Vector3;
+import codechicken.lib.vec.Vertex5;
 
 public class ButtonModelLibrary {
+
     public static CCModel button;
 
     static {
@@ -13,6 +14,7 @@ public class ButtonModelLibrary {
     }
 
     private static void generateButton() {
+
         button = CCModel.quadModel(20);
         Vector3 min = TileFrequencyOwner.selection_button.min;
         Vector3 max = TileFrequencyOwner.selection_button.max;

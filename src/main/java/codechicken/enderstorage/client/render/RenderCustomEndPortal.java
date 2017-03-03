@@ -12,6 +12,7 @@ import java.util.Random;
 import static org.lwjgl.opengl.GL11.GL_QUADS;
 
 public class RenderCustomEndPortal {
+
     private static final ResourceLocation end_skyTex = new ResourceLocation("textures/environment/end_sky.png");
     private static final ResourceLocation end_portalTex = new ResourceLocation("textures/entity/end_portal.png");
 
@@ -24,6 +25,7 @@ public class RenderCustomEndPortal {
     FloatBuffer field_40448_a;
 
     public RenderCustomEndPortal(double y, double x1, double x2, double z1, double z2) {
+
         surfaceY = y;
         surfaceX1 = x1;
         surfaceX2 = x2;
@@ -33,6 +35,7 @@ public class RenderCustomEndPortal {
     }
 
     public void render(double posX, double posY, double posZ, float frame, double playerX, double playerY, double playerZ, TextureManager r) {
+
         if (r == null) {
             return;
         }
@@ -58,8 +61,8 @@ public class RenderCustomEndPortal {
                 f6 = 0.5F;
             }
             float f8 = (float) (-(posY + surfaceY));
-            float f9 = (float) (f8 + ActiveRenderInfo.getPosition().yCoord);
-            float f10 = (float) (f8 + f5 + ActiveRenderInfo.getPosition().yCoord);
+            float f9 = (float) (f8 + ActiveRenderInfo.position.yCoord);
+            float f10 = (float) (f8 + f5 + ActiveRenderInfo.position.yCoord);
             float f11 = f9 / f10;
             f11 = (float) (posY + surfaceY) + f11;
             GlStateManager.translate(playerX, f11, playerZ);
@@ -85,8 +88,8 @@ public class RenderCustomEndPortal {
             GlStateManager.rotate((i * i * 4321 + i * 9) * 2.0F, 0.0F, 0.0F, 1.0F);
             GlStateManager.translate(-0.5F, -0.5F, 0.0F);
             GlStateManager.translate(-playerX, -playerZ, -playerY);
-            f9 = f8 + (float) ActiveRenderInfo.getPosition().yCoord;
-            GlStateManager.translate(((float) ActiveRenderInfo.getPosition().xCoord * f5) / f9, ((float) ActiveRenderInfo.getPosition().zCoord * f5) / f9, -playerY + 20);
+            f9 = f8 + (float) ActiveRenderInfo.position.yCoord;
+            GlStateManager.translate(((float) ActiveRenderInfo.position.xCoord * f5) / f9, ((float) ActiveRenderInfo.position.zCoord * f5) / f9, -playerY + 20);
             Tessellator tessellator = Tessellator.getInstance();
             VertexBuffer buffer = tessellator.getBuffer();
             buffer.begin(GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
@@ -116,6 +119,7 @@ public class RenderCustomEndPortal {
     }
 
     private FloatBuffer func_40447_a(float f, float f1, float f2, float f3) {
+
         field_40448_a.clear();
         field_40448_a.put(f).put(f1).put(f2).put(f3);
         field_40448_a.flip();

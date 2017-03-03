@@ -7,7 +7,6 @@ import codechicken.enderstorage.manager.EnderStorageManager;
 import codechicken.enderstorage.util.LogHelper;
 import codechicken.lib.colour.EnumColour;
 import codechicken.lib.util.ArrayUtils;
-import com.google.common.base.Predicate;
 import com.google.common.base.Strings;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
@@ -15,8 +14,8 @@ import net.minecraft.command.ICommandSender;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.text.TextComponentString;
 
-import javax.annotation.Nullable;
 import java.util.*;
+import java.util.function.Predicate;
 
 import static net.minecraft.util.text.TextFormatting.*;
 
@@ -26,18 +25,21 @@ import static net.minecraft.util.text.TextFormatting.*;
 public class ClearCommand extends CommandBase implements ICCCommand {
 
     @Override
-    public String getCommandName() {
+    public String getName() {
+
         return "clear";
     }
 
     @Override
     public String getBrief() {
+
         return "Provides ability to clear a users EnderStorage.";
     }
 
     @Override
     public List<String> getHelpLines() {
-        List<String> lines = new LinkedList<String>();
+
+        List<String> lines = new LinkedList<>();
         lines.add("[] Defines required choice parameters.");
         lines.add("<> Defines optional parameters.");
         lines.add("Syntax: \"/EnderStorage clear [item|liquid|*] [freq|*] <player>\"");
@@ -48,14 +50,16 @@ public class ClearCommand extends CommandBase implements ICCCommand {
     }
 
     @Override
-    public String getCommandUsage(ICommandSender sender) {
+    public String getUsage(ICommandSender sender) {
+
         return getBrief();
     }
 
     @Override
     public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
+
         if (args.length < 2) {
-            sender.addChatMessage(new TextComponentString(RED + "Not Enough Arguments!"));
+            sender.sendMessage(new TextComponentString(RED + "Not Enough Arguments!"));
             displayHelpText(sender);
             return;
         }
@@ -77,13 +81,14 @@ public class ClearCommand extends CommandBase implements ICCCommand {
             if (identifiers.contains(identifier)) {
                 nukeStorage(identifier, frequency, owner, sender);
             } else {
-                sender.addChatMessage(new TextComponentString(RED + "Invalid Storage Identifier [" + identifier + "]"));
-                sender.addChatMessage(new TextComponentString("For valid Identifiers run, " + YELLOW + "\"/EnderStorage help validStorage\""));
+                sender.sendMessage(new TextComponentString(RED + "Invalid Storage Identifier [" + identifier + "]"));
+                sender.sendMessage(new TextComponentString("For valid Identifiers run, " + YELLOW + "\"/EnderStorage help validStorage\""));
             }
         }
     }
 
     private static void nukeStorage(String identifier, String frequency, final String owner, ICommandSender sender) throws CommandException {
+
         LogHelper.info("%s %s %s", identifier, frequency, owner);
         EnderStorageManager manager = EnderStorageManager.instance(false);
         List<String> validKeys = manager.getValidKeys(identifier);
@@ -91,12 +96,7 @@ public class ClearCommand extends CommandBase implements ICCCommand {
         Predicate<String> ownerPredicate;
 
         if ("*".equals(frequency)) {
-            frequencyPredicate = new Predicate<String>() {
-                @Override
-                public boolean apply(@Nullable String input) {
-                    return true;
-                }
-            };
+            frequencyPredicate = input -> true;
         } else {
             final String[] split = frequency.split(",");
             if (split != null && split.length == 3) {
@@ -112,23 +112,20 @@ public class ClearCommand extends CommandBase implements ICCCommand {
                     }
                 }
                 //If we've come this far the colour is probably valid.
-                frequencyPredicate = new Predicate<String>() {
-                    @Override
-                    public boolean apply(@Nullable String input) {
-                        if (Strings.isNullOrEmpty(input)) {
-                            return false;
-                        }
-                        //Assume this is valid as we control what comes in here.
-                        Map<String, String> kvArray = ArrayUtils.convertKeyValueArrayToMap(input.split(","));
-                        if (kvArray.get("left").equalsIgnoreCase(split[0])) {
-                            if (kvArray.get("middle").equalsIgnoreCase(split[1])) {
-                                if (kvArray.get("right").equalsIgnoreCase(split[2])) {
-                                    return true;
-                                }
-                            }
-                        }
+                frequencyPredicate = input -> {
+                    if (Strings.isNullOrEmpty(input)) {
                         return false;
                     }
+                    //Assume this is valid as we control what comes in here.
+                    Map<String, String> kvArray = ArrayUtils.convertKeyValueArrayToMap(input.split(","));
+                    if (kvArray.get("left").equalsIgnoreCase(split[0])) {
+                        if (kvArray.get("middle").equalsIgnoreCase(split[1])) {
+                            if (kvArray.get("right").equalsIgnoreCase(split[2])) {
+                                return true;
+                            }
+                        }
+                    }
+                    return false;
                 };
             } else {
                 throw new CommandException("Invalid frequency format! \"<colour>,<colour>,<colour>\"");
@@ -137,39 +134,24 @@ public class ClearCommand extends CommandBase implements ICCCommand {
 
         if (owner == null) {
             //No owner, cool, only global then.
-            ownerPredicate = new Predicate<String>() {
-                @Override
-                public boolean apply(@Nullable String input) {
-                    return input == null;
-                }
-            };
+            ownerPredicate = Objects::isNull;
         } else {
             if ("*".equals(owner)) {
                 //Any owner, not global.
-                ownerPredicate = new Predicate<String>() {
-                    @Override
-                    public boolean apply(@Nullable String input) {
-                        return !Strings.isNullOrEmpty(input);
-                    }
-                };
+                ownerPredicate = input -> !Strings.isNullOrEmpty(input);
             } else {
                 //Specific owner.
-                ownerPredicate = new Predicate<String>() {
-                    @Override
-                    public boolean apply(@Nullable String input) {
-                        return owner.equals(input);
-                    }
-                };
+                ownerPredicate = owner::equals;
             }
         }
 
         boolean noStorage = true;
-        List<String> cleared = new ArrayList<String>();
+        List<String> cleared = new ArrayList<>();
         for (String key : validKeys) {
             LogHelper.info(key);
             Map<String, String> kvArray = ArrayUtils.convertKeyValueArrayToMap(key.split(","));
-            if (frequencyPredicate.apply(key)) {
-                if (ownerPredicate.apply(kvArray.get("owner"))) {
+            if (frequencyPredicate.test(key)) {
+                if (ownerPredicate.test(kvArray.get("owner"))) {
                     noStorage = false;
                     Frequency freq = Frequency.fromString(kvArray.get("left"), kvArray.get("middle"), kvArray.get("right"), kvArray.get("owner"));
                     AbstractEnderStorage storage = manager.getStorage(freq, identifier);
@@ -181,16 +163,17 @@ public class ClearCommand extends CommandBase implements ICCCommand {
         if (noStorage) {
             throw new CommandException("No storage's exist for that colour and owner..");
         } else {
-            sender.addChatMessage(new TextComponentString(YELLOW + "Successfully cleared " + cleared.size() + " Storage's!"));
+            sender.sendMessage(new TextComponentString(YELLOW + "Successfully cleared " + cleared.size() + " Storage's!"));
             for (String entry : cleared) {
-                sender.addChatMessage(new TextComponentString(BLUE + entry));
+                sender.sendMessage(new TextComponentString(BLUE + entry));
             }
         }
     }
 
     private void displayHelpText(ICommandSender sender) {
+
         for (String line : getHelpLines()) {
-            sender.addChatMessage(new TextComponentString(BLUE + line));
+            sender.sendMessage(new TextComponentString(BLUE + line));
         }
     }
 }

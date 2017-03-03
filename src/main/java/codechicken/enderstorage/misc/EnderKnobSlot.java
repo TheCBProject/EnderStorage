@@ -4,7 +4,9 @@ import codechicken.lib.vec.Vector3;
 import net.minecraft.util.math.AxisAlignedBB;
 
 public class EnderKnobSlot {
+
     public EnderKnobSlot(int meta) {
+
         Vector3[] verts = new Vector3[8];
         verts[0] = new Vector3(-0.0625, 0.4375, -0.5);
         verts[1] = new Vector3(0.0625, 0.4375, -0.5);
@@ -26,10 +28,12 @@ public class EnderKnobSlot {
     private AxisAlignedBB aabb;
 
     public AxisAlignedBB getSelectionBB() {
+
         return aabb;
     }
 
     public static AxisAlignedBB cornersToAABB(Vector3[] corners) {
+
         Vector3 min = corners[0].copy();
         Vector3 max = corners[0].copy();
         for (int i = 1; i < corners.length; i++) {

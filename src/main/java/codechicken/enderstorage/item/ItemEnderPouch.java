@@ -6,7 +6,6 @@ import codechicken.enderstorage.handler.ConfigurationHandler;
 import codechicken.enderstorage.manager.EnderStorageManager;
 import codechicken.enderstorage.storage.EnderItemStorage;
 import codechicken.enderstorage.tile.TileEnderChest;
-import codechicken.enderstorage.util.LogHelper;
 import codechicken.lib.model.blockbakery.IBakeryItem;
 import codechicken.lib.model.blockbakery.IItemBakery;
 import net.minecraft.creativetab.CreativeTabs;
@@ -29,6 +28,7 @@ import java.util.List;
 public class ItemEnderPouch extends Item implements IBakeryItem {
 
     public ItemEnderPouch() {
+
         setMaxStackSize(1);
         setCreativeTab(CreativeTabs.TRANSPORTATION);
         setUnlocalizedName("enderPouch");
@@ -36,6 +36,7 @@ public class ItemEnderPouch extends Item implements IBakeryItem {
 
     @Override
     public void addInformation(ItemStack stack, EntityPlayer player, List<String> list, boolean extended) {
+
         Frequency freq = Frequency.fromItemStack(stack);
         if (freq.owner != null) {
             list.add(freq.owner);
@@ -44,11 +45,13 @@ public class ItemEnderPouch extends Item implements IBakeryItem {
     }
 
     @Override
-    public EnumActionResult onItemUseFirst(ItemStack stack, EntityPlayer player, World world, BlockPos pos, EnumFacing side, float hitX, float hitY, float hitZ, EnumHand hand) {
+    public EnumActionResult onItemUseFirst(EntityPlayer player, World world, BlockPos pos, EnumFacing side, float hitX, float hitY, float hitZ, EnumHand hand) {
+
         if (world.isRemote) {
             return EnumActionResult.PASS;
         }
 
+        ItemStack stack = player.getHeldItem(hand);
         TileEntity tile = world.getTileEntity(pos);
         if (tile instanceof TileEnderChest && player.isSneaking()) {
             TileEnderChest chest = (TileEnderChest) tile;
@@ -70,19 +73,21 @@ public class ItemEnderPouch extends Item implements IBakeryItem {
     }
 
     @Override
-    public ActionResult<ItemStack> onItemRightClick(ItemStack stack, World world, EntityPlayer player, EnumHand hand) {
+    public ActionResult<ItemStack> onItemRightClick(World world, EntityPlayer player, EnumHand hand) {
 
+        ItemStack stack = player.getHeldItem(hand);
         if (world.isRemote || player.isSneaking()) {
-            return new ActionResult<ItemStack>(EnumActionResult.PASS, stack);
+            return new ActionResult<>(EnumActionResult.PASS, stack);
         }
         Frequency frequency = Frequency.fromItemStack(stack);
         ((EnderItemStorage) EnderStorageManager.instance(world.isRemote).getStorage(frequency, "item")).openSMPGui(player, stack.getUnlocalizedName() + ".name");
-        return new ActionResult<ItemStack>(EnumActionResult.SUCCESS, stack);
+        return new ActionResult<>(EnumActionResult.SUCCESS, stack);
     }
 
-    @SideOnly(Side.CLIENT)
+    @SideOnly (Side.CLIENT)
     @Override
     public IItemBakery getBakery() {
+
         return EnderPouchBakery.INSTANCE;
     }
 }

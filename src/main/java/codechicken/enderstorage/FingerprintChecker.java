@@ -21,8 +21,8 @@ import java.util.Map.Entry;
  */
 public class FingerprintChecker {
 
-    private static final Map<String, String> modCertMap = new HashMap<String, String>();
-    private static final List<String> invalidMods = new ArrayList<String>();
+    private static final Map<String, String> modCertMap = new HashMap<>();
+    private static final List<String> invalidMods = new ArrayList<>();
 
     static {
         //@formatter:off
@@ -37,6 +37,7 @@ public class FingerprintChecker {
     }
 
     public static void runFingerprintChecks() {
+
         try {
             ModContainer activeContainer = Loader.instance().activeModContainer();
             for (Entry<String, ModContainer> modEntry : Loader.instance().getIndexedModList().entrySet()) {

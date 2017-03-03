@@ -10,11 +10,13 @@ import net.minecraft.inventory.IInventory;
 import net.minecraft.util.text.translation.I18n;
 
 public class GuiEnderItemStorage extends GuiContainer {
+
     private String name;
     private IInventory playerInv;
     private EnderItemStorage chestInv;
 
     public GuiEnderItemStorage(InventoryPlayer invplayer, EnderItemStorage chestInv, String name) {
+
         super(new ContainerEnderItemStorage(invplayer, chestInv, true));
         playerInv = invplayer;
         this.chestInv = chestInv;
@@ -28,6 +30,7 @@ public class GuiEnderItemStorage extends GuiContainer {
 
     @Override
     protected void drawGuiContainerForegroundLayer(int par1, int par2) {
+
         fontRendererObj.drawString(name, 8, 6, 0x404040);
         fontRendererObj.drawString(I18n.translateToLocal(playerInv.getName()), 8, ySize - 94, 0x404040);
         ContainerEnderItemStorage ces = (ContainerEnderItemStorage) inventorySlots;
@@ -37,6 +40,7 @@ public class GuiEnderItemStorage extends GuiContainer {
     }
 
     protected void drawGuiContainerBackgroundLayer(float f, int i, int j) {
+
         GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
         TextureUtils.changeTexture(chestInv.getSize() == 0 ? "textures/gui/container/dispenser.png" : "textures/gui/container/generic_54.png");
         int x = (width - xSize) / 2;

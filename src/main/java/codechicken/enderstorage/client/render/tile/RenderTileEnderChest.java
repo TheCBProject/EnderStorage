@@ -24,6 +24,7 @@ import org.lwjgl.opengl.GL11;
  * Created by covers1624 on 4/12/2016.
  */
 public class RenderTileEnderChest extends TileEntitySpecialRenderer<TileEnderChest> {
+
     private static ModelEnderChest model = new ModelEnderChest();
     public static final double phi = 1.618034;
 
@@ -31,10 +32,12 @@ public class RenderTileEnderChest extends TileEntitySpecialRenderer<TileEnderChe
 
     @Override
     public void renderTileEntityAt(TileEnderChest enderChest, double x, double y, double z, float partialTicks, int destroyStage) {
+
         renderChest(enderChest.rotation, enderChest.frequency, x, y, z, RenderUtils.getTimeOffset(enderChest.getPos()), (float) enderChest.getRadianLidAngle(partialTicks));
     }
 
     public static void renderChest(int rotation, Frequency freq, double x, double y, double z, int offset, float lidAngle) {
+
         TileEntityRendererDispatcher info = TileEntityRendererDispatcher.instance;
         renderEndPortal.render(x, y, z, 0, info.entityX, info.entityY, info.entityZ, info.renderEngine);
         GlStateManager.color(1, 1, 1, 1);
@@ -72,6 +75,7 @@ public class RenderTileEnderChest extends TileEntitySpecialRenderer<TileEnderChe
     }
 
     private static void renderButtons(Frequency freq, int rot, double lidAngle) {
+
         TextureUtils.changeTexture("enderstorage:textures/buttons.png");
 
         drawButton(0, freq.left, rot, lidAngle);
@@ -80,6 +84,7 @@ public class RenderTileEnderChest extends TileEntitySpecialRenderer<TileEnderChe
     }
 
     private static void drawButton(int button, int colour, int rot, double lidAngle) {
+
         float texx = 0.25F * (colour % 4);
         float texy = 0.25F * (colour / 4);
 
@@ -122,6 +127,7 @@ public class RenderTileEnderChest extends TileEntitySpecialRenderer<TileEnderChe
     }
 
     private static void addVecWithUV(Vector3 vec, double u, double v) {
+
         Tessellator.getInstance().getBuffer().pos(vec.x, vec.y, vec.z).tex(u, v).endVertex();
     }
 }

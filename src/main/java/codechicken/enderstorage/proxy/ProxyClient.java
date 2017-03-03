@@ -1,11 +1,9 @@
 package codechicken.enderstorage.proxy;
 
-import codechicken.core.CCUpdateChecker;
 import codechicken.enderstorage.client.EnderPouchBakery;
 import codechicken.enderstorage.client.render.entity.TankLayerRenderer;
 import codechicken.enderstorage.client.render.tile.RenderTileEnderChest;
 import codechicken.enderstorage.client.render.tile.RenderTileEnderTank;
-import codechicken.enderstorage.handler.ConfigurationHandler;
 import codechicken.enderstorage.init.ModBlocks;
 import codechicken.enderstorage.init.ModItems;
 import codechicken.enderstorage.network.EnderStorageCPH;
@@ -20,10 +18,11 @@ import net.minecraftforge.fml.client.registry.ClientRegistry;
 /**
  * Created by covers1624 on 4/11/2016.
  */
-public class ClientProxy extends CommonProxy {
+public class ProxyClient extends Proxy {
 
     @Override
     public void preInit() {
+
         super.preInit();
         TextureUtils.addIconRegister(EnderPouchBakery.INSTANCE);
         ModBlocks.registerModels();
@@ -33,9 +32,7 @@ public class ClientProxy extends CommonProxy {
 
     @Override
     public void init() {
-        if (ConfigurationHandler.clientCheckUpdates) {
-            CCUpdateChecker.updateCheck("EnderStorage");
-        }
+
         super.init();
         PacketCustom.assignHandler(EnderStorageCPH.channel, new EnderStorageCPH());
         ClientRegistry.bindTileEntitySpecialRenderer(TileEnderChest.class, new RenderTileEnderChest());

@@ -28,8 +28,10 @@ import java.util.List;
  * Created by covers1624 on 4/27/2016.
  */
 public class EnderTankItemRender implements IItemRenderer, IPerspectiveAwareModel {
+
     @Override
     public void renderItem(ItemStack item) {
+
         GlStateManager.pushMatrix();
         CCRenderState ccrs = CCRenderState.instance();
         ccrs.reset();
@@ -50,41 +52,49 @@ public class EnderTankItemRender implements IItemRenderer, IPerspectiveAwareMode
 
     @Override
     public List<BakedQuad> getQuads(IBlockState state, EnumFacing side, long rand) {
-        return new ArrayList<BakedQuad>();
+
+        return new ArrayList<>();
     }
 
     @Override
     public boolean isAmbientOcclusion() {
+
         return false;
     }
 
     @Override
     public boolean isGui3d() {
+
         return false;
     }
 
     @Override
     public boolean isBuiltInRenderer() {
+
         return true;
     }
 
     @Override
     public TextureAtlasSprite getParticleTexture() {
+
         return null;
     }
 
     @Override
     public ItemCameraTransforms getItemCameraTransforms() {
+
         return ItemCameraTransforms.DEFAULT;
     }
 
     @Override
     public ItemOverrideList getOverrides() {
+
         return ItemOverrideList.NONE;
     }
 
     @Override
     public Pair<? extends IBakedModel, Matrix4f> handlePerspective(ItemCameraTransforms.TransformType cameraTransformType) {
+
         return MapWrapper.handlePerspective(this, TransformUtils.DEFAULT_BLOCK.getTransforms(), cameraTransformType);
     }
 }

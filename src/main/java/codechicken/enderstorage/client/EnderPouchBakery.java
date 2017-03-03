@@ -2,7 +2,6 @@ package codechicken.enderstorage.client;
 
 import codechicken.enderstorage.api.Frequency;
 import codechicken.enderstorage.manager.EnderStorageManager;
-import codechicken.enderstorage.reference.Reference;
 import codechicken.enderstorage.storage.EnderItemStorage;
 import codechicken.lib.colour.EnumColour;
 import codechicken.lib.model.PerspectiveAwareModelProperties;
@@ -34,7 +33,8 @@ public class EnderPouchBakery implements IItemBakery, IIconRegister {
 
     @Override
     public List<BakedQuad> bakeItemQuads(EnumFacing face, ItemStack stack) {
-        List<BakedQuad> quads = new ArrayList<BakedQuad>();
+
+        List<BakedQuad> quads = new ArrayList<>();
         if (face == null) {
             Frequency frequency = Frequency.fromItemStack(stack);
             boolean open = ((EnderItemStorage) EnderStorageManager.instance(true).getStorage(frequency, "item")).openCount() > 0;
@@ -46,13 +46,14 @@ public class EnderPouchBakery implements IItemBakery, IIconRegister {
 
     @Override
     public PerspectiveAwareModelProperties getModelProperties(ItemStack stack) {
+
         return PerspectiveAwareModelProperties.DEFAULT_ITEM;
     }
 
     @Override
     public void registerIcons(TextureMap map) {
 
-        String POUCH_PREFIX = Reference.MOD_PREFIX + "items/pouch/";
+        String POUCH_PREFIX = "enderstorage:items/pouch/";
         String BUTTONS_PREFIX = POUCH_PREFIX + "buttons/";
         String[] position_prefixes = { "left/", "middle/", "right/" };
 
@@ -74,6 +75,7 @@ public class EnderPouchBakery implements IItemBakery, IIconRegister {
 
     // Bouncer because reasons.
     private static TextureAtlasSprite register(TextureMap map, String sprite) {
+
         return map.registerSprite(new ResourceLocation(sprite));
     }
 }

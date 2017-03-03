@@ -1,9 +1,8 @@
 package codechicken.enderstorage.client.render.entity;
 
-import codechicken.core.fluid.FluidUtils;
 import codechicken.enderstorage.api.Frequency;
 import codechicken.enderstorage.client.render.tile.RenderTileEnderTank;
-import codechicken.enderstorage.util.LogHelper;
+import codechicken.lib.fluid.FluidUtils;
 import codechicken.lib.math.MathHelper;
 import codechicken.lib.render.CCRenderState;
 import codechicken.lib.render.RenderUtils;
@@ -31,6 +30,7 @@ public class TankLayerRenderer implements LayerRenderer<AbstractClientPlayer> {
 
     @Override
     public void doRenderLayer(AbstractClientPlayer entity, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch, float scale) {
+
         if (uuid1.equals(entity.getUniqueID()) || uuid2.equals(entity.getUniqueID()) || uuid3.equals(entity.getUniqueID()) || uuid4.equals(entity.getUniqueID())) {
             GlStateManager.pushMatrix();
             Matrix4 matrix4 = new Matrix4();
@@ -59,6 +59,7 @@ public class TankLayerRenderer implements LayerRenderer<AbstractClientPlayer> {
 
     @Override
     public boolean shouldCombineTextures() {
+
         return false;
     }
 }

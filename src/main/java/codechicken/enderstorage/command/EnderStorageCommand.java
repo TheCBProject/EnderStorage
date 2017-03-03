@@ -19,12 +19,14 @@ public class EnderStorageCommand extends CommandTreeBase {
     private HelpCommand helpCommand;
 
     @Override
-    public String getCommandName() {
+    public String getName() {
+
         return "EnderStorage";
     }
 
     @Override
     public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
+
         if (args.length < 1) {
             helpCommand.displayHelp(server, sender);
         } else {
@@ -33,22 +35,25 @@ public class EnderStorageCommand extends CommandTreeBase {
     }
 
     @Override
-    public List<String> getCommandAliases() {
+    public List<String> getAliases() {
         //TODO Is "ES" already used by someone?
         return ImmutableList.of("ES", "es", "EnderStorage", "enderstorage");
     }
 
     @Override
-    public String getCommandUsage(ICommandSender sender) {
-        return "/" + getCommandName() + " help";
+    public String getUsage(ICommandSender sender) {
+
+        return "/" + getName() + " help";
     }
 
     @Override
     public int getRequiredPermissionLevel() {
+
         return 0;
     }
 
     public ICommand registerSubCommands() {
+
         addSubcommand(helpCommand = new HelpCommand(this).registerHelpPages());
         addSubcommand(new ClearCommand());
         return this;

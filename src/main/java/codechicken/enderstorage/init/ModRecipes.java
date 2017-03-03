@@ -15,6 +15,7 @@ import static codechicken.enderstorage.init.ModItems.enderPouch;
 public class ModRecipes {
 
     public static void init() {
+
         for (int i = 0; i < 16; i++) {
             Frequency frequency = new Frequency(i, i, i);
             GameRegistry.addRecipe(frequency.toItemStack(new ItemStack(blockEnderStorage)), "bWb", "OCO", "bpb", 'b', Items.BLAZE_ROD, 'p', Items.ENDER_PEARL, 'O', Blocks.OBSIDIAN, 'C', Blocks.CHEST, 'W', new ItemStack(Blocks.WOOL, 1, i));

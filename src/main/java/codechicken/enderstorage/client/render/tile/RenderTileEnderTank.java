@@ -1,16 +1,16 @@
 package codechicken.enderstorage.client.render.tile;
 
-import codechicken.core.fluid.FluidUtils;
 import codechicken.enderstorage.api.Frequency;
 import codechicken.enderstorage.client.model.ButtonModelLibrary;
 import codechicken.enderstorage.client.render.RenderCustomEndPortal;
 import codechicken.enderstorage.tile.TileEnderTank;
+import codechicken.lib.fluid.FluidUtils;
 import codechicken.lib.math.MathHelper;
 import codechicken.lib.render.*;
 import codechicken.lib.texture.TextureUtils;
-import codechicken.lib.vec.uv.UVTranslation;
 import codechicken.lib.util.ClientUtils;
 import codechicken.lib.vec.*;
+import codechicken.lib.vec.uv.UVTranslation;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
@@ -23,6 +23,7 @@ import java.util.Map;
 import static net.minecraft.client.renderer.vertex.DefaultVertexFormats.POSITION_TEX_COLOR_NORMAL;
 
 public class RenderTileEnderTank extends TileEntitySpecialRenderer<TileEnderTank> {
+
     public static CCModel tankModel;
     public static CCModel valveModel;
     public static CCModel[] buttons;
@@ -30,12 +31,13 @@ public class RenderTileEnderTank extends TileEntitySpecialRenderer<TileEnderTank
     private static boolean initialized = false;
 
     public static void loadModel() {
+
         if (initialized) {
             return;
         }
         initialized = true;
         Map<String, CCModel> models = CCOBJParser.parseObjModels(new ResourceLocation("enderstorage", "models/endertank.obj"), new SwapYZ());
-        ArrayList<CCModel> tankParts = new ArrayList<CCModel>();
+        ArrayList<CCModel> tankParts = new ArrayList<>();
         tankParts.add(models.get("Blazerod1"));
         tankParts.add(models.get("Blazerod2"));
         tankParts.add(models.get("Blazerod3"));
@@ -59,6 +61,7 @@ public class RenderTileEnderTank extends TileEntitySpecialRenderer<TileEnderTank
 
     @Override
     public void renderTileEntityAt(TileEnderTank enderTank, double x, double y, double z, float partialTicks, int breakProgress) {
+
         CCRenderState ccrs = CCRenderState.instance();
         //CCRenderState.setBrightness(enderTank.getWorld(), enderTank.getPos());
         renderTank(ccrs, enderTank.rotation, (float) MathHelper.interpolate(enderTank.pressure_state.b_rotate, enderTank.pressure_state.a_rotate, partialTicks) * 0.01745F, enderTank.frequency, x, y, z, RenderUtils.getTimeOffset(enderTank.getPos()));
@@ -66,6 +69,7 @@ public class RenderTileEnderTank extends TileEntitySpecialRenderer<TileEnderTank
     }
 
     public static void renderTank(CCRenderState ccrs, int rotation, float valve, Frequency freq, double x, double y, double z, int offset) {
+
         ccrs.reset();
         TileEntityRendererDispatcher info = TileEntityRendererDispatcher.instance;
         renderEndPortal.render(x, y, z, 0, info.entityX, info.entityY, info.entityZ, info.renderEngine);
@@ -103,6 +107,7 @@ public class RenderTileEnderTank extends TileEntitySpecialRenderer<TileEnderTank
     }
 
     public static void renderLiquid(FluidStack liquid, double x, double y, double z) {
+
         RenderUtils.renderFluidCuboidGL(liquid, new Cuboid6(0.22, 0.12, 0.22, 0.78, 0.121 + 0.63, 0.78).add(new Vector3(x, y, z)), liquid.amount / (16D * FluidUtils.B), 0.75);
     }
 }

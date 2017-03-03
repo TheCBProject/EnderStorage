@@ -71,6 +71,7 @@ processResources {
 version = "${project.minecraft.version}-${project.version}"
 def commonManifest = {
     attributes 'CCTransformerExclusions': 'codechicken.enderstorage.FingerprintChecker'
+    attributes 'FMLAT': 'es_at.cfg'
 }
 
 jar {
