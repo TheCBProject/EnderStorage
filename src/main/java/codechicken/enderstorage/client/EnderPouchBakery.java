@@ -5,8 +5,8 @@ import codechicken.enderstorage.manager.EnderStorageManager;
 import codechicken.enderstorage.storage.EnderItemStorage;
 import codechicken.lib.colour.EnumColour;
 import codechicken.lib.model.PerspectiveAwareModelProperties;
-import codechicken.lib.model.bakery.ItemModelBakery;
-import codechicken.lib.model.blockbakery.IItemBakery;
+import codechicken.lib.model.ItemQuadBakery;
+import codechicken.lib.model.bakery.generation.IItemBakery;
 import codechicken.lib.texture.TextureUtils.IIconRegister;
 import com.google.common.collect.ImmutableList;
 import net.minecraft.client.renderer.block.model.BakedQuad;
@@ -39,7 +39,7 @@ public class EnderPouchBakery implements IItemBakery, IIconRegister {
             Frequency frequency = Frequency.fromItemStack(stack);
             boolean open = ((EnderItemStorage) EnderStorageManager.instance(true).getStorage(frequency, "item")).openCount() > 0;
             TextureAtlasSprite bagTexture = BAG_TEXTURES[frequency.hasOwner() ? 1 : 0][open ? 1 : 0];
-            quads.addAll(ItemModelBakery.bakeItem(ImmutableList.of(bagTexture, COLOUR_TEXTURES[0][frequency.left], COLOUR_TEXTURES[1][frequency.middle], COLOUR_TEXTURES[2][frequency.right])));
+            quads.addAll(ItemQuadBakery.bakeItem(ImmutableList.of(bagTexture, COLOUR_TEXTURES[0][frequency.left], COLOUR_TEXTURES[1][frequency.middle], COLOUR_TEXTURES[2][frequency.right])));
         }
         return quads;
     }

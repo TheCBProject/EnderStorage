@@ -212,7 +212,7 @@ public class BlockEnderStorage extends Block implements ITileEntityProvider {
 
         TileEntity tile = world.getTileEntity(pos);
         if (tile != null && tile instanceof TileFrequencyOwner) {
-            return RayTracer.rayTraceCuboidsClosest(start, end, ((TileFrequencyOwner) tile).getIndexedCuboids(), pos);
+            return RayTracer.rayTraceCuboidsClosest(start, end, pos, ((TileFrequencyOwner) tile).getIndexedCuboids());
         }
         return super.collisionRayTrace(state, world, pos, start, end);
     }

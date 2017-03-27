@@ -36,7 +36,7 @@ public class RenderTileEnderTank extends TileEntitySpecialRenderer<TileEnderTank
             return;
         }
         initialized = true;
-        Map<String, CCModel> models = CCOBJParser.parseObjModels(new ResourceLocation("enderstorage", "models/endertank.obj"), new SwapYZ());
+        Map<String, CCModel> models = OBJParser.parseModels(new ResourceLocation("enderstorage", "models/endertank.obj"), new SwapYZ());
         ArrayList<CCModel> tankParts = new ArrayList<>();
         tankParts.add(models.get("Blazerod1"));
         tankParts.add(models.get("Blazerod2"));

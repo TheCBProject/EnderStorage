@@ -5,8 +5,8 @@ import codechicken.enderstorage.item.ItemEnderPouch;
 import codechicken.enderstorage.manager.EnderStorageManager;
 import codechicken.enderstorage.storage.EnderItemStorage;
 import codechicken.lib.model.ModelRegistryHelper;
-import codechicken.lib.model.blockbakery.BlockBakery;
-import codechicken.lib.model.blockbakery.CCBakeryModel;
+import codechicken.lib.model.bakery.ModelBakery;
+import codechicken.lib.model.bakery.CCBakeryModel;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.fml.common.registry.GameRegistry;
@@ -31,10 +31,10 @@ public class ModItems {
 
         ModelLoader.setCustomModelResourceLocation(enderPouch, 0, new ModelResourceLocation("enderstorage:enderPouch", "inventory"));
         ModelRegistryHelper.register(new ModelResourceLocation("enderstorage:enderPouch", "inventory"), new CCBakeryModel(""));
-        BlockBakery.registerItemKeyGenerator(enderPouch, stack -> {
+        ModelBakery.registerItemKeyGenerator(enderPouch, stack -> {
             Frequency frequency = Frequency.fromItemStack(stack);
             boolean open = ((EnderItemStorage) EnderStorageManager.instance(true).getStorage(frequency, "item")).openCount() > 0;
-            return BlockBakery.defaultItemKeyGenerator.generateKey(stack) + "|" + frequency.toModelLoc() + "|" + open;
+            return ModelBakery.defaultItemKeyGenerator.generateKey(stack) + "|" + frequency.toModelLoc() + "|" + open;
         });
     }
 

@@ -6,8 +6,8 @@ import codechicken.enderstorage.handler.ConfigurationHandler;
 import codechicken.enderstorage.manager.EnderStorageManager;
 import codechicken.enderstorage.storage.EnderItemStorage;
 import codechicken.enderstorage.tile.TileEnderChest;
-import codechicken.lib.model.blockbakery.IBakeryItem;
-import codechicken.lib.model.blockbakery.IItemBakery;
+import codechicken.lib.model.bakery.IBakeryProvider;
+import codechicken.lib.model.bakery.generation.IBakery;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
@@ -25,7 +25,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.util.List;
 
-public class ItemEnderPouch extends Item implements IBakeryItem {
+public class ItemEnderPouch extends Item implements IBakeryProvider {
 
     public ItemEnderPouch() {
 
@@ -86,7 +86,7 @@ public class ItemEnderPouch extends Item implements IBakeryItem {
 
     @SideOnly (Side.CLIENT)
     @Override
-    public IItemBakery getBakery() {
+    public IBakery getBakery() {
 
         return EnderPouchBakery.INSTANCE;
     }

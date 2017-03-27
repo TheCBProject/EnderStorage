@@ -3,6 +3,7 @@ package codechicken.enderstorage.init;
 import codechicken.enderstorage.handler.ConfigurationHandler;
 import codechicken.enderstorage.manager.EnderStorageManager;
 import codechicken.lib.inventory.InventoryUtils;
+import codechicken.lib.util.ItemUtils;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.inventory.InventoryCrafting;
@@ -81,7 +82,7 @@ public class EnderStorageRecipe implements IRecipe {
             int colour2 = recolour(1, row, freq, ic);
             int colour3 = recolour(2, row, freq, ic);
 
-            ItemStack result = InventoryUtils.copyStack(freqOwner, 1);
+            ItemStack result = ItemUtils.copyStack(freqOwner, 1);
             result.setItemDamage(EnderStorageManager.getFreqFromColours(colour3, colour2, colour1) | freqOwner.getItemDamage() & 0xF000);
             return result;
         }

@@ -208,19 +208,16 @@ public class EnderItemStorage extends AbstractEnderStorage implements IInventory
 
     public void openSMPGui(EntityPlayer player, final String name) {
 
-        ServerUtils.openSMPContainer((EntityPlayerMP) player, new ContainerEnderItemStorage(player.inventory, this, false), new IGuiPacketSender() {
-            @Override
-            public void sendPacket(EntityPlayerMP player, int windowId) {
+        ServerUtils.openSMPContainer((EntityPlayerMP) player, new ContainerEnderItemStorage(player.inventory, this, false), (player1, windowId) -> {
 
-                PacketCustom packet = new PacketCustom(EnderStorageSPH.channel, 2);
-                packet.writeByte(windowId);
-                //packet.writeString(owner);
-                packet.writeNBTTagCompound(freq.toNBT());
-                packet.writeString(name);
-                packet.writeByte(size);
+            PacketCustom packet = new PacketCustom(EnderStorageSPH.channel, 2);
+            packet.writeByte(windowId);
+            //packet.writeString(owner);
+            packet.writeNBTTagCompound(freq.toNBT());
+            packet.writeString(name);
+            packet.writeByte(size);
 
-                packet.sendToPlayer(player);
-            }
+            packet.sendToPlayer(player1);
         });
     }
 
