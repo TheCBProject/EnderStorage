@@ -50,7 +50,7 @@ public class RenderTileEnderTank extends TileEntitySpecialRenderer<TileEnderTank
 
         Transformation fix = new Translation(-0.0099 - 0.5, 0, -0.0027 - 0.5);
 
-        tankModel = CCModel.combine(tankParts).apply(fix).computeNormals();
+        tankModel = CCModel.combine(tankParts).apply(fix).computeNormals().shrinkUVs(0.004);
         valveModel = models.get("Valve").apply(fix).computeNormals();
 
         buttons = new CCModel[3];

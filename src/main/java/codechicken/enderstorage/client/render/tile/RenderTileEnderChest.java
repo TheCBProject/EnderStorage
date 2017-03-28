@@ -15,10 +15,10 @@ import codechicken.lib.vec.Rotation;
 import codechicken.lib.vec.Vector3;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.VertexBuffer;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import org.lwjgl.opengl.GL11;
 
 /**
  * Created by covers1624 on 4/12/2016.
@@ -39,6 +39,9 @@ public class RenderTileEnderChest extends TileEntitySpecialRenderer<TileEnderChe
     public static void renderChest(int rotation, Frequency freq, double x, double y, double z, int offset, float lidAngle) {
 
         TileEntityRendererDispatcher info = TileEntityRendererDispatcher.instance;
+        CCRenderState ccrs = CCRenderState.instance();
+        ccrs.reset();
+
         renderEndPortal.render(x, y, z, 0, info.entityX, info.entityY, info.entityZ, info.renderEngine);
         GlStateManager.color(1, 1, 1, 1);
 
@@ -66,7 +69,7 @@ public class RenderTileEnderChest extends TileEntitySpecialRenderer<TileEnderChe
         GlStateManager.disableLighting();
         TextureUtils.changeTexture("enderstorage:textures/hedronmap.png");
         GlStateManager.pushMatrix();
-        CCRenderState ccrs = CCRenderState.instance();
+
         ccrs.startDrawing(7, DefaultVertexFormats.POSITION_TEX_COLOR_NORMAL);
         CCModelLibrary.icosahedron7.render(ccrs, pearlMat);
         ccrs.draw();
@@ -88,7 +91,7 @@ public class RenderTileEnderChest extends TileEntitySpecialRenderer<TileEnderChe
         float texx = 0.25F * (colour % 4);
         float texy = 0.25F * (colour / 4);
 
-        GL11.glPushMatrix();
+        GlStateManager.pushMatrix();
 
         EnderDyeButton ebutton = TileEnderChest.buttons[button].copy();
         ebutton.rotate(0, 0.5625, 0.0625, 1, 0, 0, lidAngle);
@@ -96,38 +99,39 @@ public class RenderTileEnderChest extends TileEntitySpecialRenderer<TileEnderChe
         Vector3[] verts = ebutton.verts;
 
         Tessellator tessellator = Tessellator.getInstance();
-        tessellator.getBuffer().begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
-        addVecWithUV(verts[7], texx + 0.0938, texy + 0.0625);
-        addVecWithUV(verts[3], texx + 0.0938, texy + 0.1875);
-        addVecWithUV(verts[2], texx + 0.1562, texy + 0.1875);
-        addVecWithUV(verts[6], texx + 0.1562, texy + 0.0625);
+        VertexBuffer buffer = tessellator.getBuffer();
+        buffer.begin(0x07, DefaultVertexFormats.POSITION_TEX);
+        addVecWithUV(buffer, verts[7], texx + 0.0938, texy + 0.0625);
+        addVecWithUV(buffer, verts[3], texx + 0.0938, texy + 0.1875);
+        addVecWithUV(buffer, verts[2], texx + 0.1562, texy + 0.1875);
+        addVecWithUV(buffer, verts[6], texx + 0.1562, texy + 0.0625);
 
-        addVecWithUV(verts[4], texx + 0.0938, texy + 0.0313);
-        addVecWithUV(verts[7], texx + 0.0938, texy + 0.0313);
-        addVecWithUV(verts[6], texx + 0.1562, texy + 0.0624);
-        addVecWithUV(verts[5], texx + 0.1562, texy + 0.0624);
+        addVecWithUV(buffer, verts[4], texx + 0.0938, texy + 0.0313);
+        addVecWithUV(buffer, verts[7], texx + 0.0938, texy + 0.0313);
+        addVecWithUV(buffer, verts[6], texx + 0.1562, texy + 0.0624);
+        addVecWithUV(buffer, verts[5], texx + 0.1562, texy + 0.0624);
 
-        addVecWithUV(verts[0], texx + 0.0938, texy + 0.2186);
-        addVecWithUV(verts[1], texx + 0.1562, texy + 0.2186);
-        addVecWithUV(verts[2], texx + 0.1562, texy + 0.1876);
-        addVecWithUV(verts[3], texx + 0.0938, texy + 0.1876);
+        addVecWithUV(buffer, verts[0], texx + 0.0938, texy + 0.2186);
+        addVecWithUV(buffer, verts[1], texx + 0.1562, texy + 0.2186);
+        addVecWithUV(buffer, verts[2], texx + 0.1562, texy + 0.1876);
+        addVecWithUV(buffer, verts[3], texx + 0.0938, texy + 0.1876);
 
-        addVecWithUV(verts[6], texx + 0.1563, texy + 0.0626);
-        addVecWithUV(verts[2], texx + 0.1563, texy + 0.1874);
-        addVecWithUV(verts[1], texx + 0.1874, texy + 0.1874);
-        addVecWithUV(verts[5], texx + 0.1874, texy + 0.0626);
+        addVecWithUV(buffer, verts[6], texx + 0.1563, texy + 0.0626);
+        addVecWithUV(buffer, verts[2], texx + 0.1563, texy + 0.1874);
+        addVecWithUV(buffer, verts[1], texx + 0.1874, texy + 0.1874);
+        addVecWithUV(buffer, verts[5], texx + 0.1874, texy + 0.0626);
 
-        addVecWithUV(verts[7], texx + 0.0937, texy + 0.0626);
-        addVecWithUV(verts[4], texx + 0.0626, texy + 0.0626);
-        addVecWithUV(verts[0], texx + 0.0626, texy + 0.1874);
-        addVecWithUV(verts[3], texx + 0.0937, texy + 0.1874);
+        addVecWithUV(buffer, verts[7], texx + 0.0937, texy + 0.0626);
+        addVecWithUV(buffer, verts[4], texx + 0.0626, texy + 0.0626);
+        addVecWithUV(buffer, verts[0], texx + 0.0626, texy + 0.1874);
+        addVecWithUV(buffer, verts[3], texx + 0.0937, texy + 0.1874);
         tessellator.draw();
 
         GlStateManager.popMatrix();
     }
 
-    private static void addVecWithUV(Vector3 vec, double u, double v) {
+    private static void addVecWithUV(VertexBuffer buffer, Vector3 vec, double u, double v) {
 
-        Tessellator.getInstance().getBuffer().pos(vec.x, vec.y, vec.z).tex(u, v).endVertex();
+        buffer.pos(vec.x, vec.y, vec.z).tex(u, v).endVertex();
     }
 }
