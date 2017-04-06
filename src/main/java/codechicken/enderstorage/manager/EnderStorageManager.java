@@ -43,7 +43,7 @@ public class EnderStorageManager {
         }
 
         @SubscribeEvent
-        public void onPlayerChangedDimension(PlayerEvent.PlayerLoggedOutEvent event) {
+        public void onPlayerChangedDimension(PlayerEvent.PlayerChangedDimensionEvent event) {
             instance(false).sendClientInfo(event.player);
         }
     }
