@@ -25,6 +25,9 @@ apply plugin: 'maven'
 group = "codechicken" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = "EnderStorage"
 
+targetCompatibility = "1.8"
+sourceCompatibility = "1.8"
+
 // Define properties file
 ext.configFile = file "build.properties"
 
@@ -37,7 +40,6 @@ configFile.withReader {
 
 dependencies {
     compile "codechicken:CodeChickenLib:${config.mc_version}-${config.ccl_version}:deobf"
-    compile "codechicken:CodeChickenCore:${config.mc_version}-${config.ccc_version}:deobf"
 }
 
 version =  "${project.config.mod_version}." + System.getenv("BUILD_NUMBER") ?: "1"
