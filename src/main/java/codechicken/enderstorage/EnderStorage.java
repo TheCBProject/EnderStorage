@@ -5,7 +5,6 @@ import codechicken.enderstorage.handler.ConfigurationHandler;
 import codechicken.enderstorage.manager.EnderStorageManager;
 import codechicken.enderstorage.proxy.Proxy;
 import codechicken.lib.CodeChickenLib;
-import codechicken.lib.internal.MigrationManager;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
@@ -40,7 +39,6 @@ public class EnderStorage {
     @Mod.EventHandler
     public void preInit(FMLPreInitializationEvent event) {
 
-        MigrationManager.registerMigrationHandler("EnderStorage", "enderstorage");
         FingerprintChecker.runFingerprintChecks();
         ConfigurationHandler.init(event.getSuggestedConfigurationFile());
         proxy.preInit();
