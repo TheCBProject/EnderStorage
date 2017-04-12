@@ -7,10 +7,6 @@
     {
       "slug" : "codechicken-lib-1-8",
       "type" : "requiredLibrary"
-    },
-    {
-      "slug" : "codechicken-core-1-8",
-      "type" : "requiredLibrary"
     }
   ]
 }
