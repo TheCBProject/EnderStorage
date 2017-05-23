@@ -78,10 +78,10 @@ public class ContainerEnderItemStorage extends Container {
             int chestSlots = EnderItemStoragePlugin.sizes[chestInv.getSize()];
             if (i < chestSlots) {
                 if (!mergeItemStack(itemstack1, chestSlots, inventorySlots.size(), true)) {
-                    return null;
+                    return ItemStack.EMPTY;
                 }
             } else if (!mergeItemStack(itemstack1, 0, chestSlots, false)) {
-                return null;
+                return ItemStack.EMPTY;
             }
             if (itemstack1.getCount() == 0) {
                 slot.putStack(ItemStack.EMPTY);

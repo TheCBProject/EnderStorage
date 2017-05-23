@@ -56,7 +56,7 @@ public class TankSynchroniser {
                 if (!s_liquid.isFluidEqual(c_liquid)) {
                     sendSyncPacket();
                     c_liquid = s_liquid;
-                } else if (Math.abs(c_liquid.amount - s_liquid.amount) > 250 || (s_liquid.amount == 0 && c_liquid.amount > 0)) {
+                } else if (Math.abs(c_liquid.amount - s_liquid.amount) > 250 || (s_liquid.amount == 0 && c_liquid.amount > 0)) {// Diff grater than 250 Or server no longer has liquid and client does.
                     sendSyncPacket();
                     c_liquid = s_liquid;
                 }
