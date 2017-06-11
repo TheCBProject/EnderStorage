@@ -1,5 +1,6 @@
 package codechicken.enderstorage;
 
+import codechicken.lib.asm.ObfMapping;
 import codechicken.lib.fingerprint.FingerprintViolatedCrashCallable;
 import com.google.common.collect.ImmutableList;
 import net.minecraftforge.fml.common.*;
@@ -26,20 +27,23 @@ public class FingerprintChecker {
 
     static {
         //@formatter:off
-        modCertMap.put("CodeChickenLib"    , "f1850c39b2516232a2108a7bd84d1cb5df93b261");
-        modCertMap.put("CodeChickenCore"   , "f1850c39b2516232a2108a7bd84d1cb5df93b261");
-        modCertMap.put("ChickenChunks"     , "f1850c39b2516232a2108a7bd84d1cb5df93b261");
-        modCertMap.put("EnderStorage"      , "f1850c39b2516232a2108a7bd84d1cb5df93b261");
-        modCertMap.put("Translocator"      , "f1850c39b2516232a2108a7bd84d1cb5df93b261");
-        modCertMap.put("NotEnoughItems"    , "f1850c39b2516232a2108a7bd84d1cb5df93b261");
-        modCertMap.put("forgemultipartcbe" , "f1850c39b2516232a2108a7bd84d1cb5df93b261");
+        modCertMap.put("codechickenlib"     , "f1850c39b2516232a2108a7bd84d1cb5df93b261");
+        modCertMap.put("chickenchunks"      , "f1850c39b2516232a2108a7bd84d1cb5df93b261");
+        modCertMap.put("enderstorage"       , "f1850c39b2516232a2108a7bd84d1cb5df93b261");
+        modCertMap.put("translocatr"        , "f1850c39b2516232a2108a7bd84d1cb5df93b261");
+        modCertMap.put("nei"                , "f1850c39b2516232a2108a7bd84d1cb5df93b261");
+        modCertMap.put("forgemultipartcbe"  , "f1850c39b2516232a2108a7bd84d1cb5df93b261");
+        modCertMap.put("wrcbe"              , "f1850c39b2516232a2108a7bd84d1cb5df93b261");
         //@formatter:on
     }
 
     public static void runFingerprintChecks() {
-
         try {
             ModContainer activeContainer = Loader.instance().activeModContainer();
+
+            if (ObfMapping.obfuscated) {
+                FMLLog.log(activeContainer.getModId() + " Fingerprint Verification", Level.INFO, "Development environment detected, Suppressing Invalid fingerprints..");
+            }
             for (Entry<String, ModContainer> modEntry : Loader.instance().getIndexedModList().entrySet()) {
                 for (Entry<String, String> certEntry : modCertMap.entrySet()) {
                     if (modEntry.getKey().equals(certEntry.getKey())) {
@@ -66,7 +70,8 @@ public class FingerprintChecker {
 
                         if (expectedFingerprint != null && !expectedFingerprint.isEmpty()) {
                             if (!certList.contains(expectedFingerprint)) {
-                                FMLLog.log(activeContainer.getModId() + " Fingerprint Verification", Level.FATAL, "The fingerprint for mod %s is invalid! Expected: %s", modEntry.getKey(), expectedFingerprint);
+                                Level level = ObfMapping.obfuscated ? Level.DEBUG : Level.FATAL;
+                                FMLLog.log(activeContainer.getModId() + " Fingerprint Verification", level, "The fingerprint for mod %s is invalid! Expected: %s", modEntry.getKey(), expectedFingerprint);
                                 invalidMods.add(modEntry.getKey());
                                 break;
                             } else {
@@ -83,5 +88,4 @@ public class FingerprintChecker {
             e.printStackTrace();
         }
     }
-
 }

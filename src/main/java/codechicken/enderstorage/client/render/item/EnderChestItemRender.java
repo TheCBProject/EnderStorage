@@ -9,6 +9,7 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.client.renderer.block.model.ItemCameraTransforms;
+import net.minecraft.client.renderer.block.model.ItemCameraTransforms.TransformType;
 import net.minecraft.client.renderer.block.model.ItemOverrideList;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.item.ItemStack;
@@ -23,10 +24,10 @@ import java.util.List;
 /**
  * Created by covers1624 on 4/27/2016.
  */
-public class EnderChestItemRender implements IItemRenderer, IPerspectiveAwareModel {
+public class EnderChestItemRender implements IItemRenderer {
 
     @Override
-    public void renderItem(ItemStack item) {
+    public void renderItem(ItemStack item, TransformType transformType) {
 
         GlStateManager.pushMatrix();
 
@@ -42,12 +43,6 @@ public class EnderChestItemRender implements IItemRenderer, IPerspectiveAwareMod
     }
 
     @Override
-    public List<BakedQuad> getQuads(IBlockState state, EnumFacing side, long rand) {
-
-        return new ArrayList<>();
-    }
-
-    @Override
     public boolean isAmbientOcclusion() {
 
         return false;
@@ -57,35 +52,5 @@ public class EnderChestItemRender implements IItemRenderer, IPerspectiveAwareMod
     public boolean isGui3d() {
 
         return false;
-    }
-
-    @Override
-    public boolean isBuiltInRenderer() {
-
-        return true;
-    }
-
-    @Override
-    public TextureAtlasSprite getParticleTexture() {
-
-        return null;
-    }
-
-    @Override
-    public ItemCameraTransforms getItemCameraTransforms() {
-
-        return ItemCameraTransforms.DEFAULT;
-    }
-
-    @Override
-    public ItemOverrideList getOverrides() {
-
-        return ItemOverrideList.NONE;
-    }
-
-    @Override
-    public Pair<? extends IBakedModel, Matrix4f> handlePerspective(ItemCameraTransforms.TransformType cameraTransformType) {
-
-        return MapWrapper.handlePerspective(this, TransformUtils.DEFAULT_BLOCK.getTransforms(), cameraTransformType);
     }
 }
