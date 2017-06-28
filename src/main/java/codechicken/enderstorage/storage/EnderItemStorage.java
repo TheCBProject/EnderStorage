@@ -6,7 +6,6 @@ import codechicken.enderstorage.client.gui.GuiEnderItemStorage;
 import codechicken.enderstorage.container.ContainerEnderItemStorage;
 import codechicken.enderstorage.manager.EnderStorageManager;
 import codechicken.enderstorage.network.EnderStorageSPH;
-import codechicken.lib.gui.IGuiPacketSender;
 import codechicken.lib.inventory.InventoryUtils;
 import codechicken.lib.packet.PacketCustom;
 import codechicken.lib.util.ArrayUtils;
