@@ -17,6 +17,10 @@ repositories {
 		name = "CB Repo"
 		url = "http://chickenbones.net/maven"
 	}
+	maven {
+		name = "JEI Maven"
+		url = "http://dvs1.progwml6.com/files/maven"
+	}
 }
 
 apply plugin: 'net.minecraftforge.gradle.forge'
@@ -40,6 +44,7 @@ configFile.withReader {
 
 dependencies {
     compile "codechicken:CodeChickenLib:${config.mc_version}-${config.ccl_version}:deobf"
+	compile "mezz.jei:jei_${config.mc_version}:${config.jei_version}"
 }
 
 version =  "${project.config.mod_version}." + System.getenv("BUILD_NUMBER") ?: "1"
