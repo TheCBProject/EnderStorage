@@ -18,9 +18,6 @@ import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.ITickable;
-import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.World;
 
 public abstract class TileFrequencyOwner extends TileEntity implements ICuboidProvider, ITickable, ICustomPacketTile {
 
@@ -30,7 +27,6 @@ public abstract class TileFrequencyOwner extends TileEntity implements ICuboidPr
     private int changeCount;
 
     public void setFreq(Frequency frequency) {
-
         this.frequency = frequency;
         markDirty();
         IBlockState state = world.getBlockState(pos);
@@ -42,7 +38,6 @@ public abstract class TileFrequencyOwner extends TileEntity implements ICuboidPr
 
     @Override
     public void update() {
-
         if (getStorage().getChangeCount() > changeCount) {
             world.updateComparatorOutputLevel(pos, getBlockType());
             changeCount = getStorage().getChangeCount();
@@ -52,39 +47,28 @@ public abstract class TileFrequencyOwner extends TileEntity implements ICuboidPr
     public abstract AbstractEnderStorage getStorage();
 
     public void readFromNBT(NBTTagCompound tag) {
-
         super.readFromNBT(tag);
-        frequency.readNBT(tag.getCompoundTag("Frequency"));
+        frequency.set(new Frequency(tag.getCompoundTag("Frequency")));
     }
 
     public NBTTagCompound writeToNBT(NBTTagCompound tag) {
-
         super.writeToNBT(tag);
-        tag.setTag("Frequency", frequency.toNBT());
+        tag.setTag("Frequency", frequency.writeToNBT(new NBTTagCompound()));
         return tag;
     }
 
     public boolean activate(EntityPlayer player, int subHit, EnumHand hand) {
-
         return false;
     }
 
     public void onPlaced(EntityLivingBase entity) {
-
     }
 
     protected void sendUpdatePacket() {
-
-        writeToCCPacket().sendToChunk(world, getPos().getX() >> 4, getPos().getZ() >> 4);
+        createPacket().sendToChunk(world, getPos().getX() >> 4, getPos().getZ() >> 4);
     }
 
-    public RayTraceResult rayTrace(World world, Vec3d vec3d, Vec3d vec3d1, RayTraceResult fullBlock) {
-
-        return fullBlock;
-    }
-
-    public PacketCustom writeToCCPacket() {
-
+    public PacketCustom createPacket() {
         PacketCustom packet = new PacketCustom(EnderStorageCPH.channel, 1);
         writeToPacket(packet);
         return packet;
@@ -92,55 +76,45 @@ public abstract class TileFrequencyOwner extends TileEntity implements ICuboidPr
 
     @Override
     public final SPacketUpdateTileEntity getUpdatePacket() {
-
-        return writeToCCPacket().toTilePacket(getPos());
+        return createPacket().toTilePacket(getPos());
     }
 
     @Override
     public NBTTagCompound getUpdateTag() {
-
-        return writeToCCPacket().toNBTTag(super.getUpdateTag());
+        return createPacket().toNBTTag(super.getUpdateTag());
     }
 
     public void writeToPacket(MCDataOutput packet) {
-
-        packet.writeNBTTagCompound(frequency.toNBT());
+        frequency.writeToPacket(packet);
     }
 
     public void readFromPacket(MCDataInput packet) {
-
-        frequency.readNBT(packet.readNBTTagCompound());
+        frequency.set(Frequency.readFromPacket(packet));
     }
 
     @Override
     public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity pkt) {
-
         readFromPacket(PacketCustom.fromTilePacket(pkt));
     }
 
     @Override
     public void handleUpdateTag(NBTTagCompound tag) {
-
         readFromPacket(PacketCustom.fromNBTTag(tag));
     }
 
     public int getLightValue() {
-
         return 0;
     }
 
     public boolean redstoneInteraction() {
-
         return false;
     }
 
     public int comparatorInput() {
-
         return 0;
     }
 
     public boolean rotate() {
-
         return false;
     }
 }

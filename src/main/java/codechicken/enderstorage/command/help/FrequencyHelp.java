@@ -10,19 +10,16 @@ public class FrequencyHelp implements IHelpPage {
 
     @Override
     public String name() {
-
         return "frequency";
     }
 
     @Override
     public String getBrief() {
-
         return "Shows you how frequency is formatted inside EnderStorage commands.";
     }
 
     @Override
     public List<String> getHelpText() {
-
         List<String> list = new ArrayList<>();
         list.add("Frequency for commands is defined as follows:");
         list.add("\"<colour>,<colour>,<colour>\"");

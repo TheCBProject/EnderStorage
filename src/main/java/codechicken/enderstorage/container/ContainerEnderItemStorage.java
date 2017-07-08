@@ -13,7 +13,6 @@ public class ContainerEnderItemStorage extends Container {
     public EnderItemStorage chestInv;
 
     public ContainerEnderItemStorage(IInventory invplayer, EnderItemStorage chestInv, boolean client) {
-
         this.chestInv = chestInv;
         chestInv.openInventory();
 
@@ -47,7 +46,6 @@ public class ContainerEnderItemStorage extends Container {
     }
 
     private void addPlayerSlots(IInventory invplayer, int yOffset) {
-
         for (int row = 0; row < 3; row++) {
             for (int col = 0; col < 9; col++) {
                 addSlotToContainer(new Slot(invplayer, col + row * 9 + 9, 8 + col * 18, yOffset + row * 18));
@@ -61,13 +59,11 @@ public class ContainerEnderItemStorage extends Container {
 
     @Override
     public boolean canInteractWith(EntityPlayer entityplayer) {
-
         return chestInv.isUsableByPlayer(entityplayer);
     }
 
     @Override
     public ItemStack transferStackInSlot(EntityPlayer par1EntityPlayer, int i) {
-
         ItemStack itemstack = ItemStack.EMPTY;
         Slot slot = inventorySlots.get(i);
 
@@ -94,7 +90,6 @@ public class ContainerEnderItemStorage extends Container {
 
     @Override
     public void onContainerClosed(EntityPlayer entityplayer) {
-
         super.onContainerClosed(entityplayer);
         chestInv.closeInventory();
     }

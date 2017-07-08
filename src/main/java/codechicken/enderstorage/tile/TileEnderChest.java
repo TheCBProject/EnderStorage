@@ -18,13 +18,10 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.SoundCategory;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextComponentString;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.wrapper.InvWrapper;
 
-import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -49,7 +46,6 @@ public class TileEnderChest extends TileFrequencyOwner {
 
     @Override
     public void update() {
-
         super.update();
 
         if (!world.isRemote && (world.getTotalWorldTime() % 20 == 0 || c_numOpen != getStorage().getNumOpen())) {
@@ -70,7 +66,6 @@ public class TileEnderChest extends TileFrequencyOwner {
 
     @Override
     public boolean receiveClientEvent(int id, int type) {
-
         if (id == 1) {
             c_numOpen = type;
             return true;
@@ -79,7 +74,6 @@ public class TileEnderChest extends TileFrequencyOwner {
     }
 
     public double getRadianLidAngle(float frame) {
-
         double a = MathHelper.interpolate(b_lidAngle, a_lidAngle, frame);
         a = 1.0F - a;
         a = 1.0F - a * a * a;
@@ -88,33 +82,28 @@ public class TileEnderChest extends TileFrequencyOwner {
 
     @Override
     public EnderItemStorage getStorage() {
-
         return (EnderItemStorage) EnderStorageManager.instance(world.isRemote).getStorage(frequency, "item");
     }
 
     @Override
     public void writeToPacket(MCDataOutput packet) {
-
         super.writeToPacket(packet);
         packet.writeByte(rotation);
     }
 
     @Override
     public void readFromPacket(MCDataInput packet) {
-
         super.readFromPacket(packet);
         rotation = packet.readUByte();
     }
 
     @Override
     public void onPlaced(EntityLivingBase entity) {
-
         rotation = (int) Math.floor(entity.rotationYaw * 4 / 360 + 2.5D) & 3;
     }
 
     @Override
     public NBTTagCompound writeToNBT(NBTTagCompound tag) {
-
         super.writeToNBT(tag);
         tag.setByte("rot", (byte) rotation);
         return tag;
@@ -122,21 +111,18 @@ public class TileEnderChest extends TileFrequencyOwner {
 
     @Override
     public void readFromNBT(NBTTagCompound tag) {
-
         super.readFromNBT(tag);
         rotation = tag.getByte("rot");
     }
 
     @Override
     public boolean activate(EntityPlayer player, int subHit, EnumHand hand) {
-
         getStorage().openSMPGui(player, "tile.enderChest.name");
         return true;
     }
 
     @Override
     public List<IndexedCuboid6> getIndexedCuboids() {
-
         List<IndexedCuboid6> cuboids = new ArrayList<>();
 
         cuboids.add(new IndexedCuboid6(0, new Cuboid6(1 / 16D, 0, 1 / 16D, 15 / 16D, 14 / 16D, 15 / 16D)));
@@ -162,7 +148,6 @@ public class TileEnderChest extends TileFrequencyOwner {
 
     @Override
     public boolean rotate() {
-
         if (!world.isRemote) {
             rotation = (rotation + 1) % 4;
             PacketCustom.sendToChunk(getUpdatePacket(), world, pos.getX() >> 4, pos.getZ() >> 4);
@@ -173,20 +158,17 @@ public class TileEnderChest extends TileFrequencyOwner {
 
     @Override
     public int comparatorInput() {
-
         return Container.calcRedstoneFromInventory(getStorage());
     }
 
     @Override
     public boolean hasCapability(Capability<?> capability, EnumFacing facing) {
-
         return capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY;
     }
 
     @SuppressWarnings ("unchecked")
     @Override
     public <T> T getCapability(Capability<T> capability, EnumFacing facing) {
-
         if (capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
             return (T) new InvWrapper(getStorage());
         }

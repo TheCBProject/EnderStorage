@@ -30,12 +30,10 @@ public class TankSynchroniser {
         public FluidStack f_liquid = FluidUtils.emptyFluid();
 
         public void setFrequency(Frequency frequency) {
-
             this.frequency = frequency;
         }
 
         public void update(boolean client) {
-
             FluidStack b_liquid;
             FluidStack a_liquid;
             if (client) {
@@ -69,13 +67,11 @@ public class TankSynchroniser {
         }
 
         public void onLiquidChanged() {
-
         }
 
         public abstract void sendSyncPacket();
 
         public void sync(FluidStack liquid) {
-
             s_liquid = liquid;
             if (!s_liquid.isFluidEqual(c_liquid)) {
                 f_liquid = c_liquid.copy();
@@ -84,49 +80,42 @@ public class TankSynchroniser {
 
         //SERVER SIDE ONLY!
         public EnderLiquidStorage getStorage(boolean client) {
-
             return (EnderLiquidStorage) EnderStorageManager.instance(client).getStorage(frequency, "liquid");
         }
     }
 
     public static class PlayerItemTankState extends TankState {
-
         private EntityPlayerMP player;
         private boolean tracking;
 
         public PlayerItemTankState(EntityPlayerMP player, EnderLiquidStorage storage) {
-
             this.player = player;
             setFrequency(storage.freq);
             tracking = true;
         }
 
         public PlayerItemTankState() {
-
         }
 
         @Override
         public void sendSyncPacket() {
-
             if (!tracking) {
                 return;
             }
 
             PacketCustom packet = new PacketCustom(EnderStorageSPH.channel, 4);
-            packet.writeNBTTagCompound(getStorage(false).freq.toNBT());
+            getStorage(false).freq.writeToPacket(packet);
             //packet.writeString(storage.owner);
             packet.writeFluidStack(s_liquid);
             packet.sendToPlayer(player);
         }
 
         public void setTracking(boolean t) {
-
             tracking = t;
         }
 
         @Override
         public void update(boolean client) {
-
             if (tracking || client) {
                 super.update(client);
             }
@@ -144,21 +133,18 @@ public class TankSynchroniser {
         private EntityPlayerMP player;
 
         public PlayerItemTankCache(EntityPlayerMP player) {
-
             this.player = player;
             client = false;
         }
 
         public PlayerItemTankCache() {
-
             client = true;
             a_visible = new HashSet<>();
             b_visible = new HashSet<>();
         }
 
         public void track(Frequency freq, boolean t) {
-
-            String key = key(freq);
+            String key = freq.toString();
             PlayerItemTankState state = tankStates.get(key);
             if (state == null) {
                 if (!t) {
@@ -170,17 +156,12 @@ public class TankSynchroniser {
         }
 
         public void sync(Frequency freq, FluidStack liquid) {
-
-            String key = key(freq);
-            PlayerItemTankState state = tankStates.get(key);
-            if (state == null) {
-                tankStates.put(key, state = new PlayerItemTankState());
-            }
+            String key = freq.toString();
+            PlayerItemTankState state = tankStates.computeIfAbsent(key, k -> new PlayerItemTankState());
             state.sync(liquid);
         }
 
         public void update() {
-
             for (Map.Entry<String, PlayerItemTankState> entry : tankStates.entrySet()) {
                 entry.getValue().update(client);
             }
@@ -191,14 +172,13 @@ public class TankSynchroniser {
 
                 if (!new_visible.isEmpty() || !old_visible.isEmpty()) {
                     PacketCustom packet = new PacketCustom(EnderStorageCPH.channel, 1);
+
                     packet.writeShort(new_visible.size());
-                    for (Frequency frequency : new_visible) {
-                        packet.writeNBTTagCompound(frequency.toNBT());
-                    }
+                    new_visible.forEach(freq -> freq.writeToPacket(packet));
+
                     packet.writeShort(old_visible.size());
-                    for (Frequency frequency : old_visible) {
-                        packet.writeNBTTagCompound(frequency.toNBT());
-                    }
+                    old_visible.forEach(freq -> freq.writeToPacket(packet));
+
                     packet.sendToServer();
                 }
 
@@ -210,68 +190,46 @@ public class TankSynchroniser {
         }
 
         public FluidStack getLiquid(Frequency freq) {
-
-            String key = key(freq);
+            String key = freq.toString();
             a_visible.add(freq);
             PlayerItemTankState state = tankStates.get(key);
             return state == null ? FluidUtils.emptyFluid() : state.c_liquid;
         }
 
         public void handleVisiblityPacket(PacketCustom packet) {
-
             int k = packet.readUShort();
             for (int i = 0; i < k; i++) {
-                track(Frequency.fromNBT(packet.readNBTTagCompound()), true);
+                track(Frequency.readFromPacket(packet), true);
             }
             k = packet.readUShort();
             for (int i = 0; i < k; i++) {
-                track(Frequency.fromNBT(packet.readNBTTagCompound()), false);
+                track(Frequency.readFromPacket(packet), false);
             }
         }
-    }
-
-    public static String key(Frequency freq) {
-
-        return freq.toString();
-    }
-
-    public static int splitKeyF(String s) {
-
-        return Integer.parseInt(s.substring(0, s.indexOf('|')));
-    }
-
-    public static String splitKeyS(String s) {
-
-        return s.substring(s.indexOf('|') + 1, s.length());
     }
 
     private static HashMap<String, PlayerItemTankCache> playerItemTankStates;
     private static PlayerItemTankCache clientState;
 
     public static void syncClient(Frequency freq, FluidStack liquid) {
-
         clientState.sync(freq, liquid);
     }
 
     public static FluidStack getClientLiquid(Frequency freq) {
-
         return clientState.getLiquid(freq);
     }
 
     public static void handleVisiblityPacket(EntityPlayerMP player, PacketCustom packet) {
-
         playerItemTankStates.get(player.getName()).handleVisiblityPacket(packet);
     }
 
     @SubscribeEvent
     public void onPlayerLogin(PlayerEvent.PlayerLoggedInEvent event) {
-
         playerItemTankStates.put(event.player.getName(), new PlayerItemTankCache((EntityPlayerMP) event.player));
     }
 
     @SubscribeEvent
     public void onPlayerLogout(PlayerEvent.PlayerLoggedOutEvent event) {
-
         if (playerItemTankStates != null) //sometimes world unloads before players logout
         {
             playerItemTankStates.remove(event.player.getName());
@@ -280,13 +238,11 @@ public class TankSynchroniser {
 
     @SubscribeEvent
     public void onPlayerChangedDimension(PlayerEvent.PlayerChangedDimensionEvent event) {
-
         playerItemTankStates.put(event.player.getName(), new PlayerItemTankCache((EntityPlayerMP) event.player));
     }
 
     @SubscribeEvent
     public void tickEnd(TickEvent.ServerTickEvent event) {
-
         if (event.phase == TickEvent.Phase.END && playerItemTankStates != null) {
             for (Map.Entry<String, PlayerItemTankCache> entry : playerItemTankStates.entrySet()) {
                 entry.getValue().update();
@@ -296,7 +252,6 @@ public class TankSynchroniser {
 
     @SubscribeEvent
     public void tickEnd(TickEvent.ClientTickEvent event) {
-
         if (event.phase == TickEvent.Phase.END) {
             if (ClientUtils.inWorld()) {
                 clientState.update();
@@ -306,7 +261,6 @@ public class TankSynchroniser {
 
     @SubscribeEvent
     public void onWorldUnload(WorldEvent.Unload event) {
-
         if (!event.getWorld().isRemote && !ServerUtils.mc().isServerRunning()) {
             playerItemTankStates = null;
         }
@@ -314,7 +268,6 @@ public class TankSynchroniser {
 
     @SubscribeEvent
     public void onWorldLoad(WorldEvent.Load event) {
-
         if (event.getWorld().isRemote) {
             clientState = new PlayerItemTankCache();
         } else if (playerItemTankStates == null) {

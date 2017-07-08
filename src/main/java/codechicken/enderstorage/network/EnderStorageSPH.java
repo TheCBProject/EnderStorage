@@ -13,7 +13,6 @@ public class EnderStorageSPH implements IServerPacketHandler {
 
     @Override
     public void handlePacket(PacketCustom packet, EntityPlayerMP sender, INetHandlerPlayServer handler) {
-
         switch (packet.getType()) {
             case 1:
                 TankSynchroniser.handleVisiblityPacket(sender, packet);
@@ -22,10 +21,9 @@ public class EnderStorageSPH implements IServerPacketHandler {
     }
 
     public static void sendOpenUpdateTo(EntityPlayer player, Frequency freq, boolean open) {
-
         PacketCustom packet = new PacketCustom(channel, 3);
         //packet.writeString(owner);
-        packet.writeNBTTagCompound(freq.toNBT());
+        freq.writeToPacket(packet);
         packet.writeBoolean(open);
 
         packet.sendToPlayer(player);

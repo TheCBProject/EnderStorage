@@ -4,11 +4,10 @@ import codechicken.enderstorage.api.Frequency;
 import codechicken.enderstorage.manager.EnderStorageManager;
 import codechicken.enderstorage.storage.EnderItemStorage;
 import codechicken.lib.colour.EnumColour;
-import codechicken.lib.model.PerspectiveAwareModelProperties;
 import codechicken.lib.model.ItemQuadBakery;
+import codechicken.lib.model.PerspectiveAwareModelProperties;
 import codechicken.lib.model.bakery.generation.IItemBakery;
 import codechicken.lib.texture.TextureUtils.IIconRegister;
-import com.google.common.collect.ImmutableList;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureMap;
@@ -33,26 +32,26 @@ public class EnderPouchBakery implements IItemBakery, IIconRegister {
 
     @Override
     public List<BakedQuad> bakeItemQuads(EnumFacing face, ItemStack stack) {
-
         List<BakedQuad> quads = new ArrayList<>();
         if (face == null) {
-            Frequency frequency = Frequency.fromItemStack(stack);
+            Frequency frequency = Frequency.readFromStack(stack);
             boolean open = ((EnderItemStorage) EnderStorageManager.instance(true).getStorage(frequency, "item")).openCount() > 0;
             TextureAtlasSprite bagTexture = BAG_TEXTURES[frequency.hasOwner() ? 1 : 0][open ? 1 : 0];
-            quads.addAll(ItemQuadBakery.bakeItem(ImmutableList.of(bagTexture, COLOUR_TEXTURES[0][frequency.left], COLOUR_TEXTURES[1][frequency.middle], COLOUR_TEXTURES[2][frequency.right])));
+            TextureAtlasSprite leftButton = COLOUR_TEXTURES[0][frequency.getLeft().getWoolMeta()];
+            TextureAtlasSprite middleButton = COLOUR_TEXTURES[1][frequency.getMiddle().getWoolMeta()];
+            TextureAtlasSprite rightButton = COLOUR_TEXTURES[2][frequency.getRight().getWoolMeta()];
+            quads.addAll(ItemQuadBakery.bakeItem(bagTexture, leftButton, middleButton, rightButton));
         }
         return quads;
     }
 
     @Override
     public PerspectiveAwareModelProperties getModelProperties(ItemStack stack) {
-
         return PerspectiveAwareModelProperties.DEFAULT_ITEM;
     }
 
     @Override
     public void registerIcons(TextureMap map) {
-
         String POUCH_PREFIX = "enderstorage:items/pouch/";
         String BUTTONS_PREFIX = POUCH_PREFIX + "buttons/";
         String[] position_prefixes = { "left/", "middle/", "right/" };
@@ -67,7 +66,7 @@ public class EnderPouchBakery implements IItemBakery, IIconRegister {
 
         for (int i = 0; i < 3; i++) {
             for (EnumColour colour : EnumColour.values()) {
-                COLOUR_TEXTURES[i][colour.ordinal()] = register(map, BUTTONS_PREFIX + position_prefixes[i] + colour.getMinecraftName());
+                COLOUR_TEXTURES[i][colour.ordinal()] = register(map, BUTTONS_PREFIX + position_prefixes[i] + colour.getName());
             }
         }
 
@@ -75,7 +74,6 @@ public class EnderPouchBakery implements IItemBakery, IIconRegister {
 
     // Bouncer because reasons.
     private static TextureAtlasSprite register(TextureMap map, String sprite) {
-
         return map.registerSprite(new ResourceLocation(sprite));
     }
 }

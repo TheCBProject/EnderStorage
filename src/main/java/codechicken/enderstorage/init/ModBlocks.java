@@ -1,16 +1,16 @@
 package codechicken.enderstorage.init;
 
 import codechicken.enderstorage.block.BlockEnderStorage;
+import codechicken.enderstorage.block.BlockEnderStorage.Type;
 import codechicken.enderstorage.client.render.item.EnderChestItemRender;
 import codechicken.enderstorage.client.render.item.EnderTankItemRender;
 import codechicken.enderstorage.item.ItemEnderStorage;
-import codechicken.enderstorage.reference.VariantReference;
 import codechicken.enderstorage.tile.TileEnderChest;
 import codechicken.enderstorage.tile.TileEnderTank;
 import codechicken.lib.model.ModelRegistryHelper;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
-import net.minecraft.item.Item;
 import net.minecraftforge.client.model.ModelLoader;
+import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -21,27 +21,27 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 public class ModBlocks {
 
     public static BlockEnderStorage blockEnderStorage;
+    public static ItemEnderStorage itemEnderStorage;
 
     public static void init() {
-
         blockEnderStorage = new BlockEnderStorage();
-        GameRegistry.register(blockEnderStorage.setRegistryName("enderStorage"));
-        GameRegistry.register(new ItemEnderStorage(blockEnderStorage).setRegistryName("enderStorage"));
+        itemEnderStorage = new ItemEnderStorage(blockEnderStorage);
+        ForgeRegistries.BLOCKS.register(blockEnderStorage.setRegistryName("ender_storage"));
+        ForgeRegistries.ITEMS.register(itemEnderStorage.setRegistryName("ender_storage"));
         GameRegistry.registerTileEntity(TileEnderChest.class, "Ender Chest");
         GameRegistry.registerTileEntity(TileEnderTank.class, "Ender Tank");
     }
 
     @SideOnly (Side.CLIENT)
     public static void registerModels() {
-
-        for (int i = 0; i < VariantReference.enderBlockNamesList.size(); i++) {
-            String variant = VariantReference.enderBlockNamesList.get(i);
-            ModelResourceLocation location = new ModelResourceLocation("enderstorage:enderStorage", "type=" + variant);
-            ModelLoader.setCustomModelResourceLocation(Item.getItemFromBlock(blockEnderStorage), i, location);
+        for (int i = 0; i < Type.VALUES.length; i++) {
+            Type variant = Type.VALUES[i];
+            ModelResourceLocation location = new ModelResourceLocation("enderstorage:enderStorage", "type=" + variant.getName());
+            ModelLoader.setCustomModelResourceLocation(itemEnderStorage, i, location);
         }
 
-        ModelRegistryHelper.register(new ModelResourceLocation("enderstorage:enderStorage", "type=enderChest"), new EnderChestItemRender());
-        ModelRegistryHelper.register(new ModelResourceLocation("enderstorage:enderStorage", "type=enderTank"), new EnderTankItemRender());
+        ModelRegistryHelper.register(new ModelResourceLocation("enderstorage:enderStorage", "type=ender_chest"), new EnderChestItemRender());
+        ModelRegistryHelper.register(new ModelResourceLocation("enderstorage:enderStorage", "type=ender_tank"), new EnderTankItemRender());
     }
 
 }

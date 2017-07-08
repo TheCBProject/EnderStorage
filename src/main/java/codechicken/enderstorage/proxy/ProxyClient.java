@@ -22,7 +22,6 @@ public class ProxyClient extends Proxy {
 
     @Override
     public void preInit() {
-
         super.preInit();
         TextureUtils.addIconRegister(EnderPouchBakery.INSTANCE);
         ModBlocks.registerModels();
@@ -32,7 +31,6 @@ public class ProxyClient extends Proxy {
 
     @Override
     public void init() {
-
         super.init();
         PacketCustom.assignHandler(EnderStorageCPH.channel, new EnderStorageCPH());
         ClientRegistry.bindTileEntitySpecialRenderer(TileEnderChest.class, new RenderTileEnderChest());

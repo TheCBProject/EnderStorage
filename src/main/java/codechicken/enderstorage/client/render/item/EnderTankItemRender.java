@@ -7,24 +7,11 @@ import codechicken.lib.render.CCRenderState;
 import codechicken.lib.render.RenderUtils;
 import codechicken.lib.render.item.IItemRenderer;
 import codechicken.lib.util.TransformUtils;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.block.model.BakedQuad;
-import net.minecraft.client.renderer.block.model.IBakedModel;
-import net.minecraft.client.renderer.block.model.ItemCameraTransforms;
 import net.minecraft.client.renderer.block.model.ItemCameraTransforms.TransformType;
-import net.minecraft.client.renderer.block.model.ItemOverrideList;
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.EnumFacing;
-import net.minecraftforge.client.model.IPerspectiveAwareModel;
 import net.minecraftforge.common.model.IModelState;
 import net.minecraftforge.fluids.FluidStack;
-import org.apache.commons.lang3.tuple.Pair;
-
-import javax.vecmath.Matrix4f;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by covers1624 on 4/27/2016.
@@ -33,12 +20,11 @@ public class EnderTankItemRender implements IItemRenderer {
 
     @Override
     public void renderItem(ItemStack item, TransformType transformType) {
-
         GlStateManager.pushMatrix();
         CCRenderState ccrs = CCRenderState.instance();
         ccrs.reset();
         ccrs.pullLightmap();
-        Frequency frequency = Frequency.fromItemStack(item);
+        Frequency frequency = Frequency.readFromStack(item);
         FluidStack fluidStack = TankSynchroniser.getClientLiquid(frequency);
         RenderTileEnderTank.renderTank(ccrs, 2, 0F, frequency, 0, 0, 0, 0);
         if (fluidStack != null && RenderUtils.shouldRenderFluid(fluidStack)) {
@@ -59,13 +45,11 @@ public class EnderTankItemRender implements IItemRenderer {
 
     @Override
     public boolean isAmbientOcclusion() {
-
         return false;
     }
 
     @Override
     public boolean isGui3d() {
-
         return false;
     }
 }

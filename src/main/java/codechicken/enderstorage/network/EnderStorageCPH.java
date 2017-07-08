@@ -19,20 +19,19 @@ public class EnderStorageCPH implements IClientPacketHandler {
 
     @Override
     public void handlePacket(PacketCustom packet, Minecraft mc, INetHandlerPlayClient handler) {
-
         switch (packet.getType()) {
             case 1:
                 handleTilePacket(mc.world, packet, packet.readPos());
                 break;
             case 2:
                 int windowID = packet.readUByte();
-                ((EnderItemStorage) EnderStorageManager.instance(true).getStorage(Frequency.fromNBT(packet.readNBTTagCompound()), "item")).openClientGui(windowID, mc.player.inventory, packet.readString(), packet.readUByte());
+                ((EnderItemStorage) EnderStorageManager.instance(true).getStorage(Frequency.readFromPacket(packet), "item")).openClientGui(windowID, mc.player.inventory, packet.readString(), packet.readUByte());
                 break;
             case 3:
-                ((EnderItemStorage) EnderStorageManager.instance(true).getStorage(Frequency.fromNBT(packet.readNBTTagCompound()), "item")).setClientOpen(packet.readBoolean() ? 1 : 0);
+                ((EnderItemStorage) EnderStorageManager.instance(true).getStorage(Frequency.readFromPacket(packet), "item")).setClientOpen(packet.readBoolean() ? 1 : 0);
                 break;
             case 4:
-                TankSynchroniser.syncClient(Frequency.fromNBT(packet.readNBTTagCompound()), packet.readFluidStack());
+                TankSynchroniser.syncClient(Frequency.readFromPacket(packet), packet.readFluidStack());
                 break;
             case 5:
             case 6:
@@ -42,7 +41,6 @@ public class EnderStorageCPH implements IClientPacketHandler {
     }
 
     private void handleTankTilePacket(WorldClient world, BlockPos pos, PacketCustom packet) {
-
         TileEntity tile = world.getTileEntity(pos);
         if (tile instanceof TileEnderTank) {
             ((TileEnderTank) tile).sync(packet);
@@ -50,7 +48,6 @@ public class EnderStorageCPH implements IClientPacketHandler {
     }
 
     private void handleTilePacket(WorldClient world, PacketCustom packet, BlockPos pos) {
-
         TileEntity tile = world.getTileEntity(pos);
 
         if (tile instanceof TileFrequencyOwner) {

@@ -16,7 +16,6 @@ public class GuiEnderItemStorage extends GuiContainer {
     private EnderItemStorage chestInv;
 
     public GuiEnderItemStorage(InventoryPlayer invplayer, EnderItemStorage chestInv, String name) {
-
         super(new ContainerEnderItemStorage(invplayer, chestInv, true));
         playerInv = invplayer;
         this.chestInv = chestInv;
@@ -29,18 +28,23 @@ public class GuiEnderItemStorage extends GuiContainer {
     }
 
     @Override
-    protected void drawGuiContainerForegroundLayer(int par1, int par2) {
+    public void drawScreen(int mouseX, int mouseY, float partialTicks) {
+        drawDefaultBackground();
+        super.drawScreen(mouseX, mouseY, partialTicks);
+        renderHoveredToolTip(mouseX, mouseY);
+    }
 
-        fontRendererObj.drawString(name, 8, 6, 0x404040);
-        fontRendererObj.drawString(I18n.translateToLocal(playerInv.getName()), 8, ySize - 94, 0x404040);
+    @Override
+    protected void drawGuiContainerForegroundLayer(int par1, int par2) {
+        fontRenderer.drawString(name, 8, 6, 0x404040);
+        fontRenderer.drawString(I18n.translateToLocal(playerInv.getName()), 8, ySize - 94, 0x404040);
         ContainerEnderItemStorage ces = (ContainerEnderItemStorage) inventorySlots;
         if (ces.chestInv.freq.hasOwner()) {
-            fontRendererObj.drawString(ces.chestInv.freq.owner, 170 - fontRendererObj.getStringWidth(ces.chestInv.freq.owner), 6, 0x404040);
+            fontRenderer.drawString(ces.chestInv.freq.owner, 170 - fontRenderer.getStringWidth(ces.chestInv.freq.owner), 6, 0x404040);
         }
     }
 
     protected void drawGuiContainerBackgroundLayer(float f, int i, int j) {
-
         GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
         TextureUtils.changeTexture(chestInv.getSize() == 0 ? "textures/gui/container/dispenser.png" : "textures/gui/container/generic_54.png");
         int x = (width - xSize) / 2;

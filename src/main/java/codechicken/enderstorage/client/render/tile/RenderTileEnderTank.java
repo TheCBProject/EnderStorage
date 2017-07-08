@@ -4,6 +4,7 @@ import codechicken.enderstorage.api.Frequency;
 import codechicken.enderstorage.client.model.ButtonModelLibrary;
 import codechicken.enderstorage.client.render.RenderCustomEndPortal;
 import codechicken.enderstorage.tile.TileEnderTank;
+import codechicken.lib.colour.EnumColour;
 import codechicken.lib.fluid.FluidUtils;
 import codechicken.lib.math.MathHelper;
 import codechicken.lib.render.*;
@@ -31,7 +32,6 @@ public class RenderTileEnderTank extends TileEntitySpecialRenderer<TileEnderTank
     private static boolean initialized = false;
 
     public static void loadModel() {
-
         if (initialized) {
             return;
         }
@@ -60,8 +60,7 @@ public class RenderTileEnderTank extends TileEntitySpecialRenderer<TileEnderTank
     }
 
     @Override
-    public void renderTileEntityAt(TileEnderTank enderTank, double x, double y, double z, float partialTicks, int breakProgress) {
-
+    public void render(TileEnderTank enderTank, double x, double y, double z, float partialTicks, int breakProgress, float alpha) {
         CCRenderState ccrs = CCRenderState.instance();
         //CCRenderState.setBrightness(enderTank.getWorld(), enderTank.getPos());
         renderTank(ccrs, enderTank.rotation, (float) MathHelper.interpolate(enderTank.pressure_state.b_rotate, enderTank.pressure_state.a_rotate, partialTicks) * 0.01745F, enderTank.frequency, x, y, z, RenderUtils.getTimeOffset(enderTank.getPos()));
@@ -69,7 +68,6 @@ public class RenderTileEnderTank extends TileEntitySpecialRenderer<TileEnderTank
     }
 
     public static void renderTank(CCRenderState ccrs, int rotation, float valve, Frequency freq, double x, double y, double z, int offset) {
-
         ccrs.reset();
         TileEntityRendererDispatcher info = TileEntityRendererDispatcher.instance;
         renderEndPortal.render(x, y, z, 0, info.entityX, info.entityY, info.entityZ, info.renderEngine);
@@ -87,9 +85,9 @@ public class RenderTileEnderTank extends TileEntitySpecialRenderer<TileEnderTank
 
         TextureUtils.changeTexture("enderstorage:textures/buttons.png");
         ccrs.startDrawing(7, POSITION_TEX_COLOR_NORMAL);
-        int[] colours = freq.toArray();
+        EnumColour[] colours = freq.toArray();
         for (int i = 0; i < 3; i++) {
-            buttons[i].render(ccrs, new UVTranslation(0.25 * (colours[i] % 4), 0.25 * (colours[i] / 4)));
+            buttons[i].render(ccrs, new UVTranslation(0.25 * (colours[i].getWoolMeta() % 4), 0.25 * (colours[i].getWoolMeta() / 4)));
         }
         ccrs.draw();
         GlStateManager.popMatrix();
@@ -107,7 +105,6 @@ public class RenderTileEnderTank extends TileEntitySpecialRenderer<TileEnderTank
     }
 
     public static void renderLiquid(FluidStack liquid, double x, double y, double z) {
-
         RenderUtils.renderFluidCuboidGL(liquid, new Cuboid6(0.22, 0.12, 0.22, 0.78, 0.121 + 0.63, 0.78).add(new Vector3(x, y, z)), liquid.amount / (16D * FluidUtils.B), 0.75);
     }
 }

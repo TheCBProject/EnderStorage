@@ -14,19 +14,16 @@ public class ValidStorageHelp implements IHelpPage {
 
     @Override
     public String name() {
-
         return "validStorage";
     }
 
     @Override
     public String getBrief() {
-
         return "Displays the valid key words for systems managed by EnderStorage.";
     }
 
     @Override
     public List<String> getHelpText() {
-
         List<String> list = new ArrayList<>();
         list.add("This directly references what plugins are installed to EnderStorage");
         list.add("\"*\" is a valid keyword and defines and essentially means All Plugins.");

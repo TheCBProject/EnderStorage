@@ -1,0 +1,38 @@
+{
+	"type" : "enderstorage:crafting_recipe",
+	"result" : {
+		"item" : "enderstorage:ender_storage",
+		"data": 1
+	},
+	"pattern": [
+		"BWB",
+		"OCO",
+		"BPB"
+	],
+	"key": {
+		"P": {
+			"type": "minecraft:item",
+			"item": "minecraft:ender_pearl",
+			"data": 0
+		},
+		"O": {
+			"type": "minecraft:item",
+			"item": "minecraft:obsidian",
+			"data": 0
+		},
+		"C": {
+			"type": "minecraft:item",
+			"item": "minecraft:cauldron",
+			"data": 0
+		},
+		"B": {
+			"type": "minecraft:item",
+			"item": "minecraft:blaze_rod",
+			"data": 0
+		},
+		"W": {
+			"type" : "enderstorage:wool"
+		}
+	}
+	
+}

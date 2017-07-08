@@ -9,6 +9,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.oredict.OreDictionary;
+import org.apache.logging.log4j.Level;
 
 import java.io.File;
 
@@ -30,7 +31,6 @@ public class ConfigurationHandler {
     //TODO public static boolean enableChestInventoryLid;
 
     public static void init(File file) {
-
         if (!initialized) {
             config = new ConfigFile(file).setComment("EnderStorage Configuration File\n" + "Deleting any element will restore it to it's default value");
             initialized = true;
@@ -39,7 +39,6 @@ public class ConfigurationHandler {
     }
 
     public static void loadConfig() {
-
         clientCheckUpdates = config.getTag("clientUpdateCheck").getBooleanValue(true);
         disableVanillaEnderChest = config.getTag("disableVanilla").setComment("Set to true to make the vanilla EnderChest un-placeable.").getBooleanValue(true);
         removeVanillaRecipe = config.getTag("disableVanillaRecipe").setComment("Set to true to make the vanilla EnderChest un-craftable").getBooleanValue(false);
@@ -64,7 +63,7 @@ public class ConfigurationHandler {
             }
         } catch (Exception e) {
             tag.setValue("minecraft:diamond|0");
-            LogHelper.error("Failed to parse PersonalItem config entry, It has been reset to default. Reason: %s", e.getMessage());
+            LogHelper.log(Level.ERROR, e, "Unable to parse Personal item config entry, Resetting to default.");
             item = Items.DIAMOND;
             meta = 0;
         }

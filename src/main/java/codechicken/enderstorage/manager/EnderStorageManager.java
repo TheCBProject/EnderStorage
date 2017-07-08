@@ -26,7 +26,6 @@ public class EnderStorageManager {
 
         @SubscribeEvent
         public void onWorldLoad(WorldEvent.Load event) {
-
             if (event.getWorld().isRemote) {
                 reloadManager(true);
             }
@@ -34,7 +33,6 @@ public class EnderStorageManager {
 
         @SubscribeEvent
         public void onWorldSave(WorldEvent.Save event) {
-
             if (!event.getWorld().isRemote && instance(false) != null) {
                 instance(false).save(false);
             }
@@ -42,13 +40,11 @@ public class EnderStorageManager {
 
         @SubscribeEvent
         public void onPlayerLogin(PlayerEvent.PlayerLoggedInEvent event) {
-
             instance(false).sendClientInfo(event.player);
         }
 
         @SubscribeEvent
         public void onPlayerChangedDimension(PlayerEvent.PlayerChangedDimensionEvent event) {
-
             instance(false).sendClientInfo(event.player);
         }
     }
@@ -69,7 +65,6 @@ public class EnderStorageManager {
     private NBTTagCompound saveTag;
 
     public EnderStorageManager(boolean client) {
-
         this.client = client;
 
         storageMap = Collections.synchronizedMap(new HashMap<String, AbstractEnderStorage>());
@@ -86,19 +81,19 @@ public class EnderStorageManager {
     }
 
     private void sendClientInfo(EntityPlayer player) {
-
         for (Map.Entry<String, EnderStoragePlugin> plugin : plugins.entrySet()) {
             plugin.getValue().sendClientInfo(player, storageList.get(plugin.getKey()));
         }
     }
 
     private void load() {
-
         saveDir = new File(DimensionManager.getCurrentSaveRootDirectory(), "EnderStorage");
         try {
             if (!saveDir.exists()) {
                 saveDir.mkdirs();
             }
+            //TODO, Ok so, This looks like cancer, but is actually quite smart, data1, and data2 are essentially backups, lock holds the current data and lock is only ever written to after a successful write to data1/2.
+            //TODO, Maybe this isnt needed anymore? Maybe it should be stored via WorldSavedData..
             saveFiles = new File[] { new File(saveDir, "data1.dat"), new File(saveDir, "data2.dat"), new File(saveDir, "lock.dat") };
             if (saveFiles[2].exists() && saveFiles[2].length() > 0) {
                 FileInputStream fin = new FileInputStream(saveFiles[2]);
@@ -121,7 +116,6 @@ public class EnderStorageManager {
     }
 
     private void save(boolean force) {
-
         if (!dirtyStorage.isEmpty() || force) {
             for (AbstractEnderStorage inv : dirtyStorage) {
                 saveTag.setTag(inv.freq + ",type=" + inv.type(), inv.saveToTag());
@@ -149,7 +143,6 @@ public class EnderStorageManager {
     }
 
     public static void reloadManager(boolean client) {
-
         EnderStorageManager newManager = new EnderStorageManager(client);
         if (client) {
             clientManager = newManager;
@@ -159,12 +152,10 @@ public class EnderStorageManager {
     }
 
     public File getSaveDir() {
-
         return saveDir;
     }
 
     public static EnderStorageManager instance(boolean client) {
-
         EnderStorageManager manager = client ? clientManager : serverManager;
         if (manager == null) {
             reloadManager(client);
@@ -174,7 +165,6 @@ public class EnderStorageManager {
     }
 
     public AbstractEnderStorage getStorage(Frequency freq, String type) {
-
         String key = freq + ",type=" + type;
         AbstractEnderStorage storage = storageMap.get(key);
         if (storage == null) {
@@ -188,62 +178,7 @@ public class EnderStorageManager {
         return storage;
     }
 
-    @Deprecated
-    public static int getFreqFromColours(int colour1, int colour2, int colour3) {
-
-        return ((colour1 & 0xF) << 8) + ((colour2 & 0xF) << 4) + (colour3 & 0xF);
-    }
-
-    @Deprecated
-    public static int getFreqFromColours(int[] colours) {
-
-        return ((colours[0] & 0xF) << 8) + ((colours[1] & 0xF) << 4) + (colours[2] & 0xF);
-    }
-
-    @Deprecated
-    public static int getColourFromFreq(int freq, int colour) {
-
-        switch (colour) {
-            case 0:
-                return freq >> 8 & 0xF;
-            case 1:
-                return freq >> 4 & 0xF;
-            case 2:
-                return freq & 0xF;
-        }
-        return 0;
-    }
-
-    @Deprecated
-    public static int[] getColoursFromFreq(int freq) {
-
-        int[] ai = new int[3];
-        ai[0] = (freq >> 8) & 0xF;
-        ai[1] = (freq >> 4) & 0xF;
-        ai[2] = freq & 0xF;
-
-        return ai;
-    }
-
-    @Deprecated
-    public static String getOwner(ItemStack stack) {
-
-        String owner = "";
-        if (stack.hasTagCompound()) {
-            owner = stack.getTagCompound().getString("owner");
-        }
-
-        return owner.isEmpty() ? "global" : owner;
-    }
-
-    @Deprecated
-    public static boolean isOwned(ItemStack stack) {
-
-        return !getOwner(stack).equals("global");
-    }
-
     public static void loadConfig(ConfigFile config2) {
-
         config = config2;
         for (Map.Entry<String, EnderStoragePlugin> plugin : plugins.entrySet()) {
             plugin.getValue().loadConfig(config.getTag(plugin.getKey()));
@@ -251,7 +186,6 @@ public class EnderStorageManager {
     }
 
     public static void registerPlugin(EnderStoragePlugin plugin) {
-
         plugins.put(plugin.identifier(), plugin);
         if (config != null) {
             plugin.loadConfig(config.getTag(plugin.identifier()));
@@ -266,17 +200,14 @@ public class EnderStorageManager {
     }
 
     public static EnderStoragePlugin getPlugin(String identifier) {
-
         return plugins.get(identifier);
     }
 
     public static Map<String, EnderStoragePlugin> getPlugins() {
-
         return ImmutableMap.copyOf(plugins);
     }
 
     public List<String> getValidKeys(String identifer) {
-
         List<String> list = new ArrayList<>();
         for (String key : saveTag.getKeySet()) {
             if (key.endsWith(",type=" + identifer)) {
@@ -287,7 +218,6 @@ public class EnderStorageManager {
     }
 
     public void requestSave(AbstractEnderStorage storage) {
-
         dirtyStorage.add(storage);
     }
 }

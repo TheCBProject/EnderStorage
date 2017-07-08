@@ -5,11 +5,11 @@ import codechicken.enderstorage.item.ItemEnderPouch;
 import codechicken.enderstorage.manager.EnderStorageManager;
 import codechicken.enderstorage.storage.EnderItemStorage;
 import codechicken.lib.model.ModelRegistryHelper;
-import codechicken.lib.model.bakery.ModelBakery;
 import codechicken.lib.model.bakery.CCBakeryModel;
+import codechicken.lib.model.bakery.ModelBakery;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraftforge.client.model.ModelLoader;
-import net.minecraftforge.fml.common.registry.GameRegistry;
+import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -21,18 +21,18 @@ public class ModItems {
     public static ItemEnderPouch enderPouch;
 
     public static void init() {
-
         enderPouch = new ItemEnderPouch();
-        GameRegistry.register(enderPouch.setRegistryName("enderPouch"));
+        ForgeRegistries.ITEMS.register(enderPouch.setRegistryName("ender_pouch"));
     }
 
     @SideOnly (Side.CLIENT)
     public static void registerModels() {
-
-        ModelLoader.setCustomModelResourceLocation(enderPouch, 0, new ModelResourceLocation("enderstorage:enderPouch", "inventory"));
-        ModelRegistryHelper.register(new ModelResourceLocation("enderstorage:enderPouch", "inventory"), new CCBakeryModel(""));
+        ModelResourceLocation invLocation = new ModelResourceLocation("enderstorage:ender_pouch", "inventory");
+        ModelLoader.setCustomModelResourceLocation(enderPouch, 0, invLocation);
+        ModelLoader.setCustomMeshDefinition(enderPouch, (stack) -> invLocation);
+        ModelRegistryHelper.register(invLocation, new CCBakeryModel(""));
         ModelBakery.registerItemKeyGenerator(enderPouch, stack -> {
-            Frequency frequency = Frequency.fromItemStack(stack);
+            Frequency frequency = Frequency.readFromStack(stack);
             boolean open = ((EnderItemStorage) EnderStorageManager.instance(true).getStorage(frequency, "item")).openCount() > 0;
             return ModelBakery.defaultItemKeyGenerator.generateKey(stack) + "|" + frequency.toModelLoc() + "|" + open;
         });

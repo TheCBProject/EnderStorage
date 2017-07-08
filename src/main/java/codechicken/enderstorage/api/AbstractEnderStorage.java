@@ -11,13 +11,11 @@ public abstract class AbstractEnderStorage {
     private int changeCount;
 
     public AbstractEnderStorage(EnderStorageManager manager, Frequency freq) {
-
         this.manager = manager;
         this.freq = freq;
     }
 
     public void setDirty() {
-
         if (manager.client) {
             return;
         }
@@ -30,12 +28,10 @@ public abstract class AbstractEnderStorage {
     }
 
     public void setClean() {
-
         dirty = false;
     }
 
     public int getChangeCount() {
-
         return changeCount;
     }
 

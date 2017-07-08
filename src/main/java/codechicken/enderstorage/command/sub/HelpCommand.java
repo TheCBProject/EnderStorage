@@ -29,32 +29,27 @@ public class HelpCommand extends CommandBase {
     private List<IHelpPage> helpPages;
 
     public HelpCommand(EnderStorageCommand parent) {
-
         this.parent = parent;
         helpPages = new LinkedList<>();
     }
 
     @Override
     public int getRequiredPermissionLevel() {
-
         return 0;
     }
 
     @Override
     public String getName() {
-
         return "help";
     }
 
     @Override
     public String getUsage(ICommandSender sender) {
-
         return "Displays help for EnderStorage commands.";
     }
 
     @Override
     public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
-
         if (args.length < 1) {
             displayHelp(server, sender);
         } else if (args.length == 1) {
@@ -88,7 +83,6 @@ public class HelpCommand extends CommandBase {
     }
 
     public void displayHelp(MinecraftServer server, ICommandSender sender) {
-
         sender.sendMessage(new TextComponentString(TextFormatting.DARK_GREEN + "Available commands for EnderStorage:"));
         sender.sendMessage(new TextComponentString(TextFormatting.GOLD + "For more info use \"/" + getName() + " help [command]\""));
         for (Entry<String, ICommand> entry : parent.getCommandMap().entrySet()) {
@@ -104,7 +98,6 @@ public class HelpCommand extends CommandBase {
     }
 
     private static String getCommandBrief(ICommand command, ICommandSender sender) {
-
         if (command instanceof ICCCommand) {
             return ((ICCCommand) command).getBrief();
         } else {
@@ -113,13 +106,11 @@ public class HelpCommand extends CommandBase {
     }
 
     public HelpCommand registerHelpPage(IHelpPage page) {
-
         helpPages.add(page);
         return this;
     }
 
     public HelpCommand registerHelpPages() {
-
         registerHelpPage(new FrequencyHelp());
         registerHelpPage(new ValidStorageHelp());
         registerHelpPage(new ColourHelp());

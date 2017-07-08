@@ -32,33 +32,27 @@ public class EnderStorage {
     public static EnderStorage instance;
 
     public EnderStorage() {
-
         instance = this;
     }
 
     @Mod.EventHandler
     public void preInit(FMLPreInitializationEvent event) {
-
-        FingerprintChecker.runFingerprintChecks();
         ConfigurationHandler.init(event.getSuggestedConfigurationFile());
         proxy.preInit();
     }
 
     @Mod.EventHandler
     public void init(FMLInitializationEvent event) {
-
         proxy.init();
     }
 
     @Mod.EventHandler
     public void serverStarting(FMLServerStartingEvent event) {
-
         event.registerServerCommand(new EnderStorageCommand().registerSubCommands());
     }
 
     @Mod.EventHandler
     public void preServerStart(FMLServerStartedEvent event) {
-
         EnderStorageManager.reloadManager(false);
     }
 }

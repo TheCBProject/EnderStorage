@@ -11,7 +11,6 @@ public class ModelEnderChest extends ModelBase {
     public ModelRenderer diamondKnob;
 
     public ModelEnderChest() {
-
         chestLid = new ModelRenderer(this, 0, 0).setTextureSize(64, 64);
         chestLid.addBox(0.0F, -5F, -14F, 14, 5, 14, 0.0F);
         chestLid.rotationPointX = 1.0F;
@@ -35,7 +34,6 @@ public class ModelEnderChest extends ModelBase {
     }
 
     public void render(boolean personal) {
-
         chestKnob.rotateAngleX = chestLid.rotateAngleX;
         diamondKnob.rotateAngleX = chestLid.rotateAngleX;
         chestLid.render(0.0625F);

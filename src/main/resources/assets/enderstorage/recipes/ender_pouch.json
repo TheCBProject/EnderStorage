@@ -1,0 +1,33 @@
+{
+	"type" : "enderstorage:crafting_recipe",
+	"result" : {
+		"item" : "enderstorage:ender_pouch",
+		"data": 1
+	},
+	"pattern": [
+		"BLB",
+		"LPL",
+		"BWB"
+	],
+	"key": {
+		"P": {
+			"type": "minecraft:item",
+			"item": "minecraft:ender_pearl",
+			"data": 0
+		},
+		"L": {
+			"type": "minecraft:item",
+			"item": "minecraft:leather",
+			"data": 0
+		},
+		"B": {
+			"type": "minecraft:item",
+			"item": "minecraft:blaze_powder",
+			"data": 0
+		},
+		"W": {
+			"type" : "enderstorage:wool"
+		}
+	}
+	
+}

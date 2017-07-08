@@ -3,10 +3,10 @@ package codechicken.enderstorage.misc;
 import codechicken.lib.vec.Quat;
 import codechicken.lib.vec.Vector3;
 
+//TODO, Unify all this button stuff..
 public class EnderDyeButton {
 
     public EnderDyeButton(int index) {
-
         button = index;
 
         verts = new Vector3[8];
@@ -30,11 +30,9 @@ public class EnderDyeButton {
     }
 
     private EnderDyeButton() {
-
     }
 
     public void rotateMeta(int angle) {
-
         rotate(0.5, 0, 0.5, 0, 1, 0, angle * -0.5 * 3.14159);
     }
 
@@ -42,7 +40,6 @@ public class EnderDyeButton {
      * @param angle in radians
      */
     public void rotate(double px, double py, double pz, double ax, double ay, double az, double angle) {
-
         Quat quat = Quat.aroundAxis(ax, ay, az, angle);
         for (int i = 0; i < 8; i++) {
             verts[i].add(-px, -py, -pz);
@@ -52,7 +49,6 @@ public class EnderDyeButton {
     }
 
     public EnderDyeButton copy() {
-
         EnderDyeButton newButton = new EnderDyeButton();
         newButton.button = button;
         newButton.verts = new Vector3[8];
@@ -65,7 +61,6 @@ public class EnderDyeButton {
     }
 
     public void flipCoords(int ax, int ay, int az) {
-
         for (int i = 0; i < 8; i++) {
             verts[i].add(ax, ay, az);
         }
@@ -75,7 +70,6 @@ public class EnderDyeButton {
     public Vector3[] verts;
 
     public Vector3 getMin() {
-
         int minindex = 0;
         double mindist = 100;
         for (int i = 0; i < 8; i++) {
@@ -90,7 +84,6 @@ public class EnderDyeButton {
     }
 
     public Vector3 getMax() {
-
         int maxindex = 0;
         double maxdist = 0;
         for (int i = 0; i < 8; i++) {

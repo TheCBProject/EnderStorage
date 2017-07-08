@@ -20,13 +20,11 @@ public class EnderStorageCommand extends CommandTreeBase {
 
     @Override
     public String getName() {
-
         return "EnderStorage";
     }
 
     @Override
     public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
-
         if (args.length < 1) {
             helpCommand.displayHelp(server, sender);
         } else {
@@ -42,18 +40,15 @@ public class EnderStorageCommand extends CommandTreeBase {
 
     @Override
     public String getUsage(ICommandSender sender) {
-
         return "/" + getName() + " help";
     }
 
     @Override
     public int getRequiredPermissionLevel() {
-
         return 0;
     }
 
     public ICommand registerSubCommands() {
-
         addSubcommand(helpCommand = new HelpCommand(this).registerHelpPages());
         addSubcommand(new ClearCommand());
         return this;

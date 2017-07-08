@@ -1,51 +1,47 @@
 package codechicken.enderstorage.api;
 
 import codechicken.lib.colour.EnumColour;
+import codechicken.lib.data.MCDataInput;
+import codechicken.lib.data.MCDataOutput;
 import codechicken.lib.util.Copyable;
+import codechicken.lib.util.ItemNBTUtils;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.text.translation.I18n;
 
 /**
  * Created by covers1624 on 4/26/2016.
  */
 public final class Frequency implements Copyable<Frequency> {
 
-    public int left;
-    public int middle;
-    public int right;
+    public EnumColour left;
+    public EnumColour middle;
+    public EnumColour right;
     public String owner;
 
     public Frequency() {
-
-        this(0, 0, 0, null);
+        this(EnumColour.WHITE, EnumColour.WHITE, EnumColour.WHITE);
     }
 
-    public Frequency(int left, int middle, int right, String owner) {
+    public Frequency(EnumColour left, EnumColour middle, EnumColour right) {
+        this(left, middle, right, null);
+    }
 
+    public Frequency(EnumColour left, EnumColour middle, EnumColour right, String owner) {
         this.left = left;
         this.middle = middle;
         this.right = right;
         this.owner = owner;
     }
 
-    public Frequency(int left, int middle, int right) {
-
-        this(left, middle, right, null);
+    public Frequency(NBTTagCompound tagCompound) {
+        read_internal(tagCompound);
     }
 
-    public Frequency(EnumColour left, EnumColour middle, EnumColour right, String owner) {
-
-        this(left.ordinal(), middle.ordinal(), right.ordinal(), owner);
-    }
-
-    public Frequency(EnumColour left, EnumColour middle, EnumColour right) {
-
-        this(left, middle, right, null);
+    public static Frequency fromString(String left, String middle, String right) {
+        return fromString(left, middle, right, null);
     }
 
     public static Frequency fromString(String left, String middle, String right, String owner) {
-
         EnumColour c1 = EnumColour.fromName(left);
         EnumColour c2 = EnumColour.fromName(middle);
         EnumColour c3 = EnumColour.fromName(right);
@@ -61,59 +57,44 @@ public final class Frequency implements Copyable<Frequency> {
         return new Frequency(c1, c2, c3, owner);
     }
 
-    public static Frequency fromString(String left, String middle, String right) {
-
-        return fromString(left, middle, right, null);
-    }
-
-    public Frequency setLeft(int left) {
-
-        this.left = left;
+    public Frequency setLeft(EnumColour left) {
+        if (left != null) {
+            this.left = left;
+        }
         return this;
     }
 
-    public Frequency setMiddle(int middle) {
-
-        this.middle = middle;
+    public Frequency setMiddle(EnumColour middle) {
+        if (middle != null) {
+            this.middle = middle;
+        }
         return this;
     }
 
-    public Frequency setRight(int right) {
-
-        this.right = right;
+    public Frequency setRight(EnumColour right) {
+        if (right != null) {
+            this.right = right;
+        }
         return this;
     }
 
     public Frequency setOwner(String owner) {
-
         this.owner = owner;
         return this;
     }
 
     public boolean hasOwner() {
-
         return owner != null;
     }
 
-    public static Frequency fromArray(int[] colours) {
-
-        Frequency frequency = new Frequency();
-        frequency.setLeft(colours[0]);
-        frequency.setMiddle(colours[1]);
-        frequency.setRight(colours[2]);
-        return frequency;
-    }
-
-    public Frequency setFrequency(int left, int middle, int right) {
-
-        setLeft(left);
-        setMiddle(middle);
-        setRight(right);
+    public Frequency set(EnumColour[] colours) {
+        setLeft(colours[0]);
+        setMiddle(colours[1]);
+        setRight(colours[2]);
         return this;
     }
 
-    public Frequency setFrequency(Frequency frequency) {
-
+    public Frequency set(Frequency frequency) {
         setLeft(frequency.left);
         setMiddle(frequency.middle);
         setRight(frequency.right);
@@ -121,153 +102,95 @@ public final class Frequency implements Copyable<Frequency> {
         return this;
     }
 
-    public String getLeft() {
-
-        return EnumColour.values()[left].getMinecraftName();
+    public EnumColour getLeft() {
+        return left;
     }
 
-    public String getMiddle() {
-
-        return EnumColour.values()[middle].getMinecraftName();
+    public EnumColour getMiddle() {
+        return middle;
     }
 
-    public String getRight() {
-
-        return EnumColour.values()[right].getMinecraftName();
+    public EnumColour getRight() {
+        return right;
     }
 
-    public EnumColour getLeftRaw() {
-
-        return EnumColour.values()[left];
+    public EnumColour[] toArray() {
+        return new EnumColour[] { left, middle, right };
     }
 
-    public EnumColour getMiddleRaw() {
-
-        return EnumColour.values()[middle];
-    }
-
-    public EnumColour getRightRaw() {
-
-        return EnumColour.values()[right];
-    }
-
-    public String getLocalizedLeft() {
-
-        return I18n.translateToLocal(getLeftRaw().getUnlocalizedName());
-    }
-
-    public String getLocalizedMiddle() {
-
-        return I18n.translateToLocal(getMiddleRaw().getUnlocalizedName());
-    }
-
-    public String getLocalizedRight() {
-
-        return I18n.translateToLocal(getRightRaw().getUnlocalizedName());
-    }
-
-    public String[] getColours() {
-
-        return new String[] { getLeft(), getMiddle(), getRight() };
-    }
-
-    public int[] toArray() {
-
-        return new int[] { left, middle, right };
-    }
-
-    public Frequency readNBT(NBTTagCompound tagCompound) {
-
-        left = tagCompound.getInteger("left");
-        middle = tagCompound.getInteger("middle");
-        right = tagCompound.getInteger("right");
+    protected Frequency read_internal(NBTTagCompound tagCompound) {
+        left = EnumColour.fromWoolMeta(tagCompound.getInteger("left"));
+        middle = EnumColour.fromWoolMeta(tagCompound.getInteger("middle"));
+        right = EnumColour.fromWoolMeta(tagCompound.getInteger("right"));
         if (tagCompound.hasKey("owner")) {
             owner = tagCompound.getString("owner");
         }
         return this;
     }
 
-    public Frequency writeNBT(NBTTagCompound tagCompound) {
-
-        tagCompound.setInteger("left", left);
-        tagCompound.setInteger("middle", middle);
-        tagCompound.setInteger("right", right);
+    protected NBTTagCompound write_internal(NBTTagCompound tagCompound) {
+        tagCompound.setInteger("left", left.getWoolMeta());
+        tagCompound.setInteger("middle", middle.getWoolMeta());
+        tagCompound.setInteger("right", right.getWoolMeta());
         if (owner != null) {
             tagCompound.setString("owner", owner);
         }
-        return this;
-    }
-
-    public NBTTagCompound toNBT() {
-
-        NBTTagCompound tagCompound = new NBTTagCompound();
-        writeNBT(tagCompound);
         return tagCompound;
     }
 
-    public static Frequency fromNBT(NBTTagCompound tagCompound) {
-
-        NBTTagCompound frequencyTag = tagCompound;
-        if (tagCompound.hasKey("Frequency")) {
-            frequencyTag = tagCompound.getCompoundTag("Frequency");
-        }
-        return new Frequency().readNBT(frequencyTag);
+    public NBTTagCompound writeToNBT(NBTTagCompound tagCompound) {
+        write_internal(tagCompound);
+        return tagCompound;
     }
 
-    public static Frequency fromItemStack(ItemStack stack) {
+    public void writeToPacket(MCDataOutput packet) {
+        packet.writeNBTTagCompound(write_internal(new NBTTagCompound()));
+    }
 
-        Frequency frequency = new Frequency();
+    public static Frequency readFromPacket(MCDataInput packet) {
+        return new Frequency(packet.readNBTTagCompound());
+    }
+
+    public static Frequency readFromStack(ItemStack stack) {
         if (stack.hasTagCompound()) {
-            if (stack.getTagCompound().hasKey("Frequency")) {
-                NBTTagCompound tagCompound = stack.getTagCompound().getCompoundTag("Frequency");
-                frequency.setFrequency(fromNBT(tagCompound));
+            NBTTagCompound stackTag = stack.getTagCompound();
+            if (stackTag.hasKey("Frequency")) {
+                return new Frequency(stackTag.getCompoundTag("Frequency"));
             }
         }
-        return frequency;
+        return new Frequency();
     }
 
-    public static ItemStack toItemStack(ItemStack stack, Frequency frequency) {
-
-        return frequency.toItemStack(stack);
-    }
-
-    public ItemStack toItemStack(ItemStack stack) {
-
-        NBTTagCompound tagCompound = new NBTTagCompound();
-        if (stack.hasTagCompound()) {
-            tagCompound = stack.getTagCompound();
-        }
-        NBTTagCompound frequencyTag = new NBTTagCompound();
-        writeNBT(frequencyTag);
-        tagCompound.setTag("Frequency", frequencyTag);
-        stack.setTagCompound(tagCompound);
+    public ItemStack writeToStack(ItemStack stack) {
+        NBTTagCompound tagCompound = ItemNBTUtils.validateTagExists(stack);
+        tagCompound.setTag("Frequency", write_internal(new NBTTagCompound()));
         return stack;
     }
 
     public String toModelLoc() {
-
-        return "left=" + getLeft() + ",middle=" + getMiddle() + ",right=" + getRight() + ",owned=" + hasOwner();
+        return "left=" + getLeft().getName() + ",middle=" + getMiddle().getName() + ",right=" + getRight().getName() + ",owned=" + hasOwner();
     }
 
     @Override
     public String toString() {
-
         String owner = "";
         if (hasOwner()) {
             owner = ",owner=" + this.owner;
         }
-        return "left=" + getLeft() + ",middle=" + getMiddle() + ",right=" + getRight() + owner;
+        return "left=" + getLeft().getName() + ",middle=" + getMiddle().getName() + ",right=" + getRight().getName() + owner;
+    }
+
+    public String getTooltip() {
+        return String.format("%s/%s/%s", getLeft().getLocalizedName(), getMiddle().getLocalizedName(), getRight().getLocalizedName());
     }
 
     @Override
     public int hashCode() {
-
         return toString().hashCode();
     }
 
     @Override
     public Frequency copy() {
-
         return new Frequency(this.left, this.middle, this.right, this.owner);
     }
 }

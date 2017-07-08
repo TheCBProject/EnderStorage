@@ -22,20 +22,18 @@ public class RenderCustomEndPortal {
     private double surfaceZ1;
     private double surfaceZ2;
 
-    FloatBuffer field_40448_a;
+    FloatBuffer texBuffer;
 
     public RenderCustomEndPortal(double y, double x1, double x2, double z1, double z2) {
-
         surfaceY = y;
         surfaceX1 = x1;
         surfaceX2 = x2;
         surfaceZ1 = z1;
         surfaceZ2 = z2;
-        field_40448_a = GLAllocation.createDirectFloatBuffer(16);
+        texBuffer = GLAllocation.createDirectFloatBuffer(16);
     }
 
     public void render(double posX, double posY, double posZ, float frame, double playerX, double playerY, double playerZ, TextureManager r) {
-
         if (r == null) {
             return;
         }
@@ -61,8 +59,8 @@ public class RenderCustomEndPortal {
                 f6 = 0.5F;
             }
             float f8 = (float) (-(posY + surfaceY));
-            float f9 = (float) (f8 + ActiveRenderInfo.position.yCoord);
-            float f10 = (float) (f8 + f5 + ActiveRenderInfo.position.yCoord);
+            float f9 = (float) (f8 + ActiveRenderInfo.position.y);
+            float f10 = (float) (f8 + f5 + ActiveRenderInfo.position.y);
             float f11 = f9 / f10;
             f11 = (float) (posY + surfaceY) + f11;
             GlStateManager.translate(playerX, f11, playerZ);
@@ -70,10 +68,10 @@ public class RenderCustomEndPortal {
             GlStateManager.texGen(GlStateManager.TexGen.T, 9217);
             GlStateManager.texGen(GlStateManager.TexGen.R, 9217);
             GlStateManager.texGen(GlStateManager.TexGen.Q, 9216);
-            GlStateManager.texGen(GlStateManager.TexGen.S, 9473, this.func_40447_a(1.0F, 0.0F, 0.0F, 0.0F));
-            GlStateManager.texGen(GlStateManager.TexGen.T, 9473, this.func_40447_a(0.0F, 0.0F, 1.0F, 0.0F));
-            GlStateManager.texGen(GlStateManager.TexGen.R, 9473, this.func_40447_a(0.0F, 0.0F, 0.0F, 1.0F));
-            GlStateManager.texGen(GlStateManager.TexGen.Q, 9474, this.func_40447_a(0.0F, 1.0F, 0.0F, 0.0F));
+            GlStateManager.texGen(GlStateManager.TexGen.S, 9473, this.bufferTexData(1.0F, 0.0F, 0.0F, 0.0F));
+            GlStateManager.texGen(GlStateManager.TexGen.T, 9473, this.bufferTexData(0.0F, 0.0F, 1.0F, 0.0F));
+            GlStateManager.texGen(GlStateManager.TexGen.R, 9473, this.bufferTexData(0.0F, 0.0F, 0.0F, 1.0F));
+            GlStateManager.texGen(GlStateManager.TexGen.Q, 9474, this.bufferTexData(0.0F, 1.0F, 0.0F, 0.0F));
             GlStateManager.enableTexGenCoord(GlStateManager.TexGen.S);
             GlStateManager.enableTexGenCoord(GlStateManager.TexGen.T);
             GlStateManager.enableTexGenCoord(GlStateManager.TexGen.R);
@@ -88,10 +86,10 @@ public class RenderCustomEndPortal {
             GlStateManager.rotate((i * i * 4321 + i * 9) * 2.0F, 0.0F, 0.0F, 1.0F);
             GlStateManager.translate(-0.5F, -0.5F, 0.0F);
             GlStateManager.translate(-playerX, -playerZ, -playerY);
-            f9 = f8 + (float) ActiveRenderInfo.position.yCoord;
-            GlStateManager.translate(((float) ActiveRenderInfo.position.xCoord * f5) / f9, ((float) ActiveRenderInfo.position.zCoord * f5) / f9, -playerY + 20);
+            f9 = f8 + (float) ActiveRenderInfo.position.y;
+            GlStateManager.translate(((float) ActiveRenderInfo.position.x * f5) / f9, ((float) ActiveRenderInfo.position.z * f5) / f9, -playerY + 20);
             Tessellator tessellator = Tessellator.getInstance();
-            VertexBuffer buffer = tessellator.getBuffer();
+            BufferBuilder buffer = tessellator.getBuffer();
             buffer.begin(GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
             f11 = (random.nextFloat() * 0.5F + 0.1F) * f7;
             float f12 = (random.nextFloat() * 0.5F + 0.4F) * f7;
@@ -118,11 +116,10 @@ public class RenderCustomEndPortal {
         GlStateManager.enableLighting();
     }
 
-    private FloatBuffer func_40447_a(float f, float f1, float f2, float f3) {
-
-        field_40448_a.clear();
-        field_40448_a.put(f).put(f1).put(f2).put(f3);
-        field_40448_a.flip();
-        return field_40448_a;
+    private FloatBuffer bufferTexData(float f, float f1, float f2, float f3) {
+        texBuffer.clear();
+        texBuffer.put(f).put(f1).put(f2).put(f3);
+        texBuffer.flip();
+        return texBuffer;
     }
 }

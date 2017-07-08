@@ -14,22 +14,18 @@ public class EnderLiquidStoragePlugin implements EnderStoragePlugin {
 
     @Override
     public AbstractEnderStorage createEnderStorage(EnderStorageManager manager, Frequency freq) {
-
         return new EnderLiquidStorage(manager, freq);
     }
 
     @Override
     public String identifier() {
-
         return "liquid";
     }
 
     public void loadConfig(ConfigTag config) {
-
     }
 
     @Override
     public void sendClientInfo(EntityPlayer player, List<AbstractEnderStorage> list) {
-
     }
 }

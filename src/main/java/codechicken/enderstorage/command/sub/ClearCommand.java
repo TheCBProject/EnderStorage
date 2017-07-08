@@ -26,19 +26,16 @@ public class ClearCommand extends CommandBase implements ICCCommand {
 
     @Override
     public String getName() {
-
         return "clear";
     }
 
     @Override
     public String getBrief() {
-
         return "Provides ability to clear a users EnderStorage.";
     }
 
     @Override
     public List<String> getHelpLines() {
-
         List<String> lines = new LinkedList<>();
         lines.add("[] Defines required choice parameters.");
         lines.add("<> Defines optional parameters.");
@@ -51,13 +48,11 @@ public class ClearCommand extends CommandBase implements ICCCommand {
 
     @Override
     public String getUsage(ICommandSender sender) {
-
         return getBrief();
     }
 
     @Override
     public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
-
         if (args.length < 2) {
             sender.sendMessage(new TextComponentString(RED + "Not Enough Arguments!"));
             displayHelpText(sender);
@@ -88,8 +83,6 @@ public class ClearCommand extends CommandBase implements ICCCommand {
     }
 
     private static void nukeStorage(String identifier, String frequency, final String owner, ICommandSender sender) throws CommandException {
-
-        LogHelper.info("%s %s %s", identifier, frequency, owner);
         EnderStorageManager manager = EnderStorageManager.instance(false);
         List<String> validKeys = manager.getValidKeys(identifier);
         Predicate<String> frequencyPredicate;
@@ -148,7 +141,6 @@ public class ClearCommand extends CommandBase implements ICCCommand {
         boolean noStorage = true;
         List<String> cleared = new ArrayList<>();
         for (String key : validKeys) {
-            LogHelper.info(key);
             Map<String, String> kvArray = ArrayUtils.convertKeyValueArrayToMap(key.split(","));
             if (frequencyPredicate.test(key)) {
                 if (ownerPredicate.test(kvArray.get("owner"))) {
@@ -171,7 +163,6 @@ public class ClearCommand extends CommandBase implements ICCCommand {
     }
 
     private void displayHelpText(ICommandSender sender) {
-
         for (String line : getHelpLines()) {
             sender.sendMessage(new TextComponentString(BLUE + line));
         }
