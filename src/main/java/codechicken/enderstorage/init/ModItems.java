@@ -30,7 +30,7 @@ public class ModItems {
         ModelResourceLocation invLocation = new ModelResourceLocation("enderstorage:ender_pouch", "inventory");
         ModelLoader.setCustomModelResourceLocation(enderPouch, 0, invLocation);
         ModelLoader.setCustomMeshDefinition(enderPouch, (stack) -> invLocation);
-        ModelRegistryHelper.register(invLocation, new CCBakeryModel(""));
+        ModelRegistryHelper.register(invLocation, new CCBakeryModel());
         ModelBakery.registerItemKeyGenerator(enderPouch, stack -> {
             Frequency frequency = Frequency.readFromStack(stack);
             boolean open = ((EnderItemStorage) EnderStorageManager.instance(true).getStorage(frequency, "item")).openCount() > 0;

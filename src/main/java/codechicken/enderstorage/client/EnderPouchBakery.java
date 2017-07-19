@@ -5,7 +5,7 @@ import codechicken.enderstorage.manager.EnderStorageManager;
 import codechicken.enderstorage.storage.EnderItemStorage;
 import codechicken.lib.colour.EnumColour;
 import codechicken.lib.model.ItemQuadBakery;
-import codechicken.lib.model.PerspectiveAwareModelProperties;
+import codechicken.lib.model.bakedmodels.ModelProperties.PerspectiveProperties;
 import codechicken.lib.model.bakery.generation.IItemBakery;
 import codechicken.lib.texture.TextureUtils.IIconRegister;
 import net.minecraft.client.renderer.block.model.BakedQuad;
@@ -46,8 +46,8 @@ public class EnderPouchBakery implements IItemBakery, IIconRegister {
     }
 
     @Override
-    public PerspectiveAwareModelProperties getModelProperties(ItemStack stack) {
-        return PerspectiveAwareModelProperties.DEFAULT_ITEM;
+    public PerspectiveProperties getModelProperties(ItemStack stack) {
+        return PerspectiveProperties.DEFAULT_ITEM;
     }
 
     @Override
