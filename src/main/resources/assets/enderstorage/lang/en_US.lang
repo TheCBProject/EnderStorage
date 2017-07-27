@@ -1,5 +1,5 @@
-tile.enderChest.name=Ender Chest
-tile.enderTank.name=Ender Tank
+tile.ender_chest.name=Ender Chest
+tile.ender_tank.name=Ender Tank
 item.enderPouch.name=Ender Pouch
 enderstorage.serverop=Operator
 
