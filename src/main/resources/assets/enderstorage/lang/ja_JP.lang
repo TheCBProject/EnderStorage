@@ -1,7 +1,7 @@
 #ja_JP
-tile.enderChest.name=エンダーチェスト
-tile.enderTank.name=エンダータンク
-item.enderPouch.name=エンダーポーチ
+tile.ender_chest.name=エンダーチェスト
+tile.ender_tank.name=エンダータンク
+item.ender_pouch.name=エンダーポーチ
 enderstorage.serverop=管理者
 
 enderstorage.command.usage=enderstorage <freq>|(<colour> <colour> <colour>) [owner]

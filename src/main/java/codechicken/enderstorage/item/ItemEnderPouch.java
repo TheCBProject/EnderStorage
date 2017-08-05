@@ -32,7 +32,7 @@ public class ItemEnderPouch extends Item implements IBakeryProvider {
     public ItemEnderPouch() {
         setMaxStackSize(1);
         setCreativeTab(CreativeTabs.TRANSPORTATION);
-        setUnlocalizedName("enderPouch");
+        setUnlocalizedName("ender_pouch");
     }
 
     @Override

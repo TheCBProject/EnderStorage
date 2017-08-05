@@ -1,6 +1,6 @@
-tile.enderChest.name=Сундук Края
-tile.enderTank.name=Цистерна Края
-item.enderPouch.name=Сумка Края
+tile.ender_chest.name=Сундук Края
+tile.ender_tank.name=Цистерна Края
+item.ender_pouch.name=Сумка Края
 enderstorage.serverop=Оператор
 
 enderstorage.command.usage=enderstorage <частота>|(<цвет> <цвет> <цвет>) [владелец]

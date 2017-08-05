@@ -1,6 +1,6 @@
-tile.enderChest.name=Ender Sandığı
-tile.enderTank.name=Ender Sıvı Tankı
-item.enderPouch.name=Ender Sırt Çantası
+tile.ender_chest.name=Ender Sandığı
+tile.ender_tank.name=Ender Sıvı Tankı
+item.ender_pouch.name=Ender Sırt Çantası
 enderstorage.serverop=Operatör
 
 enderstorage.command.usage=enderstorage <frekans>|(<renk> <renk> <renk>) [sahibi]

@@ -1,4 +1,4 @@
-tile.enderChest.name=Enderkista
-tile.enderTank.name=Endertank
-item.enderPouch.name=Enderp�se
+tile.ender_chest.name=Enderkista
+tile.ender_tank.name=Endertank
+item.ender_pouch.name=Enderp�se
 enderstorage.serverop=Operat�r

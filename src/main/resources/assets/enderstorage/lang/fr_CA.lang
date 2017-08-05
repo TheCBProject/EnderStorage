@@ -1,6 +1,6 @@
-tile.enderChest.name=Coffre des limbes
-tile.enderTank.name=Tank des limbes
-item.enderPouch.name=Sac des limbes
+tile.ender_chest.name=Coffre des limbes
+tile.ender_tank.name=Tank des limbes
+item.ender_pouch.name=Sac des limbes
 enderstorage.serverop=Opérateur
 
 enderstorage.command.usage=enderstorage <fréquence>|(<couleur> <couleur> <couleur>) [propriétaire]
