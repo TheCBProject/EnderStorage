@@ -9,6 +9,8 @@ import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 
+import javax.annotation.Nonnull;
+
 @ChestContainer
 public class ContainerEnderItemStorage extends Container {
 
@@ -60,6 +62,7 @@ public class ContainerEnderItemStorage extends Container {
     }
 
     @Override
+    @Nonnull
     public ItemStack transferStackInSlot(EntityPlayer par1EntityPlayer, int i) {
         ItemStack itemstack = ItemStack.EMPTY;
         Slot slot = inventorySlots.get(i);
@@ -92,7 +95,7 @@ public class ContainerEnderItemStorage extends Container {
     }
 
     @Override
-    public boolean canInteractWith(EntityPlayer entityplayer) {
+    public boolean canInteractWith(@Nonnull EntityPlayer entityplayer) {
         return chestInv.isUsableByPlayer(entityplayer);
     }
 
@@ -102,7 +105,6 @@ public class ContainerEnderItemStorage extends Container {
             case 0:
                 return 3;
             case 1:
-                return 9;
             case 2:
                 return 9;
             default:
