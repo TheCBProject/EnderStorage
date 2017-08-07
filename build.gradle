@@ -13,14 +13,18 @@ buildscript {
 
 //add dependency repositories
 repositories {
-	maven {
-		name = "CB Repo"
-		url = "http://chickenbones.net/maven"
-	}
-	maven {
-		name = "JEI Maven"
-		url = "http://dvs1.progwml6.com/files/maven"
-	}
+    maven {
+        name = "CB Repo"
+        url = "http://chickenbones.net/maven"
+    }
+    maven {
+        name = "JEI Maven"
+        url = "http://dvs1.progwml6.com/files/maven"
+    }
+    maven {
+        name = "CurseForge"
+        url = "https://minecraft.curseforge.com/api/maven/"
+    }
 }
 
 apply plugin: 'net.minecraftforge.gradle.forge'
@@ -44,20 +48,21 @@ configFile.withReader {
 
 dependencies {
     compile "codechicken:CodeChickenLib:${config.mc_version}-${config.ccl_version}:deobf"
-	compile "mezz.jei:jei_${config.mc_version}:${config.jei_version}"
+    compile "mezz.jei:jei_${config.mc_version}:${config.jei_version}"
+    compile 'inventory-tweaks:InventoryTweaks:1.63+beta.107:api'
 }
 
-version =  "${project.config.mod_version}." + System.getenv("BUILD_NUMBER") ?: "1"
+version = "${project.config.mod_version}." + (System.getenv("BUILD_NUMBER") ?: "1")
 
-println  config.mc_version + "-" + config.forge_version
+println config.mc_version + "-" + config.forge_version
 // Setup the forge minecraft plugin data. Specify the preferred forge/minecraft version here
 minecraft {
     version = config.mc_version + "-" + config.forge_version
     mappings = config.mappings
-	makeObfSourceJar = false
+    makeObfSourceJar = false
     replace '${mod_version}', project.config.mod_version
     replaceIn "Reference.java"
-	runDir = "run"
+    runDir = "run"
 }
 
 processResources {
@@ -67,12 +72,12 @@ processResources {
 
     // Replace properties in info files
     from(sourceSets.main.resources.srcDirs) {
-        include '*.info'
-        expand 'version':project.version,'mc_version':config.mc_version
+        include 'mcmod.info'
+        expand 'version': project.version, 'mc_version': config.mc_version
     }
 
-	// Move access transformer to META-INF
-	rename '(.+_at.cfg)', 'META-INF/$1'
+    // Move access transformer to META-INF
+    rename '(.+_at.cfg)', 'META-INF/$1'
 }
 
 version = "${project.minecraft.version}-${project.version}"

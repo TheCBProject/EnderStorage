@@ -2,12 +2,14 @@ package codechicken.enderstorage.container;
 
 import codechicken.enderstorage.plugin.EnderItemStoragePlugin;
 import codechicken.enderstorage.storage.EnderItemStorage;
+import invtweaks.api.container.ChestContainer;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 
+@ChestContainer
 public class ContainerEnderItemStorage extends Container {
 
     public EnderItemStorage chestInv;
@@ -58,11 +60,6 @@ public class ContainerEnderItemStorage extends Container {
     }
 
     @Override
-    public boolean canInteractWith(EntityPlayer entityplayer) {
-        return chestInv.isUsableByPlayer(entityplayer);
-    }
-
-    @Override
     public ItemStack transferStackInSlot(EntityPlayer par1EntityPlayer, int i) {
         ItemStack itemstack = ItemStack.EMPTY;
         Slot slot = inventorySlots.get(i);
@@ -92,5 +89,24 @@ public class ContainerEnderItemStorage extends Container {
     public void onContainerClosed(EntityPlayer entityplayer) {
         super.onContainerClosed(entityplayer);
         chestInv.closeInventory();
+    }
+
+    @Override
+    public boolean canInteractWith(EntityPlayer entityplayer) {
+        return chestInv.isUsableByPlayer(entityplayer);
+    }
+
+    @ChestContainer.RowSizeCallback
+    public int getRowSize() {
+        switch (chestInv.getSize()) {
+            case 0:
+                return 3;
+            case 1:
+                return 9;
+            case 2:
+                return 9;
+            default:
+                throw new IllegalStateException("Unsupported chest size! Must be one of {0, 1, 2}");
+        }
     }
 }
