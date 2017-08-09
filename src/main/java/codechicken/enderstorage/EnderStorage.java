@@ -5,7 +5,9 @@ import codechicken.enderstorage.handler.ConfigurationHandler;
 import codechicken.enderstorage.manager.EnderStorageManager;
 import codechicken.enderstorage.proxy.Proxy;
 import codechicken.lib.CodeChickenLib;
+import codechicken.lib.internal.ModDescriptionEnhancer;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.common.ModMetadata;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
@@ -39,6 +41,9 @@ public class EnderStorage {
     public void preInit(FMLPreInitializationEvent event) {
         ConfigurationHandler.init(event.getSuggestedConfigurationFile());
         proxy.preInit();
+        ModMetadata metadata = event.getModMetadata();
+        metadata.description = modifyDesc(metadata.description);
+        ModDescriptionEnhancer.registerEnhancement(MOD_ID, MOD_NAME);
     }
 
     @Mod.EventHandler
@@ -54,5 +59,13 @@ public class EnderStorage {
     @Mod.EventHandler
     public void preServerStart(FMLServerStartedEvent event) {
         EnderStorageManager.reloadManager(false);
+    }
+
+    private static String modifyDesc(String desc) {
+        desc += "\n";
+        desc += "    Credits: Ecu - original idea, design, chest and pouch texture\n";
+        desc += "    Rosethorns - tank model\n";
+        desc += "    Soaryn - tank texture\n";
+        return desc;
     }
 }

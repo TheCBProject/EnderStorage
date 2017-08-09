@@ -56,7 +56,6 @@ minecraft {
     mappings = config.mappings
 	makeObfSourceJar = false
     replace '${mod_version}', project.config.mod_version
-    replaceIn "Reference.java"
 	runDir = "run"
 }
 
