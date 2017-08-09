@@ -72,7 +72,7 @@ processResources {
 
     // Replace properties in info files
     from(sourceSets.main.resources.srcDirs) {
-        include 'mcmod.info'
+        include '*.info'
         expand 'version': project.version, 'mc_version': config.mc_version
     }
 

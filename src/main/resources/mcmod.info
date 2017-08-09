@@ -4,26 +4,12 @@
   "name": "EnderStorage",
   "description": "Stores your stuff in the END!
 
-  Credits: Ecu
-  -
-  original
-  idea,
-  design,
-  chest
-  and
-  pouch
-  texture
-  Rosethorns
-  -
-  tank
-  model
-  Soaryn
-  -
-  tank
-  texture
+Credits: Ecu - original idea, design,
+        chest and pouch texture
+    Rosethorns - tank model
+    Soaryn - tank texture
 
-  Supporters: Blkdragon112
-  ",
+Supporters: Blkdragon112",
   "version": "${version}",
   "mcversion": "${mc_version}",
   "url": "http://www.minecraftforum.net/topic/909223",

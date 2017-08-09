@@ -62,6 +62,11 @@ public class ContainerEnderItemStorage extends Container {
     }
 
     @Override
+    public boolean canInteractWith(@Nonnull EntityPlayer entityplayer) {
+        return chestInv.isUsableByPlayer(entityplayer);
+    }
+
+    @Override
     @Nonnull
     public ItemStack transferStackInSlot(EntityPlayer par1EntityPlayer, int i) {
         ItemStack itemstack = ItemStack.EMPTY;
@@ -92,11 +97,6 @@ public class ContainerEnderItemStorage extends Container {
     public void onContainerClosed(EntityPlayer entityplayer) {
         super.onContainerClosed(entityplayer);
         chestInv.closeInventory();
-    }
-
-    @Override
-    public boolean canInteractWith(@Nonnull EntityPlayer entityplayer) {
-        return chestInv.isUsableByPlayer(entityplayer);
     }
 
     @ChestContainer.RowSizeCallback
