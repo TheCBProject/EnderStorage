@@ -85,6 +85,7 @@ public class TankSynchroniser {
     }
 
     public static class PlayerItemTankState extends TankState {
+
         private EntityPlayerMP player;
         private boolean tracking;
 

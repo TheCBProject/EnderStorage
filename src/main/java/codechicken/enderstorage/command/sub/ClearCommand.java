@@ -4,7 +4,6 @@ import codechicken.enderstorage.api.AbstractEnderStorage;
 import codechicken.enderstorage.api.Frequency;
 import codechicken.enderstorage.command.ICCCommand;
 import codechicken.enderstorage.manager.EnderStorageManager;
-import codechicken.enderstorage.util.LogHelper;
 import codechicken.lib.colour.EnumColour;
 import codechicken.lib.util.ArrayUtils;
 import com.google.common.base.Strings;

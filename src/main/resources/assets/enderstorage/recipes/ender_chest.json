@@ -1,7 +1,7 @@
 {
-	"type" : "enderstorage:crafting_recipe",
-	"result" : {
-		"item" : "enderstorage:ender_storage",
+	"type": "enderstorage:crafting_recipe",
+	"result": {
+		"item": "enderstorage:ender_storage",
 		"data": 0
 	},
 	"pattern": [
@@ -31,8 +31,7 @@
 			"data": 0
 		},
 		"W": {
-			"type" : "enderstorage:wool"
+			"type": "enderstorage:wool"
 		}
 	}
-	
 }
