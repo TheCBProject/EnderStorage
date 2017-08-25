@@ -56,6 +56,7 @@ public class EnderItemStorage extends AbstractEnderStorage implements IInventory
     private void alignSize() {
         if (configSize > size) {
             ItemStack[] newItems = new ItemStack[sizes[configSize]];
+            ArrayUtils.fillArray(newItems, ItemStack.EMPTY);
             System.arraycopy(items, 0, newItems, 0, items.length);
             items = newItems;
             size = configSize;
@@ -70,6 +71,7 @@ public class EnderItemStorage extends AbstractEnderStorage implements IInventory
 
             if (numStacks <= sizes[configSize]) {
                 ItemStack[] newItems = new ItemStack[sizes[configSize]];
+                ArrayUtils.fillArray(newItems, ItemStack.EMPTY);
                 int copyTo = 0;
                 for (ItemStack item : items) {
                     if (!item.isEmpty()) {
