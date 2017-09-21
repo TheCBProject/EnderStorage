@@ -2,12 +2,14 @@ package codechicken.enderstorage.container;
 
 import codechicken.enderstorage.plugin.EnderItemStoragePlugin;
 import codechicken.enderstorage.storage.EnderItemStorage;
+import invtweaks.api.container.ChestContainer;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 
+@ChestContainer
 public class ContainerEnderItemStorage extends Container {
 
     public EnderItemStorage chestInv;
@@ -92,5 +94,18 @@ public class ContainerEnderItemStorage extends Container {
     public void onContainerClosed(EntityPlayer entityplayer) {
         super.onContainerClosed(entityplayer);
         chestInv.closeInventory();
+    }
+
+    @ChestContainer.RowSizeCallback
+    public int getRowSize() {
+        switch(chestInv.getSize()) {
+            case 0:
+                return 3;
+            case 1:
+            case 2:
+                return 9;
+            default:
+                throw new IllegalArgumentException("Invalid chest size: " + chestInv.getSize());
+        }
     }
 }
