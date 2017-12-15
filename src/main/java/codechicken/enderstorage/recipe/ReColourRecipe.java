@@ -122,7 +122,7 @@ public class ReColourRecipe extends RecipeBase {
     }
 
     @Override
-    public boolean isHidden() {
+    public boolean isDynamic() {
         return true;
     }
 }
