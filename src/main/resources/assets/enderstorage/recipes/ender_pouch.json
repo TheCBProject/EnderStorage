@@ -11,14 +11,12 @@
 	],
 	"key": {
 		"P": {
-			"type": "minecraft:item",
-			"item": "minecraft:ender_pearl",
-			"data": 0
+			"type": "forge:ore_dict",
+			"ore": "enderpearl"
 		},
 		"L": {
-			"type": "minecraft:item",
-			"item": "minecraft:leather",
-			"data": 0
+			"type": "forge:ore_dict",
+			"ore": "leather"
 		},
 		"B": {
 			"type": "minecraft:item",

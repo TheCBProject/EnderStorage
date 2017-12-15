@@ -11,19 +11,16 @@
 	],
 	"key": {
 		"P": {
-			"type": "minecraft:item",
-			"item": "minecraft:ender_pearl",
-			"data": 0
+			"type": "forge:ore_dict",
+			"ore": "enderpearl"
 		},
 		"O": {
-			"type": "minecraft:item",
-			"item": "minecraft:obsidian",
-			"data": 0
+			"type": "forge:ore_dict",
+			"ore": "obsidian"
 		},
 		"C": {
-			"type": "minecraft:item",
-			"item": "minecraft:chest",
-			"data": 0
+			"type": "forge:ore_dict",
+			"ore": "chestWood"
 		},
 		"B": {
 			"type": "minecraft:item",

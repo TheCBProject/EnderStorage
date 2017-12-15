@@ -231,8 +231,7 @@ public class TankSynchroniser {
 
     @SubscribeEvent
     public void onPlayerLogout(PlayerEvent.PlayerLoggedOutEvent event) {
-        if (playerItemTankStates != null) //sometimes world unloads before players logout
-        {
+        if (playerItemTankStates != null) { //sometimes world unloads before players logout
             playerItemTankStates.remove(event.player.getName());
         }
     }
@@ -254,7 +253,7 @@ public class TankSynchroniser {
     @SubscribeEvent
     public void tickEnd(TickEvent.ClientTickEvent event) {
         if (event.phase == TickEvent.Phase.END) {
-            if (ClientUtils.inWorld()) {
+            if (ClientUtils.inWorld() && clientState != null) {
                 clientState.update();
             }
         }

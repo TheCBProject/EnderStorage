@@ -162,18 +162,20 @@ public class BlockEnderStorage extends Block implements ITileEntityProvider {
             }
         } else if (hit.subHit >= 1 && hit.subHit <= 3) {
             ItemStack item = player.inventory.getCurrentItem();
-            EnumColour dye = EnumColour.fromDyeStack(item);
-            if (dye != null) {
-                EnumColour[] colours = { null, null, null };
-                if (colours[hit.subHit - 1] == dye) {
-                    return false;
+            if (!item.isEmpty()) {
+                EnumColour dye = EnumColour.fromDyeStack(item);
+                if (dye != null) {
+                    EnumColour[] colours = { null, null, null };
+                    if (colours[hit.subHit - 1] == dye) {
+                        return false;
+                    }
+                    colours[hit.subHit - 1] = dye;
+                    owner.setFreq(owner.frequency.copy().set(colours));
+                    if (!player.capabilities.isCreativeMode) {
+                        item.shrink(1);
+                    }
+                    return true;
                 }
-                colours[hit.subHit - 1] = dye;
-                owner.setFreq(owner.frequency.copy().set(colours));
-                if (!player.capabilities.isCreativeMode) {
-                    item.shrink(1);
-                }
-                return true;
             }
         }
         return !player.isSneaking() && owner.activate(player, hit.subHit, hand);
