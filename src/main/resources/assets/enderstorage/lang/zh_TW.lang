@@ -1,4 +1,4 @@
-tile.ender_chest.name=終界箱子
+tile.ender_chest.name=終界箱
 tile.ender_tank.name=終界蓄水槽
 item.ender_pouch.name=終界袋
 enderstorage.serverop=管理員
