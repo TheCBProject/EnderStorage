@@ -1,0 +1,9 @@
+tile.ender_chest.name=ʇsǝɥƆ ɹǝpuƎ
+tile.ender_tank.name=ʞuɐ⟘ ɹǝpuƎ
+item.ender_pouch.name=ɥɔnoԀ ɹǝpuƎ
+enderstorage.serverop=ɹoʇɐɹǝdO
+
+enderstorage.command.usage=[ɹǝuʍo] (<ɹnoꞁoɔ> <ɹnoꞁoɔ> <ɹnoꞁoɔ>)|<bǝɹɟ> ǝᵷɐɹoʇsɹǝpuǝ
+enderstorage.command.no_arguments=sʇuǝɯnᵷɹɐ ɟo ɹǝqɯnu pᴉꞁɐʌuI
+enderstorage.command.no_freq=bǝɹɟ pᴉꞁɐʌuI
+enderstorage.command.no_colour=%s :ɹoꞁoɔ pᴉꞁɐʌuI
