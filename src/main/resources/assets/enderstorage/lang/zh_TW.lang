@@ -1,9 +1,9 @@
-tile.ender_chest.name=終界箱子
+tile.ender_chest.name=終界箱
 tile.ender_tank.name=終界蓄水槽
 item.ender_pouch.name=終界袋
 enderstorage.serverop=管理員
 
 enderstorage.command.usage=enderstorage <freq>|(<colour> <colour> <colour>) [owner]
-enderstorage.command.no_arguments=參數數量不正確
-enderstorage.command.no_freq=freq參數不正確
-enderstorage.command.no_colour=color參數不正確：%s
+enderstorage.command.no_arguments=數量參數不正確
+enderstorage.command.no_freq=頻率參數不正確
+enderstorage.command.no_colour=顏色參數不正確: %s
