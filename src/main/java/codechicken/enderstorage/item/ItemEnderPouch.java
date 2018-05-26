@@ -56,7 +56,7 @@ public class ItemEnderPouch extends Item implements IBakeryProvider {
             TileEnderChest chest = (TileEnderChest) tile;
             ItemNBTUtils.validateTagExists(stack);
             Frequency frequency = chest.frequency.copy();
-            if (ConfigurationHandler.anarchyMode && !frequency.owner.equals(player.getDisplayNameString())) {
+            if (ConfigurationHandler.anarchyMode && !(frequency.owner != null && frequency.owner.equals(player.getDisplayNameString()))) {
                 frequency.setOwner(null);
             }
 
