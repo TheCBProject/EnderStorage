@@ -7,14 +7,18 @@ import codechicken.enderstorage.tile.TileEnderTank;
 import codechicken.enderstorage.tile.TileFrequencyOwner;
 import codechicken.lib.colour.EnumColour;
 import codechicken.lib.raytracer.RayTracer;
+import codechicken.lib.render.particle.CustomParticleHandler;
 import codechicken.lib.util.ItemUtils;
+import codechicken.lib.vec.Vector3;
 import net.minecraft.block.Block;
 import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyEnum;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.particle.ParticleManager;
 import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -27,6 +31,9 @@ import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldServer;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.util.ArrayList;
 
@@ -268,6 +275,28 @@ public class BlockEnderStorage extends Block implements ITileEntityProvider {
         super.eventReceived(state, worldIn, pos, eventID, eventParam);
         TileEntity tileentity = worldIn.getTileEntity(pos);
         return tileentity != null && tileentity.receiveClientEvent(eventID, eventParam);
+    }
+
+    @Override
+    public boolean addLandingEffects(IBlockState state, WorldServer world, BlockPos pos, IBlockState iblockstate, EntityLivingBase entity, int numberOfParticles) {
+        CustomParticleHandler.addLandingEffects(world, pos, state, Vector3.fromEntity(entity), numberOfParticles);
+        return true;
+    }
+
+    @Override
+    @SideOnly (Side.CLIENT)
+    public boolean addRunningEffects(IBlockState state, World world, BlockPos pos, Entity entity) {
+        return CustomParticleHandler.handleRunningEffects(world, pos, state, entity);
+    }
+
+    @Override
+    public boolean addHitEffects(IBlockState state, World world, RayTraceResult trace, ParticleManager manager) {
+        return CustomParticleHandler.handleHitEffects(state, world, trace, manager);
+    }
+
+    @Override
+    public boolean addDestroyEffects(World world, BlockPos pos, ParticleManager manager) {
+        return CustomParticleHandler.handleDestroyEffects(world, pos, manager);
     }
 
     public static enum Type implements IStringSerializable {
