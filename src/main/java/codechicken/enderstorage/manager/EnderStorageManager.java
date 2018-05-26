@@ -110,7 +110,7 @@ public class EnderStorageManager {
                 saveTag = new NBTTagCompound();
             }
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException(String.format("EnderStorage was unable to read it's data, please delete the 'EnderStorage' folder Here: %s and start the server again.", saveDir), e);
         }
     }
 
