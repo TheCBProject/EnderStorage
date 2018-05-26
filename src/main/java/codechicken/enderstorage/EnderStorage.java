@@ -48,6 +48,7 @@ public class EnderStorage {
 
     @Mod.EventHandler
     public void init(FMLInitializationEvent event) {
+        ConfigurationHandler.loadConfig();
         proxy.init();
     }
 

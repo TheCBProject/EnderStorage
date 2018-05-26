@@ -10,10 +10,13 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.oredict.OreDictionary;
 import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.File;
 
 /**
+ * TODO 1.13, move to new config system, Plugins also get ref to the config, so we can't do it now without binary change.
  * Created by covers1624 on 4/11/2016.
  */
 public class ConfigurationHandler {
@@ -28,14 +31,11 @@ public class ConfigurationHandler {
     public static boolean anarchyMode;
     public static ItemStack personalItem;
 
-    //TODO public static boolean enableChestInventoryLid;
-
     public static void init(File file) {
         if (!initialized) {
             config = new ConfigFile(file).setComment("EnderStorage Configuration File\n" + "Deleting any element will restore it to it's default value");
             initialized = true;
         }
-        loadConfig();
     }
 
     public static void loadConfig() {
