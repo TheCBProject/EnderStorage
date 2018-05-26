@@ -35,8 +35,6 @@ import net.minecraft.world.WorldServer;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-import java.util.ArrayList;
-
 /**
  * Created by covers1624 on 4/11/2016.
  */
@@ -101,18 +99,14 @@ public class BlockEnderStorage extends Block implements ITileEntityProvider {
     }
 
     @Override
-    public ArrayList<ItemStack> getDrops(IBlockAccess world, BlockPos pos, IBlockState state, int fortune) {
-        ArrayList<ItemStack> ret = new ArrayList<>();
-
+    public void getDrops(NonNullList<ItemStack> drops, IBlockAccess world, BlockPos pos, IBlockState state, int fortune) {
         TileFrequencyOwner tile = (TileFrequencyOwner) world.getTileEntity(pos);
         if (tile != null) {
-            ret.add(createItem(state.getBlock().getMetaFromState(state), tile.frequency));
+            drops.add(createItem(state.getBlock().getMetaFromState(state), tile.frequency));
             if (ConfigurationHandler.anarchyMode && tile.frequency.hasOwner()) {
-                ret.add(ConfigurationHandler.personalItem.copy());
+                drops.add(ConfigurationHandler.personalItem.copy());
             }
         }
-
-        return ret;
     }
 
     @Override
