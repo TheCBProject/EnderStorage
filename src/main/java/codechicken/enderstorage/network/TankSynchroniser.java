@@ -217,7 +217,10 @@ public class TankSynchroniser {
     }
 
     public static FluidStack getClientLiquid(Frequency freq) {
-        return clientState.getLiquid(freq);
+        if (clientState != null) {
+            return clientState.getLiquid(freq);
+        }
+        return FluidUtils.emptyFluid();
     }
 
     public static void handleVisiblityPacket(EntityPlayerMP player, PacketCustom packet) {
