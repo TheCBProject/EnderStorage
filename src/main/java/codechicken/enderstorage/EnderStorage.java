@@ -6,6 +6,7 @@ import codechicken.enderstorage.manager.EnderStorageManager;
 import codechicken.enderstorage.proxy.Proxy;
 import codechicken.lib.CodeChickenLib;
 import codechicken.lib.internal.ModDescriptionEnhancer;
+import net.minecraftforge.common.ForgeVersion;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.ModMetadata;
 import net.minecraftforge.fml.common.SidedProxy;
@@ -24,7 +25,7 @@ public class EnderStorage {
     public static final String MOD_ID = "enderstorage";
     public static final String MOD_NAME = "EnderStorage";
     public static final String VERSION = "${mod_version}";
-    public static final String DEPENDENCIES = "required-after:codechickenlib@[" + CodeChickenLib.MOD_VERSION + ",)";
+    public static final String DEPENDENCIES = "required-after:forge@[14.23.4,);" + CodeChickenLib.MOD_VERSION_DEP;
     static final String UPDATE_URL = "http://chickenbones.net/Files/notification/version.php?query=forge&version=" + MC_VERSION + "&file=EnderStorage";
 
     @SidedProxy (clientSide = "codechicken.enderstorage.proxy.ProxyClient", serverSide = "codechicken.enderstorage.proxy.Proxy")

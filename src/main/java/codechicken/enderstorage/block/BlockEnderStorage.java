@@ -284,11 +284,13 @@ public class BlockEnderStorage extends Block implements ITileEntityProvider {
     }
 
     @Override
+    @SideOnly (Side.CLIENT)
     public boolean addHitEffects(IBlockState state, World world, RayTraceResult trace, ParticleManager manager) {
         return CustomParticleHandler.handleHitEffects(state, world, trace, manager);
     }
 
     @Override
+    @SideOnly (Side.CLIENT)
     public boolean addDestroyEffects(World world, BlockPos pos, ParticleManager manager) {
         return CustomParticleHandler.handleDestroyEffects(world, pos, manager);
     }
