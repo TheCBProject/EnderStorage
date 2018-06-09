@@ -1,5 +1,7 @@
 package codechicken.enderstorage.command.help;
 
+import codechicken.lib.command.help.IHelpPage;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,17 +11,17 @@ import java.util.List;
 public class FrequencyHelp implements IHelpPage {
 
     @Override
-    public String name() {
+    public String getName() {
         return "frequency";
     }
 
     @Override
-    public String getBrief() {
+    public String getDesc() {
         return "Shows you how frequency is formatted inside EnderStorage commands.";
     }
 
     @Override
-    public List<String> getHelpText() {
+    public List<String> getHelp() {
         List<String> list = new ArrayList<>();
         list.add("Frequency for commands is defined as follows:");
         list.add("\"<colour>,<colour>,<colour>\"");

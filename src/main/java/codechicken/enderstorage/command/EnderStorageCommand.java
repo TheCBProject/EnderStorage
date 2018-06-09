@@ -1,7 +1,10 @@
 package codechicken.enderstorage.command;
 
-import codechicken.enderstorage.command.sub.ClearCommand;
-import codechicken.enderstorage.command.sub.HelpCommand;
+import codechicken.enderstorage.command.help.ColourHelp;
+import codechicken.enderstorage.command.help.FrequencyHelp;
+import codechicken.enderstorage.command.help.ValidStorageHelp;
+import codechicken.lib.command.help.HelpCommandBase;
+import codechicken.lib.command.help.IHelpCommandHost;
 import com.google.common.collect.ImmutableList;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommand;
@@ -10,13 +13,23 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraftforge.server.command.CommandTreeBase;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by covers1624 on 18/01/2017.
  */
-public class EnderStorageCommand extends CommandTreeBase {
+public class EnderStorageCommand extends CommandTreeBase implements IHelpCommandHost {
 
-    private HelpCommand helpCommand;
+    private HelpCommandBase helpCommand;
+
+    public EnderStorageCommand() {
+        helpCommand = new HelpCommandBase(this);
+        addSubcommand(helpCommand);
+        addSubcommand(new ClearCommand());
+        helpCommand.addHelpPage(new ColourHelp());
+        helpCommand.addHelpPage(new FrequencyHelp());
+        helpCommand.addHelpPage(new ValidStorageHelp());
+    }
 
     @Override
     public String getName() {
@@ -48,9 +61,13 @@ public class EnderStorageCommand extends CommandTreeBase {
         return 0;
     }
 
-    public ICommand registerSubCommands() {
-        addSubcommand(helpCommand = new HelpCommand(this).registerHelpPages());
-        addSubcommand(new ClearCommand());
-        return this;
+    @Override
+    public Map<String, ICommand> getSubCommandMap() {
+        return getCommandMap();
+    }
+
+    @Override
+    public String getParentName() {
+        return getName();
     }
 }

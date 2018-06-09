@@ -1,10 +1,10 @@
-package codechicken.enderstorage.command.sub;
+package codechicken.enderstorage.command;
 
 import codechicken.enderstorage.api.AbstractEnderStorage;
 import codechicken.enderstorage.api.Frequency;
-import codechicken.enderstorage.command.ICCCommand;
 import codechicken.enderstorage.manager.EnderStorageManager;
 import codechicken.lib.colour.EnumColour;
+import codechicken.lib.command.help.IBetterHelpCommand;
 import codechicken.lib.util.ArrayUtils;
 import com.google.common.base.Strings;
 import net.minecraft.command.CommandBase;
@@ -21,7 +21,7 @@ import static net.minecraft.util.text.TextFormatting.*;
 /**
  * Created by covers1624 on 18/01/2017.
  */
-public class ClearCommand extends CommandBase implements ICCCommand {
+public class ClearCommand extends CommandBase implements IBetterHelpCommand {
 
     @Override
     public String getName() {
@@ -29,12 +29,12 @@ public class ClearCommand extends CommandBase implements ICCCommand {
     }
 
     @Override
-    public String getBrief() {
+    public String getDesc() {
         return "Provides ability to clear a users EnderStorage.";
     }
 
     @Override
-    public List<String> getHelpLines() {
+    public List<String> getHelp() {
         List<String> lines = new LinkedList<>();
         lines.add("[] Defines required choice parameters.");
         lines.add("<> Defines optional parameters.");
@@ -43,11 +43,6 @@ public class ClearCommand extends CommandBase implements ICCCommand {
         lines.add("To clear all player Storage's provide \"*\" as the player.");
         lines.add("For frequency syntax use \"/EnderStorage help frequency\"");
         return lines;
-    }
-
-    @Override
-    public String getUsage(ICommandSender sender) {
-        return getBrief();
     }
 
     @Override
@@ -158,12 +153,6 @@ public class ClearCommand extends CommandBase implements ICCCommand {
             for (String entry : cleared) {
                 sender.sendMessage(new TextComponentString(BLUE + entry));
             }
-        }
-    }
-
-    private void displayHelpText(ICommandSender sender) {
-        for (String line : getHelpLines()) {
-            sender.sendMessage(new TextComponentString(BLUE + line));
         }
     }
 }

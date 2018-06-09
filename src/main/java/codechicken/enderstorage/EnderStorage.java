@@ -6,7 +6,6 @@ import codechicken.enderstorage.manager.EnderStorageManager;
 import codechicken.enderstorage.proxy.Proxy;
 import codechicken.lib.CodeChickenLib;
 import codechicken.lib.internal.ModDescriptionEnhancer;
-import net.minecraftforge.common.ForgeVersion;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.ModMetadata;
 import net.minecraftforge.fml.common.SidedProxy;
@@ -55,7 +54,7 @@ public class EnderStorage {
 
     @Mod.EventHandler
     public void serverStarting(FMLServerStartingEvent event) {
-        event.registerServerCommand(new EnderStorageCommand().registerSubCommands());
+        event.registerServerCommand(new EnderStorageCommand());
     }
 
     @Mod.EventHandler

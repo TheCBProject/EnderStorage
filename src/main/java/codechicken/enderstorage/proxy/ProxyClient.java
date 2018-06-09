@@ -5,6 +5,7 @@ import codechicken.enderstorage.client.ParticleDummyModel;
 import codechicken.enderstorage.client.render.entity.TankLayerRenderer;
 import codechicken.enderstorage.client.render.tile.RenderTileEnderChest;
 import codechicken.enderstorage.client.render.tile.RenderTileEnderTank;
+import codechicken.enderstorage.handler.ConfigurationHandler;
 import codechicken.enderstorage.init.ModBlocks;
 import codechicken.enderstorage.init.ModItems;
 import codechicken.enderstorage.network.EnderStorageCPH;
@@ -39,8 +40,10 @@ public class ProxyClient extends Proxy {
         ClientRegistry.bindTileEntitySpecialRenderer(TileEnderChest.class, new RenderTileEnderChest());
         ClientRegistry.bindTileEntitySpecialRenderer(TileEnderTank.class, new RenderTileEnderTank());
 
-        for (RenderPlayer renderPlayer : Minecraft.getMinecraft().getRenderManager().getSkinMap().values()) {
-            renderPlayer.addLayer(new TankLayerRenderer());
+        if (!ConfigurationHandler.disableCreatorVisuals) {
+            for (RenderPlayer renderPlayer : Minecraft.getMinecraft().getRenderManager().getSkinMap().values()) {
+                renderPlayer.addLayer(new TankLayerRenderer());
+            }
         }
     }
 }

@@ -29,6 +29,7 @@ public class ConfigurationHandler {
     public static boolean disableVanillaEnderChest;
     public static boolean removeVanillaRecipe;
     public static boolean anarchyMode;
+    public static boolean disableCreatorVisuals;
     public static ItemStack personalItem;
 
     public static void init(File file) {
@@ -69,6 +70,7 @@ public class ConfigurationHandler {
         }
         personalItem = new ItemStack(item, 1, meta);
         //endregion
+        disableCreatorVisuals = config.getTag("disableCreatorVisuals").setComment("Dissables the tank on top of the creators heads.").getBooleanValue(false);
         EnderStorageManager.loadConfig(config);
     }
 
