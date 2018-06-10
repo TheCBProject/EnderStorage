@@ -70,11 +70,13 @@ public class ItemEnderPouch extends Item implements IBakeryProvider {
     @Override
     public ActionResult<ItemStack> onItemRightClick(World world, EntityPlayer player, EnumHand hand) {
         ItemStack stack = player.getHeldItem(hand);
-        if (world.isRemote || player.isSneaking()) {
+        if (player.isSneaking()) {
             return new ActionResult<>(EnumActionResult.PASS, stack);
         }
-        Frequency frequency = Frequency.readFromStack(stack);
-        ((EnderItemStorage) EnderStorageManager.instance(world.isRemote).getStorage(frequency, "item")).openSMPGui(player, stack.getUnlocalizedName() + ".name");
+        if(!world.isRemote) {
+            Frequency frequency = Frequency.readFromStack(stack);
+            ((EnderItemStorage) EnderStorageManager.instance(world.isRemote).getStorage(frequency, "item")).openSMPGui(player, stack.getUnlocalizedName() + ".name");
+        }
         return new ActionResult<>(EnumActionResult.SUCCESS, stack);
     }
 
