@@ -273,7 +273,7 @@ public class BlockEnderStorage extends Block implements ITileEntityProvider {
 
     @Override
     public boolean addLandingEffects(IBlockState state, WorldServer world, BlockPos pos, IBlockState iblockstate, EntityLivingBase entity, int numberOfParticles) {
-        CustomParticleHandler.addLandingEffects(world, pos, state, Vector3.fromEntity(entity), numberOfParticles);
+        CustomParticleHandler.handleLandingEffects(world, pos, entity, numberOfParticles);
         return true;
     }
 
