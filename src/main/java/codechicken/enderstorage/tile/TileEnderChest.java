@@ -12,7 +12,6 @@ import codechicken.lib.raytracer.IndexedCuboid6;
 import codechicken.lib.vec.Cuboid6;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.SoundEvents;
 import net.minecraft.inventory.Container;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
@@ -24,6 +23,9 @@ import net.minecraftforge.items.wrapper.InvWrapper;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static codechicken.enderstorage.handler.ConfigurationHandler.useVanillaEnderChestSounds;
+import static net.minecraft.init.SoundEvents.*;
 
 public class TileEnderChest extends TileFrequencyOwner {
 
@@ -58,9 +60,9 @@ public class TileEnderChest extends TileFrequencyOwner {
         a_lidAngle = MathHelper.approachLinear(a_lidAngle, c_numOpen > 0 ? 1 : 0, 0.1);
 
         if (b_lidAngle >= 0.5 && a_lidAngle < 0.5) {
-            world.playSound(null, getPos(), SoundEvents.BLOCK_CHEST_CLOSE, SoundCategory.BLOCKS, 0.5F, world.rand.nextFloat() * 0.1F + 0.9F);
+            world.playSound(null, getPos(), useVanillaEnderChestSounds ? BLOCK_ENDERCHEST_CLOSE : BLOCK_CHEST_CLOSE, SoundCategory.BLOCKS, 0.5F, world.rand.nextFloat() * 0.1F + 0.9F);
         } else if (b_lidAngle == 0 && a_lidAngle > 0) {
-            world.playSound(null, getPos(), SoundEvents.BLOCK_CHEST_OPEN, SoundCategory.BLOCKS, 0.5F, world.rand.nextFloat() * 0.1F + 0.9F);
+            world.playSound(null, getPos(), useVanillaEnderChestSounds ? BLOCK_ENDERCHEST_OPEN : BLOCK_CHEST_OPEN, SoundCategory.BLOCKS, 0.5F, world.rand.nextFloat() * 0.1F + 0.9F);
         }
     }
 

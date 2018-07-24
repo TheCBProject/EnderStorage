@@ -10,8 +10,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.oredict.OreDictionary;
 import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import java.io.File;
 
@@ -25,11 +23,9 @@ public class ConfigurationHandler {
 
     public static ConfigFile config;
 
-    public static boolean clientCheckUpdates;
-    public static boolean disableVanillaEnderChest;
-    public static boolean removeVanillaRecipe;
     public static boolean anarchyMode;
     public static boolean disableCreatorVisuals;
+    public static boolean useVanillaEnderChestSounds;
     public static ItemStack personalItem;
 
     public static void init(File file) {
@@ -40,11 +36,10 @@ public class ConfigurationHandler {
     }
 
     public static void loadConfig() {
-        clientCheckUpdates = config.getTag("clientUpdateCheck").getBooleanValue(true);
-        disableVanillaEnderChest = config.getTag("disableVanilla").setComment("Set to true to make the vanilla EnderChest un-placeable.").getBooleanValue(true);
-        removeVanillaRecipe = config.getTag("disableVanillaRecipe").setComment("Set to true to make the vanilla EnderChest un-craftable").getBooleanValue(false);
+        config.removeTag("clientUpdateCheck");
+        config.removeTag("disableVanilla");
+        config.removeTag("disableVanillaRecipe");
         anarchyMode = config.getTag("anarchyMode").setComment("Causes chests to lose personal settings and drop the diamond on break").getBooleanValue(false);
-        //enableChestInventoryLid = config.getTag("enableChestInventoryLid").setComment("Set this to true to enable the EnderChest opening its lid in your inventory, it may produce a lot of lag for the client.").getBooleanValue(true);
         ConfigTag tag = config.getTag("personalItem").setComment("The name of the item used to set the chest to personal. Diamond by default. Format <modid>:<registeredItemName>|<meta>, Meta can be replaced with \"WILD\"");
         //region personalItemParsing
         String name = tag.getValue("minecraft:diamond|0");
@@ -70,7 +65,8 @@ public class ConfigurationHandler {
         }
         personalItem = new ItemStack(item, 1, meta);
         //endregion
-        disableCreatorVisuals = config.getTag("disableCreatorVisuals").setComment("Dissables the tank on top of the creators heads.").getBooleanValue(false);
+        disableCreatorVisuals = config.getTag("disableCreatorVisuals").setComment("Disables the tank on top of the creators heads.").getBooleanValue(false);
+        useVanillaEnderChestSounds = config.getTag("useVanillaEnderChestSounds").setComment("Enable this to make EnderStorage use vanilla's EnderChest sounds instead of the standard chest.").getBooleanValue(false);
         EnderStorageManager.loadConfig(config);
     }
 
