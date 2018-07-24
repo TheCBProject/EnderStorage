@@ -1,6 +1,7 @@
 package codechicken.enderstorage.plugin.jei;
 
 import codechicken.enderstorage.recipe.RecipeBase;
+import com.google.common.collect.Sets;
 import mezz.jei.api.*;
 import mezz.jei.api.gui.ICraftingGridHelper;
 import mezz.jei.api.recipe.VanillaRecipeCategoryUid;
@@ -24,11 +25,7 @@ public class EnderStorageJEIPlugin implements IModPlugin {
         IGuiHelper guiHelpers = helpers.getGuiHelper();
 
         gridHelper = guiHelpers.createCraftingGridHelper(1, 0);
-        Set<Object> recipes = new HashSet<>();
-        recipes.add(new ESCraftingRecipeWrapper((RecipeBase) ForgeRegistries.RECIPES.getValue(new ResourceLocation("enderstorage:ender_chest"))));
-        recipes.add(new ESCraftingRecipeWrapper((RecipeBase) ForgeRegistries.RECIPES.getValue(new ResourceLocation("enderstorage:ender_tank"))));
-        recipes.add(new ESCraftingRecipeWrapper((RecipeBase) ForgeRegistries.RECIPES.getValue(new ResourceLocation("enderstorage:ender_pouch"))));
-        registry.addRecipes(recipes, VanillaRecipeCategoryUid.CRAFTING);
+        registry.handleRecipes(RecipeBase.class, ESCraftingRecipeWrapper::new, VanillaRecipeCategoryUid.CRAFTING);
     }
 
 }
