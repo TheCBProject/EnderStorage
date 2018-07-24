@@ -154,13 +154,7 @@ public class TileEnderTank extends TileFrequencyOwner {
 
     private void ejectLiquid() {
         for (EnumFacing side : EnumFacing.values()) {
-
-            TileEntity tile = world.getTileEntity(getPos().offset(side));
-            if (tile == null || !tile.hasCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, side.getOpposite())) {
-                continue;
-            }
-
-            IFluidHandler c = tile.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, side.getOpposite());
+            IFluidHandler c = FluidUtils.getFluidHandlerOrEmpty(world, getPos().offset(side), side);
             FluidStack liquid = getStorage().drain(100, false);
             if (liquid == null) {
                 continue;
