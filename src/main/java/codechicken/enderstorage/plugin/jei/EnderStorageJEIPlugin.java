@@ -1,5 +1,6 @@
 package codechicken.enderstorage.plugin.jei;
 
+import codechicken.enderstorage.recipe.Factories;
 import codechicken.enderstorage.recipe.RecipeBase;
 import com.google.common.collect.Sets;
 import mezz.jei.api.*;
@@ -25,7 +26,7 @@ public class EnderStorageJEIPlugin implements IModPlugin {
         IGuiHelper guiHelpers = helpers.getGuiHelper();
 
         gridHelper = guiHelpers.createCraftingGridHelper(1, 0);
-        registry.handleRecipes(RecipeBase.class, ESCraftingRecipeWrapper::new, VanillaRecipeCategoryUid.CRAFTING);
+        registry.handleRecipes(Factories.CraftingRecipe.class, ESCraftingRecipeWrapper::new, VanillaRecipeCategoryUid.CRAFTING);
     }
 
 }

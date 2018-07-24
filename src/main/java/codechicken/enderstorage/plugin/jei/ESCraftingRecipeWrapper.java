@@ -57,12 +57,12 @@ public class ESCraftingRecipeWrapper implements IRecipeWrapper, ICustomCraftingR
             inputs.add(stacks);
         }
         this.woolIndex = woolIndex;
-        this.output = new LinkedList<>();
+        output = new LinkedList<>();
         for (ItemStack stack : wools) {
             EnumColour colour = EnumColour.fromWoolStack(stack);
             if (colour != null) {
                 Frequency frequency = new Frequency(colour, colour, colour);
-                this.output.add(frequency.writeToStack(outputStack.copy()));
+                output.add(frequency.writeToStack(outputStack.copy()));
             } else {
                 LogHelper.log(Level.WARN, "Colour is null for known wool stack.. wot. {}", stack);
             }
@@ -86,7 +86,7 @@ public class ESCraftingRecipeWrapper implements IRecipeWrapper, ICustomCraftingR
         Object focusObject = iFocus.getValue();
 
         if (focusObject instanceof ItemStack) {
-            ItemStack focus = ((ItemStack) focusObject);
+            ItemStack focus = (ItemStack) focusObject;
             Mode mode = iFocus.getMode();
 
             if (mode == Mode.INPUT) {
