@@ -16,7 +16,6 @@
 # Other Files.
 !LICENSE.txt
 !README.md
-!curse_upload.json
 
 # Include git important files
 !.gitmodules
