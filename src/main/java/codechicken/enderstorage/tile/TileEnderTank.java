@@ -154,7 +154,7 @@ public class TileEnderTank extends TileFrequencyOwner {
 
     private void ejectLiquid() {
         for (EnumFacing side : EnumFacing.values()) {
-            IFluidHandler c = FluidUtils.getFluidHandlerOrEmpty(world, getPos().offset(side), side);
+            IFluidHandler c = FluidUtils.getFluidHandlerOrEmpty(world, getPos().offset(side), side.getOpposite());
             FluidStack liquid = getStorage().drain(100, false);
             if (liquid == null) {
                 continue;
