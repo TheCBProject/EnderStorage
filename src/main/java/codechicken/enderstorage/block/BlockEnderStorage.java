@@ -154,7 +154,7 @@ public class BlockEnderStorage extends Block implements ITileEntityProvider {
                 return true;
             } else if (!item.isEmpty() && ItemUtils.areStacksSameTypeCrafting(item, ConfigurationHandler.personalItem)) {
                 if (!owner.frequency.hasOwner()) {
-                    owner.setFreq(owner.frequency.copy().setOwner(player.getDisplayNameString()));
+                    owner.setFreq(owner.frequency.copy().setOwner(player.getName()));
                     if (!player.capabilities.isCreativeMode) {
                         item.shrink(1);
                     }
