@@ -197,7 +197,7 @@ public class TileEnderTank extends TileFrequencyOwner {
     public void readFromNBT(NBTTagCompound tag) {
         super.readFromNBT(tag);
         liquid_state.setFrequency(frequency);
-        rotation = tag.getByte("rot");
+        rotation = tag.getByte("rot") & 3;
         pressure_state.invert_redstone = tag.getBoolean("ir");
     }
 
@@ -213,7 +213,7 @@ public class TileEnderTank extends TileFrequencyOwner {
     public void readFromPacket(MCDataInput packet) {
         super.readFromPacket(packet);
         liquid_state.setFrequency(frequency);
-        rotation = packet.readUByte();
+        rotation = packet.readUByte() & 3;
         liquid_state.s_liquid = packet.readFluidStack();
         pressure_state.a_pressure = packet.readBoolean();
         if (!described) {

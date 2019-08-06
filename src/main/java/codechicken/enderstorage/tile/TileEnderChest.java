@@ -96,7 +96,7 @@ public class TileEnderChest extends TileFrequencyOwner {
     @Override
     public void readFromPacket(MCDataInput packet) {
         super.readFromPacket(packet);
-        rotation = packet.readUByte();
+        rotation = packet.readUByte() & 3;
     }
 
     @Override
@@ -114,7 +114,7 @@ public class TileEnderChest extends TileFrequencyOwner {
     @Override
     public void readFromNBT(NBTTagCompound tag) {
         super.readFromNBT(tag);
-        rotation = tag.getByte("rot");
+        rotation = tag.getByte("rot") & 3;
     }
 
     @Override
