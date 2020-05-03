@@ -1,149 +1,52 @@
 package codechicken.enderstorage.tile;
 
-import codechicken.enderstorage.api.Frequency;
+import codechicken.enderstorage.init.ModContent;
 import codechicken.enderstorage.manager.EnderStorageManager;
-import codechicken.enderstorage.network.EnderStorageSPH;
+import codechicken.enderstorage.network.EnderStorageNetwork;
 import codechicken.enderstorage.network.TankSynchroniser;
 import codechicken.enderstorage.storage.EnderLiquidStorage;
+import codechicken.lib.capability.CapabilityCache;
 import codechicken.lib.data.MCDataInput;
 import codechicken.lib.data.MCDataOutput;
 import codechicken.lib.fluid.FluidUtils;
 import codechicken.lib.math.MathHelper;
 import codechicken.lib.packet.PacketCustom;
-import codechicken.lib.raytracer.IndexedCuboid6;
-import codechicken.lib.vec.*;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.util.Direction;
+import net.minecraft.util.Hand;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidUtil;
+import net.minecraftforge.fluids.IFluidTank;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
-import net.minecraftforge.fluids.capability.FluidTankProperties;
 import net.minecraftforge.fluids.capability.IFluidHandler;
-import net.minecraftforge.fluids.capability.IFluidTankProperties;
+import net.minecraftforge.fluids.capability.templates.EmptyFluidHandler;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.List;
-
-import static codechicken.lib.vec.Vector3.center;
 
 public class TileEnderTank extends TileFrequencyOwner {
-
-    public class EnderTankState extends TankSynchroniser.TankState {
-
-        @Override
-        public void sendSyncPacket() {
-            PacketCustom packet = new PacketCustom(EnderStorageSPH.channel, 5);
-            packet.writePos(getPos());
-            packet.writeFluidStack(s_liquid);
-            packet.sendToChunk(world, pos.getX() >> 4, pos.getZ() >> 4);
-        }
-
-        @Override
-        public void onLiquidChanged() {
-            world.checkLight(pos);
-        }
-    }
-
-    public class PressureState {
-
-        public boolean invert_redstone;
-        public boolean a_pressure;
-        public boolean b_pressure;
-
-        public double a_rotate;
-        public double b_rotate;
-
-        public void update(boolean client) {
-            if (client) {
-                b_rotate = a_rotate;
-                a_rotate = MathHelper.approachExp(a_rotate, approachRotate(), 0.5, 20);
-            } else {
-                b_pressure = a_pressure;
-                a_pressure = world.isBlockPowered(getPos()) != invert_redstone;
-                if (a_pressure != b_pressure) {
-                    sendSyncPacket();
-                }
-            }
-        }
-
-        public double approachRotate() {
-            return a_pressure ? -90 : 90;
-        }
-
-        private void sendSyncPacket() {
-            PacketCustom packet = new PacketCustom(EnderStorageSPH.channel, 6);
-            packet.writePos(getPos());
-            packet.writeBoolean(a_pressure);
-            packet.sendToChunk(world, pos.getX() >> 4, pos.getZ() >> 4);
-        }
-
-        public void invert() {
-            invert_redstone = !invert_redstone;
-            world.getChunkFromChunkCoords(pos.getX(), pos.getZ()).markDirty();
-        }
-    }
-
-    public class TankFluidCap implements IFluidHandler {
-
-        @Override
-        public IFluidTankProperties[] getTankProperties() {
-
-            if (world.isRemote) {
-                return new IFluidTankProperties[] { new FluidTankProperties(liquid_state.s_liquid, EnderLiquidStorage.CAPACITY) };
-            }
-            return getStorage().getTankProperties();
-        }
-
-        @Override
-        public int fill(FluidStack resource, boolean doFill) {
-
-            return getStorage().fill(resource, doFill);
-        }
-
-        @Nullable
-        @Override
-        public FluidStack drain(FluidStack resource, boolean doDrain) {
-
-            return getStorage().drain(resource, doDrain);
-        }
-
-        @Nullable
-        @Override
-        public FluidStack drain(int maxDrain, boolean doDrain) {
-
-            return getStorage().drain(maxDrain, doDrain);
-        }
-    }
-
-    private static Cuboid6[] selectionBoxes = new Cuboid6[4];
-    public static Transformation[] buttonT = new Transformation[3];
-
-    static {
-        for (int i = 0; i < 3; i++) {
-            buttonT[i] = new Scale(0.6).with(new Translation(0.35 + (2 - i) * 0.15, 0.91, 0.5));
-            selectionBoxes[i] = selection_button.copy().apply(buttonT[i]);
-        }
-        selectionBoxes[3] = new Cuboid6(0.358, 0.268, 0.05, 0.662, 0.565, 0.15);
-    }
 
     public int rotation;
     public EnderTankState liquid_state = new EnderTankState();
     public PressureState pressure_state = new PressureState();
-    public TankFluidCap fluidCap = new TankFluidCap();
+    private CapabilityCache capCache = new CapabilityCache();
+    private LazyOptional<IFluidHandler> fluidHandler = LazyOptional.empty();
 
     private boolean described;
 
-    @Override
-    public void update() {
-        super.update();
+    public TileEnderTank() {
+        super(ModContent.tileEnderTankType);
+    }
 
+    @Override
+    public void tick() {
+        super.tick();
         pressure_state.update(world.isRemote);
         if (pressure_state.a_pressure) {
             ejectLiquid();
@@ -152,50 +55,71 @@ public class TileEnderTank extends TileFrequencyOwner {
         liquid_state.update(world.isRemote);
     }
 
+    @Override
+    public void setWorldAndPos(World world, BlockPos pos) {
+        super.setWorldAndPos(world, pos);
+        capCache.setWorldPos(getWorld(), getPos());
+    }
+
+    @Override
+    public void onNeighborChange(BlockPos from) {
+        capCache.onNeighborChanged(from);
+    }
+
     private void ejectLiquid() {
-        for (EnumFacing side : EnumFacing.values()) {
-            IFluidHandler c = FluidUtils.getFluidHandlerOrEmpty(world, getPos().offset(side), side.getOpposite());
-            FluidStack liquid = getStorage().drain(100, false);
-            if (liquid == null) {
-                continue;
-            }
-            int qty = c.fill(liquid, true);
-            if (qty > 0) {
-                getStorage().drain(qty, true);
+        IFluidHandler source = getStorage();
+        for (Direction side : Direction.BY_INDEX) {
+            IFluidHandler dest = capCache.getCapabilityOr(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, side, EmptyFluidHandler.INSTANCE);
+            FluidStack drain = source.drain(100, IFluidHandler.FluidAction.SIMULATE);
+            if (!drain.isEmpty()) {
+                int qty = dest.fill(drain, IFluidHandler.FluidAction.EXECUTE);
+                if (qty > 0) {
+                    source.drain(qty, IFluidHandler.FluidAction.EXECUTE);
+                }
             }
         }
     }
 
     @Override
-    public void setFreq(Frequency frequency) {
-        super.setFreq(frequency);
+    public void onFrequencySet() {
+        if (world == null) {
+            return;
+        }
         if (!world.isRemote) {
             liquid_state.setFrequency(frequency);
         }
+        fluidHandler.invalidate();
+        fluidHandler = LazyOptional.of(this::getStorage);
+    }
+
+    @Override
+    public void remove() {
+        super.remove();
+        fluidHandler.invalidate();
     }
 
     @Override
     public EnderLiquidStorage getStorage() {
-        return (EnderLiquidStorage) EnderStorageManager.instance(world.isRemote).getStorage(frequency, "liquid");
+        return EnderStorageManager.instance(world.isRemote).getStorage(frequency, EnderLiquidStorage.TYPE);
     }
 
     @Override
-    public void onPlaced(EntityLivingBase entity) {
+    public void onPlaced(LivingEntity entity) {
         rotation = (int) Math.floor(entity.rotationYaw * 4 / 360 + 2.5D) & 3;
         pressure_state.b_rotate = pressure_state.a_rotate = pressure_state.approachRotate();
     }
 
     @Override
-    public NBTTagCompound writeToNBT(NBTTagCompound tag) {
-        super.writeToNBT(tag);
-        tag.setByte("rot", (byte) rotation);
-        tag.setBoolean("ir", pressure_state.invert_redstone);
+    public CompoundNBT write(CompoundNBT tag) {
+        super.write(tag);
+        tag.putByte("rot", (byte) rotation);
+        tag.putBoolean("ir", pressure_state.invert_redstone);
         return tag;
     }
 
     @Override
-    public void readFromNBT(NBTTagCompound tag) {
-        super.readFromNBT(tag);
+    public void read(CompoundNBT tag) {
+        super.read(tag);
         liquid_state.setFrequency(frequency);
         rotation = tag.getByte("rot") & 3;
         pressure_state.invert_redstone = tag.getBoolean("ir");
@@ -224,8 +148,7 @@ public class TileEnderTank extends TileFrequencyOwner {
     }
 
     @Override
-    public boolean activate(EntityPlayer player, int subHit, EnumHand hand) {
-        ItemStack stack = player.getHeldItem(hand);
+    public boolean activate(PlayerEntity player, int subHit, Hand hand) {
         if (subHit == 4) {
             pressure_state.invert();
             return true;
@@ -234,21 +157,9 @@ public class TileEnderTank extends TileFrequencyOwner {
     }
 
     @Override
-    public List<IndexedCuboid6> getIndexedCuboids() {
-        ArrayList<IndexedCuboid6> cuboids = new ArrayList<>();
-
-        cuboids.add(new IndexedCuboid6(0, new Cuboid6(0.15, 0, 0.15, 0.85, 0.916, 0.85)));
-
-        for (int i = 0; i < 4; i++) {
-            cuboids.add(new IndexedCuboid6(i + 1, selectionBoxes[i].copy().apply(Rotation.quarterRotations[rotation ^ 2].at(center))));
-        }
-        return cuboids;
-    }
-
-    @Override
     public int getLightValue() {
-        if (liquid_state.s_liquid.amount > 0) {
-            return FluidUtils.getLuminosity(liquid_state.c_liquid, liquid_state.s_liquid.amount / 16D);
+        if (liquid_state.s_liquid.getAmount() > 0) {
+            return FluidUtils.getLuminosity(liquid_state.c_liquid, liquid_state.s_liquid.getAmount() / 16D);
         }
 
         return 0;
@@ -279,24 +190,75 @@ public class TileEnderTank extends TileFrequencyOwner {
 
     @Override
     public int comparatorInput() {
-        IFluidTankProperties tank = getStorage().getTankProperties()[0];
-        FluidStack fluid = tank.getContents();
+        IFluidTank tank = getStorage();
+        FluidStack fluid = tank.getFluid();
         if (fluid == null) {
-            fluid = FluidUtils.emptyFluid();
+            fluid = FluidStack.EMPTY;
         }
-        return fluid.amount * 14 / tank.getCapacity() + (fluid.amount > 0 ? 1 : 0);
+        return fluid.getAmount() * 14 / tank.getCapacity() + (fluid.getAmount() > 0 ? 1 : 0);
     }
 
+    @Nonnull
     @Override
-    public boolean hasCapability(Capability<?> capability, EnumFacing facing) {
-        return capability == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY || super.hasCapability(capability, facing);
+    public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
+        if (!removed && cap == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY) {
+            return fluidHandler.cast();
+        }
+        return super.getCapability(cap, side);
     }
 
-    @Override
-    public <T> T getCapability(Capability<T> capability, EnumFacing facing) {
-        if (capability == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY) {
-            return CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY.cast(fluidCap);
+    public class EnderTankState extends TankSynchroniser.TankState {
+
+        @Override
+        public void sendSyncPacket() {
+            PacketCustom packet = new PacketCustom(EnderStorageNetwork.NET_CHANNEL, 5);
+            packet.writePos(getPos());
+            packet.writeFluidStack(s_liquid);
+            packet.sendToChunk(TileEnderTank.this);
         }
-        return super.getCapability(capability, facing);
+
+        @Override
+        public void onLiquidChanged() {
+            world.getChunkProvider().getLightManager().checkBlock(pos);
+        }
+    }
+
+    public class PressureState {
+
+        public boolean invert_redstone;
+        public boolean a_pressure;
+        public boolean b_pressure;
+
+        public double a_rotate;
+        public double b_rotate;
+
+        public void update(boolean client) {
+            if (client) {
+                b_rotate = a_rotate;
+                a_rotate = MathHelper.approachExp(a_rotate, approachRotate(), 0.5, 20);
+            } else {
+                b_pressure = a_pressure;
+                a_pressure = world.isBlockPowered(getPos()) != invert_redstone;
+                if (a_pressure != b_pressure) {
+                    sendSyncPacket();
+                }
+            }
+        }
+
+        public double approachRotate() {
+            return a_pressure ? -90 : 90;
+        }
+
+        private void sendSyncPacket() {
+            PacketCustom packet = new PacketCustom(EnderStorageNetwork.NET_CHANNEL, 6);
+            packet.writePos(getPos());
+            packet.writeBoolean(a_pressure);
+            packet.sendToChunk(TileEnderTank.this);
+        }
+
+        public void invert() {
+            invert_redstone = !invert_redstone;
+            world.getChunk(pos).setModified(true);
+        }
     }
 }

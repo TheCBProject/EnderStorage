@@ -1,132 +1,92 @@
 package codechicken.enderstorage.client.render.tile;
 
 import codechicken.enderstorage.api.Frequency;
+import codechicken.enderstorage.block.BlockEnderChest;
+import codechicken.enderstorage.client.model.ButtonModelLibrary;
 import codechicken.enderstorage.client.model.ModelEnderChest;
 import codechicken.enderstorage.client.render.RenderCustomEndPortal;
-import codechicken.enderstorage.misc.EnderDyeButton;
 import codechicken.enderstorage.tile.TileEnderChest;
+import codechicken.lib.colour.EnumColour;
+import codechicken.lib.math.MathHelper;
+import codechicken.lib.render.CCModel;
 import codechicken.lib.render.CCModelLibrary;
 import codechicken.lib.render.CCRenderState;
 import codechicken.lib.render.RenderUtils;
-import codechicken.lib.texture.TextureUtils;
 import codechicken.lib.util.ClientUtils;
 import codechicken.lib.vec.Matrix4;
 import codechicken.lib.vec.Rotation;
+import codechicken.lib.vec.Translation;
 import codechicken.lib.vec.Vector3;
-import net.minecraft.client.renderer.BufferBuilder;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.Tessellator;
+import codechicken.lib.vec.uv.UVTranslation;
+import com.mojang.blaze3d.matrix.MatrixStack;
+import net.minecraft.client.renderer.IRenderTypeBuffer;
+import net.minecraft.client.renderer.Quaternion;
+import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
-import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.util.ResourceLocation;
 
 /**
  * Created by covers1624 on 4/12/2016.
  */
-public class RenderTileEnderChest extends TileEntitySpecialRenderer<TileEnderChest> {
+public class RenderTileEnderChest extends TileEntityRenderer<TileEnderChest> {
 
-    private static ModelEnderChest model = new ModelEnderChest();
-    public static final double phi = 1.618034;
+    private static final RenderType chestType = RenderType.getEntityCutout(new ResourceLocation("enderstorage:textures/enderchest.png"));
+    private static final RenderType buttonType = RenderType.getEntitySolid(new ResourceLocation("enderstorage:textures/buttons.png"));
+    private static final RenderType pearlType = CCModelLibrary.getIcos4RenderType(new ResourceLocation("enderstorage:textures/hedronmap.png"), false);
+    private static final ModelEnderChest model = new ModelEnderChest();
+    private static final RenderCustomEndPortal renderEndPortal = new RenderCustomEndPortal(0.626, 0.188, 0.812, 0.188, 0.812);
 
-    private static RenderCustomEndPortal renderEndPortal = new RenderCustomEndPortal(0.626, 0.188, 0.812, 0.188, 0.812);
+    public RenderTileEnderChest(TileEntityRendererDispatcher rendererDispatcherIn) {
+        super(rendererDispatcherIn);
+    }
 
     @Override
-    public void render(TileEnderChest enderChest, double x, double y, double z, float partialTicks, int destroyStage, float alpha) {
-        renderChest(enderChest.rotation, enderChest.frequency, x, y, z, RenderUtils.getTimeOffset(enderChest.getPos()), (float) enderChest.getRadianLidAngle(partialTicks));
-    }
-
-    public static void renderChest(int rotation, Frequency freq, double x, double y, double z, int offset, float lidAngle) {
-        TileEntityRendererDispatcher info = TileEntityRendererDispatcher.instance;
+    public void render(TileEnderChest enderChest, float partialTicks, MatrixStack mStack, IRenderTypeBuffer getter, int packedLight, int packedOverlay) {
         CCRenderState ccrs = CCRenderState.instance();
+        ccrs.brightness = packedLight;
+        ccrs.overlay = packedOverlay;
+        double yToCamera = enderChest.getPos().getY() - renderDispatcher.renderInfo.getProjectedView().y;
+        renderChest(ccrs, mStack, getter, enderChest.rotation, yToCamera, enderChest.getFrequency(), (float) enderChest.getRadianLidAngle(partialTicks), RenderUtils.getTimeOffset(enderChest.getPos()));
+    }
+
+    public static void renderChest(CCRenderState ccrs, MatrixStack mStack, IRenderTypeBuffer getter, int rotation, double yToCamera, Frequency freq, float lidAngle, int pearlOffset) {
+        Matrix4 mat = new Matrix4(mStack);
+        if (lidAngle != 0) {//Micro optimization, lid closed, dont render starfield.
+            renderEndPortal.render(mat, getter, yToCamera);
+        }
         ccrs.reset();
-
-        renderEndPortal.render(x, y, z, 0, info.entityX, info.entityY, info.entityZ, info.renderEngine);
-        GlStateManager.color(1, 1, 1, 1);
-
-        TextureUtils.changeTexture("enderstorage:textures/enderchest.png");
-        GlStateManager.pushMatrix();
-        GlStateManager.enableRescaleNormal();
-        GlStateManager.color(1, 1, 1, 1);
-        GlStateManager.translate(x, y + 1.0, z + 1.0F);
-        GlStateManager.scale(1.0F, -1F, -1F);
-        GlStateManager.translate(0.5F, 0.5F, 0.5F);
-        GlStateManager.rotate(rotation * 90, 0.0F, 1.0F, 0.0F);
-        GlStateManager.translate(-0.5F, -0.5F, -0.5F);
+        mStack.push();
+        mStack.translate(0, 1.0, 1.0);
+        mStack.scale(1.0F, -1.0F, -1.0F);
+        mStack.translate(0.5, 0.5, 0.5);
+        mStack.rotate(new Quaternion(0, rotation * 90, 0, true));
+        mStack.translate(-0.5, -0.5, -0.5);
         model.chestLid.rotateAngleX = lidAngle;
-        model.render(freq.hasOwner());
-        GlStateManager.popMatrix();
+        model.render(mStack, getter.getBuffer(chestType), ccrs.brightness, ccrs.overlay, freq.hasOwner());
+        mStack.pop();
 
-        GlStateManager.pushMatrix();
-        GlStateManager.translate(x, y, z);
-        renderButtons(freq, rotation, lidAngle);
-        GlStateManager.popMatrix();
+        //Buttons
+        ccrs.bind(buttonType, getter);
+        EnumColour[] colours = freq.toArray();
+        for (int i = 0; i < 3; i++) {
+            CCModel button = ButtonModelLibrary.button.copy();
+            button.apply(BlockEnderChest.buttonT[i]);
+            button.apply(new Translation(0.5, 0, 0.5));
+            button.apply(new Rotation(lidAngle, 1, 0, 0).at(new Vector3(0, 9D / 16D, 1 / 16D)));
+            button.apply(new Rotation((-90 * (rotation)) * MathHelper.torad, Vector3.Y_POS).at(new Vector3(0.5, 0, 0.5)));
+            button.render(ccrs, mat, new UVTranslation(0.25 * (colours[i].getWoolMeta() % 4), 0.25 * (colours[i].getWoolMeta() / 4)));
+        }
+        mat.translate(0.5, 0, 0.5);
 
-        double time = ClientUtils.getRenderTime() + offset;
-        Matrix4 pearlMat = RenderUtils.getMatrix(new Vector3(x + 0.5, y + 0.2 + lidAngle * -0.5 + RenderUtils.getPearlBob(time), z + 0.5), new Rotation(time / 3, new Vector3(0, 1, 0)), 0.04);
-
-        GlStateManager.disableLighting();
-        TextureUtils.changeTexture("enderstorage:textures/hedronmap.png");
-        GlStateManager.pushMatrix();
-
-        ccrs.startDrawing(7, DefaultVertexFormats.POSITION_TEX_COLOR_NORMAL);
-        CCModelLibrary.icosahedron7.render(ccrs, pearlMat);
-        ccrs.draw();
-        GlStateManager.popMatrix();
-        GlStateManager.enableLighting();
-    }
-
-    private static void renderButtons(Frequency freq, int rot, double lidAngle) {
-        TextureUtils.changeTexture("enderstorage:textures/buttons.png");
-
-        drawButton(0, freq.getLeft().getWoolMeta(), rot, lidAngle);
-        drawButton(1, freq.getMiddle().getWoolMeta(), rot, lidAngle);
-        drawButton(2, freq.getRight().getWoolMeta(), rot, lidAngle);
-    }
-
-    private static void drawButton(int button, int colour, int rot, double lidAngle) {
-        float texx = 0.25F * (colour % 4);
-        float texy = 0.25F * (colour / 4);
-
-        GlStateManager.pushMatrix();
-
-        EnderDyeButton ebutton = TileEnderChest.buttons[button].copy();
-        ebutton.rotate(0, 0.5625, 0.0625, 1, 0, 0, lidAngle);
-        ebutton.rotateMeta(rot);
-        Vector3[] verts = ebutton.verts;
-
-        Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder buffer = tessellator.getBuffer();
-        buffer.begin(0x07, DefaultVertexFormats.POSITION_TEX);
-        addVecWithUV(buffer, verts[7], texx + 0.0938, texy + 0.0625);
-        addVecWithUV(buffer, verts[3], texx + 0.0938, texy + 0.1875);
-        addVecWithUV(buffer, verts[2], texx + 0.1562, texy + 0.1875);
-        addVecWithUV(buffer, verts[6], texx + 0.1562, texy + 0.0625);
-
-        addVecWithUV(buffer, verts[4], texx + 0.0938, texy + 0.0313);
-        addVecWithUV(buffer, verts[7], texx + 0.0938, texy + 0.0313);
-        addVecWithUV(buffer, verts[6], texx + 0.1562, texy + 0.0624);
-        addVecWithUV(buffer, verts[5], texx + 0.1562, texy + 0.0624);
-
-        addVecWithUV(buffer, verts[0], texx + 0.0938, texy + 0.2186);
-        addVecWithUV(buffer, verts[1], texx + 0.1562, texy + 0.2186);
-        addVecWithUV(buffer, verts[2], texx + 0.1562, texy + 0.1876);
-        addVecWithUV(buffer, verts[3], texx + 0.0938, texy + 0.1876);
-
-        addVecWithUV(buffer, verts[6], texx + 0.1563, texy + 0.0626);
-        addVecWithUV(buffer, verts[2], texx + 0.1563, texy + 0.1874);
-        addVecWithUV(buffer, verts[1], texx + 0.1874, texy + 0.1874);
-        addVecWithUV(buffer, verts[5], texx + 0.1874, texy + 0.0626);
-
-        addVecWithUV(buffer, verts[7], texx + 0.0937, texy + 0.0626);
-        addVecWithUV(buffer, verts[4], texx + 0.0626, texy + 0.0626);
-        addVecWithUV(buffer, verts[0], texx + 0.0626, texy + 0.1874);
-        addVecWithUV(buffer, verts[3], texx + 0.0937, texy + 0.1874);
-        tessellator.draw();
-
-        GlStateManager.popMatrix();
-    }
-
-    private static void addVecWithUV(BufferBuilder buffer, Vector3 vec, double u, double v) {
-        buffer.pos(vec.x, vec.y, vec.z).tex(u, v).endVertex();
+        //Pearl
+        if (lidAngle != 0) {//Micro optimization, lid closed, dont render pearl.
+            double time = ClientUtils.getRenderTime() + pearlOffset;
+            Matrix4 pearlMat = RenderUtils.getMatrix(mat.copy(), new Vector3(0, 0.2 + lidAngle * -0.5 + RenderUtils.getPearlBob(time), 0), new Rotation(time / 3, new Vector3(0, 1, 0)), 0.04);
+            ccrs.brightness = 15728880;
+            ccrs.bind(pearlType, getter);
+            CCModelLibrary.icosahedron4.render(ccrs, pearlMat);
+        }
+        ccrs.reset();
     }
 }

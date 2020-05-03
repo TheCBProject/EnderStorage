@@ -1,0 +1,10 @@
+{
+  "item.enderstorage.ender_pouch": "Sac des limbes",
+  "block.enderstorage.ender_chest": "Coffre des limbes",
+  "enderstorage.command.no_colour": "Couleur invalide : %s",
+  "enderstorage.command.usage": "enderstorage <fréquence>|(<couleur> <couleur> <couleur>) [propriétaire]",
+  "enderstorage.command.no_freq": "Fréquence invalide",
+  "block.enderstorage.ender_tank": "Tank des limbes",
+  "enderstorage.command.no_arguments": "Nombre invalide d'arguments",
+  "enderstorage.serverop": "Opérateur"
+}

@@ -3,26 +3,27 @@ package codechicken.enderstorage.storage;
 import codechicken.enderstorage.api.AbstractEnderStorage;
 import codechicken.enderstorage.api.Frequency;
 import codechicken.enderstorage.manager.EnderStorageManager;
-import codechicken.lib.fluid.ExtendedFluidTank;
 import codechicken.lib.fluid.FluidUtils;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.capability.FluidTankProperties;
+import net.minecraftforge.fluids.IFluidTank;
 import net.minecraftforge.fluids.capability.IFluidHandler;
-import net.minecraftforge.fluids.capability.IFluidTankProperties;
+import net.minecraftforge.fluids.capability.templates.FluidTank;
 
-public class EnderLiquidStorage extends AbstractEnderStorage implements IFluidHandler {
+public class EnderLiquidStorage extends AbstractEnderStorage implements IFluidHandler, IFluidTank {
+
+    public static final EnderStorageManager.StorageType<EnderLiquidStorage> TYPE = new EnderStorageManager.StorageType<>("liquid");
 
     public static final int CAPACITY = 16 * FluidUtils.B;
 
-    private class Tank extends ExtendedFluidTank {
+    private class Tank extends FluidTank {
 
         public Tank(int capacity) {
             super(capacity);
         }
 
         @Override
-        public void onLiquidChanged() {
+        protected void onContentsChanged() {
             setDirty();
         }
     }
@@ -40,8 +41,9 @@ public class EnderLiquidStorage extends AbstractEnderStorage implements IFluidHa
         setDirty();
     }
 
-    public void loadFromTag(NBTTagCompound tag) {
-        tank.fromTag(tag.getCompoundTag("tank"));
+    @Override
+    public void loadFromTag(CompoundNBT tag) {
+        tank.readFromNBT(tag.getCompound("tank"));
     }
 
     @Override
@@ -49,34 +51,24 @@ public class EnderLiquidStorage extends AbstractEnderStorage implements IFluidHa
         return "liquid";
     }
 
-    public NBTTagCompound saveToTag() {
-        NBTTagCompound compound = new NBTTagCompound();
-        compound.setTag("tank", tank.toTag());
+    public CompoundNBT saveToTag() {
+        CompoundNBT compound = new CompoundNBT();
+        compound.put("tank", tank.writeToNBT(new CompoundNBT()));
 
         return compound;
     }
 
-    public FluidStack getFluid() {
-        return tank.getFluid();
-    }
-
-    @Override
-    public int fill(FluidStack resource, boolean doFill) {
-        return tank.fill(resource, doFill);
-    }
-
-    @Override
-    public FluidStack drain(FluidStack resource, boolean doDrain) {
-        return tank.drain(resource, doDrain);
-    }
-
-    @Override
-    public FluidStack drain(int maxDrain, boolean doDrain) {
-        return tank.drain(maxDrain, doDrain);
-    }
-
-    @Override
-    public IFluidTankProperties[] getTankProperties() {
-        return new IFluidTankProperties[] { new FluidTankProperties(tank.getInfo().fluid, tank.getInfo().capacity) };
-    }
+    //@formatter:off
+    @Override public FluidStack getFluid() { return tank.getFluid(); }
+    @Override public int getFluidAmount() { return tank.getFluidAmount(); }
+    @Override public int getCapacity() { return tank.getCapacity(); }
+    @Override public boolean isFluidValid(FluidStack stack) { return tank.isFluidValid(stack); }
+    @Override public int getTanks() { return tank.getTanks(); }
+    @Override public FluidStack getFluidInTank(int tankId) { return tank.getFluidInTank(tankId); }
+    @Override public int getTankCapacity(int tankId) { return tank.getTankCapacity(tankId); }
+    @Override public boolean isFluidValid(int tankId, FluidStack stack) { return tank.isFluidValid(tankId, stack); }
+    @Override public int fill(FluidStack resource, FluidAction action) { return tank.fill(resource, action); }
+    @Override public FluidStack drain(FluidStack resource, FluidAction action) { return tank.drain(resource, action); }
+    @Override public FluidStack drain(int maxDrain, FluidAction action) { return tank.drain(maxDrain, action); }
+    //@formatter:on
 }

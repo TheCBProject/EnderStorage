@@ -2,34 +2,44 @@ package codechicken.enderstorage.tile;
 
 import codechicken.enderstorage.api.AbstractEnderStorage;
 import codechicken.enderstorage.api.Frequency;
-import codechicken.enderstorage.network.EnderStorageCPH;
+import codechicken.enderstorage.network.EnderStorageNetwork;
 import codechicken.lib.data.MCDataInput;
 import codechicken.lib.data.MCDataOutput;
-import codechicken.lib.packet.ICustomPacketTile;
 import codechicken.lib.packet.PacketCustom;
-import codechicken.lib.raytracer.ICuboidProvider;
 import codechicken.lib.vec.Cuboid6;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.block.BlockState;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.NetworkManager;
-import net.minecraft.network.play.server.SPacketUpdateTileEntity;
+import net.minecraft.network.play.server.SUpdateTileEntityPacket;
+import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumHand;
-import net.minecraft.util.ITickable;
+import net.minecraft.tileentity.TileEntityType;
+import net.minecraft.util.Hand;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 
-public abstract class TileFrequencyOwner extends TileEntity implements ICuboidProvider, ITickable, ICustomPacketTile {
+public abstract class TileFrequencyOwner extends TileEntity implements ITickableTileEntity {
 
     public static Cuboid6 selection_button = new Cuboid6(-1 / 16D, 0, -2 / 16D, 1 / 16D, 1 / 16D, 2 / 16D);
 
-    public Frequency frequency = new Frequency();
+    protected Frequency frequency = new Frequency();
     private int changeCount;
+
+    public TileFrequencyOwner(TileEntityType<?> tileEntityTypeIn) {
+        super(tileEntityTypeIn);
+    }
+
+    public Frequency getFrequency() {
+        return frequency;
+    }
 
     public void setFreq(Frequency frequency) {
         this.frequency = frequency;
+        onFrequencySet();
         markDirty();
-        IBlockState state = world.getBlockState(pos);
+        BlockState state = world.getBlockState(pos);
         world.notifyBlockUpdate(pos, state, state, 3);
         if (!world.isRemote) {
             sendUpdatePacket();
@@ -37,31 +47,46 @@ public abstract class TileFrequencyOwner extends TileEntity implements ICuboidPr
     }
 
     @Override
-    public void update() {
+    public void tick() {
         if (getStorage().getChangeCount() > changeCount) {
-            world.updateComparatorOutputLevel(pos, getBlockType());
+            world.updateComparatorOutputLevel(pos, getBlockState().getBlock());
             changeCount = getStorage().getChangeCount();
         }
     }
 
     public abstract AbstractEnderStorage getStorage();
 
-    public void readFromNBT(NBTTagCompound tag) {
-        super.readFromNBT(tag);
-        frequency.set(new Frequency(tag.getCompoundTag("Frequency")));
+    public void onFrequencySet() {
+
     }
 
-    public NBTTagCompound writeToNBT(NBTTagCompound tag) {
-        super.writeToNBT(tag);
-        tag.setTag("Frequency", frequency.writeToNBT(new NBTTagCompound()));
+    @Override
+    public void read(CompoundNBT tag) {
+        super.read(tag);
+        frequency.set(new Frequency(tag.getCompound("Frequency")));
+    }
+
+    @Override
+    public CompoundNBT write(CompoundNBT tag) {
+        super.write(tag);
+        tag.put("Frequency", frequency.writeToNBT(new CompoundNBT()));
         return tag;
     }
 
-    public boolean activate(EntityPlayer player, int subHit, EnumHand hand) {
+    @Override
+    public void setWorldAndPos(World p_226984_1_, BlockPos p_226984_2_) {
+        super.setWorldAndPos(p_226984_1_, p_226984_2_);
+        onFrequencySet();
+    }
+
+    public boolean activate(PlayerEntity player, int subHit, Hand hand) {
         return false;
     }
 
-    public void onPlaced(EntityLivingBase entity) {
+    public void onNeighborChange(BlockPos from) {
+    }
+
+    public void onPlaced(LivingEntity entity) {
     }
 
     protected void sendUpdatePacket() {
@@ -69,19 +94,19 @@ public abstract class TileFrequencyOwner extends TileEntity implements ICuboidPr
     }
 
     public PacketCustom createPacket() {
-        PacketCustom packet = new PacketCustom(EnderStorageCPH.channel, 1);
+        PacketCustom packet = new PacketCustom(EnderStorageNetwork.NET_CHANNEL, 1);
         writeToPacket(packet);
         return packet;
     }
 
     @Override
-    public final SPacketUpdateTileEntity getUpdatePacket() {
+    public final SUpdateTileEntityPacket getUpdatePacket() {
         return createPacket().toTilePacket(getPos());
     }
 
     @Override
-    public NBTTagCompound getUpdateTag() {
-        return createPacket().toNBTTag(super.getUpdateTag());
+    public CompoundNBT getUpdateTag() {
+        return createPacket().writeToNBT(super.getUpdateTag());
     }
 
     public void writeToPacket(MCDataOutput packet) {
@@ -90,15 +115,16 @@ public abstract class TileFrequencyOwner extends TileEntity implements ICuboidPr
 
     public void readFromPacket(MCDataInput packet) {
         frequency.set(Frequency.readFromPacket(packet));
+        onFrequencySet();
     }
 
     @Override
-    public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity pkt) {
+    public void onDataPacket(NetworkManager net, SUpdateTileEntityPacket pkt) {
         readFromPacket(PacketCustom.fromTilePacket(pkt));
     }
 
     @Override
-    public void handleUpdateTag(NBTTagCompound tag) {
+    public void handleUpdateTag(CompoundNBT tag) {
         readFromPacket(PacketCustom.fromNBTTag(tag));
     }
 

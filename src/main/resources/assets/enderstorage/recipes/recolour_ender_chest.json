@@ -1,7 +1,0 @@
-{
-	"type": "enderstorage:recolour_recipe",
-	"result": {
-		"item": "enderstorage:ender_storage",
-		"data": 0
-	}
-}

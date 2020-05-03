@@ -1,0 +1,10 @@
+{
+  "item.enderstorage.ender_pouch": "Vak z Endu",
+  "block.enderstorage.ender_chest": "Truhla z Endu",
+  "enderstorage.command.no_colour": "Neplatná barva: %s",
+  "enderstorage.command.usage": "enderstorage <frekvence>|(<barva> <barva> <barva>) [majitel]",
+  "enderstorage.command.no_freq": "Neplatná frekvence",
+  "block.enderstorage.ender_tank": "Nádrž z Endu",
+  "enderstorage.command.no_arguments": "Nesprávný počet parametrů",
+  "enderstorage.serverop": "Operátor"
+}

@@ -6,35 +6,24 @@ import codechicken.enderstorage.api.Frequency;
 import codechicken.enderstorage.manager.EnderStorageManager;
 import codechicken.enderstorage.network.EnderStorageSPH;
 import codechicken.enderstorage.storage.EnderItemStorage;
-import codechicken.lib.config.ConfigTag;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.ServerPlayerEntity;
 
 import java.util.List;
 
-public class EnderItemStoragePlugin implements EnderStoragePlugin {
-
-    public static final int[] sizes = new int[] { 9, 27, 54 };
-    public static int configSize;
+public class EnderItemStoragePlugin implements EnderStoragePlugin<EnderItemStorage> {
 
     @Override
-    public AbstractEnderStorage createEnderStorage(EnderStorageManager manager, Frequency freq) {
+    public EnderItemStorage createEnderStorage(EnderStorageManager manager, Frequency freq) {
         return new EnderItemStorage(manager, freq);
     }
 
     @Override
-    public String identifier() {
-        return "item";
-    }
-
-    public void loadConfig(ConfigTag config) {
-        configSize = config.getTag("storage-size").setComment("The size of each inventory of EnderStorage. 0 = 3x3, 1 = 3x9, 2 = 6x9").getIntValue(1);
-        if (configSize < 0 || configSize > 2) {
-            configSize = 1;
-        }
+    public EnderStorageManager.StorageType<EnderItemStorage> identifier() {
+        return EnderItemStorage.TYPE;
     }
 
     @Override
-    public void sendClientInfo(EntityPlayer player, List<AbstractEnderStorage> list) {
+    public void sendClientInfo(ServerPlayerEntity player, List<EnderItemStorage> list) {
         for (AbstractEnderStorage inv : list) {
             if (((EnderItemStorage) inv).openCount() > 0) {
                 EnderStorageSPH.sendOpenUpdateTo(player, inv.freq, true);

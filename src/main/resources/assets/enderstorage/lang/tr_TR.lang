@@ -1,9 +1,0 @@
-tile.ender_chest.name=Ender Sandığı
-tile.ender_tank.name=Ender Sıvı Tankı
-item.ender_pouch.name=Ender Sırt Çantası
-enderstorage.serverop=Operatör
-
-enderstorage.command.usage=enderstorage <frekans>|(<renk> <renk> <renk>) [sahibi]
-enderstorage.command.no_arguments=Girdiğiniz bilgiler yanlış
-enderstorage.command.no_freq=Geçersiz Frekans
-enderstorage.command.no_colour=Geçersiz Renk: %s

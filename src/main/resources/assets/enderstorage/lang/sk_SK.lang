@@ -1,9 +1,0 @@
-tile.ender_chest.name=Truhlica z Konca
-tile.ender_tank.name=Nádrž z Konca
-item.ender_pouch.name=Vak z Konca
-enderstorage.serverop=Operátor
-
-enderstorage.command.usage=enderstorage <frekvencia>|(<farba> <farba> <farba>) [majiteľ]
-enderstorage.command.no_arguments=Nesprávny počet parametrov
-enderstorage.command.no_freq=Neplatná frekvencia
-enderstorage.command.no_colour=Neplatná farba: %s

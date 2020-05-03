@@ -1,63 +1,54 @@
 package codechicken.enderstorage.client.gui;
 
 import codechicken.enderstorage.container.ContainerEnderItemStorage;
-import codechicken.enderstorage.storage.EnderItemStorage;
 import codechicken.lib.texture.TextureUtils;
-import net.minecraft.client.gui.inventory.GuiContainer;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.entity.player.InventoryPlayer;
-import net.minecraft.inventory.IInventory;
-import net.minecraft.util.text.translation.I18n;
+import com.mojang.blaze3d.platform.GlStateManager;
+import net.minecraft.client.gui.screen.inventory.ContainerScreen;
+import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.util.text.ITextComponent;
 
-public class GuiEnderItemStorage extends GuiContainer {
+public class GuiEnderItemStorage extends ContainerScreen<ContainerEnderItemStorage> {
 
-    private String name;
-    private IInventory playerInv;
-    private EnderItemStorage chestInv;
+    public GuiEnderItemStorage(ContainerEnderItemStorage container, PlayerInventory playerInv, ITextComponent title) {
+        super(container, playerInv, title);
+        passEvents = false;
 
-    public GuiEnderItemStorage(InventoryPlayer invplayer, EnderItemStorage chestInv, String name) {
-        super(new ContainerEnderItemStorage(invplayer, chestInv, true));
-        playerInv = invplayer;
-        this.chestInv = chestInv;
-        allowUserInput = false;
-        this.name = I18n.translateToLocal(name);
-
-        if (chestInv.getSize() == 2) {
+        if (container.chestInv.getSize() == 2) {
             ySize = 222;
         }
     }
 
     @Override
-    public void drawScreen(int mouseX, int mouseY, float partialTicks) {
-        drawDefaultBackground();
-        super.drawScreen(mouseX, mouseY, partialTicks);
+    public void render(int mouseX, int mouseY, float partialTicks) {
+        renderBackground();
+        super.render(mouseX, mouseY, partialTicks);
         renderHoveredToolTip(mouseX, mouseY);
     }
 
     @Override
     protected void drawGuiContainerForegroundLayer(int par1, int par2) {
-        fontRenderer.drawString(name, 8, 6, 0x404040);
-        fontRenderer.drawString(I18n.translateToLocal(playerInv.getName()), 8, ySize - 94, 0x404040);
-        ContainerEnderItemStorage ces = (ContainerEnderItemStorage) inventorySlots;
-        if (ces.chestInv.freq.hasOwner()) {
-            fontRenderer.drawString(ces.chestInv.freq.owner, 170 - fontRenderer.getStringWidth(ces.chestInv.freq.owner), 6, 0x404040);
+        font.drawString(title.getFormattedText(), 8, 6, 0x404040);
+        font.drawString(playerInventory.getName().getFormattedText(), 8, ySize - 94, 0x404040);
+        if (container.chestInv.freq.hasOwner()) {
+            String formatted = container.chestInv.freq.getOwnerName().getFormattedText();
+            font.drawString(formatted, 170 - font.getStringWidth(formatted), 6, 0x404040);
         }
     }
 
     protected void drawGuiContainerBackgroundLayer(float f, int i, int j) {
-        GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-        TextureUtils.changeTexture(chestInv.getSize() == 0 ? "textures/gui/container/dispenser.png" : "textures/gui/container/generic_54.png");
+        GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
+        TextureUtils.changeTexture(container.chestInv.getSize() == 0 ? "textures/gui/container/dispenser.png" : "textures/gui/container/generic_54.png");
         int x = (width - xSize) / 2;
         int y = (height - ySize) / 2;
 
-        switch (chestInv.getSize()) {
+        switch (container.chestInv.getSize()) {
             case 0:
             case 2:
-                drawTexturedModalRect(x, y, 0, 0, xSize, ySize);
+                blit(x, y, 0, 0, xSize, ySize);
                 break;
             case 1:
-                drawTexturedModalRect(x, y, 0, 0, xSize, 71);
-                drawTexturedModalRect(x, y + 71, 0, 126, xSize, 96);
+                blit(x, y, 0, 0, xSize, 71);
+                blit(x, y + 71, 0, 126, xSize, 96);
                 break;
 
         }

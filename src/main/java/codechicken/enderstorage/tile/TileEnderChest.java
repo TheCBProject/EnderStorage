@@ -1,31 +1,33 @@
 package codechicken.enderstorage.tile;
 
+import codechicken.enderstorage.config.EnderStorageConfig;
+import codechicken.enderstorage.init.ModContent;
 import codechicken.enderstorage.manager.EnderStorageManager;
 import codechicken.enderstorage.misc.EnderDyeButton;
-import codechicken.enderstorage.misc.EnderKnobSlot;
 import codechicken.enderstorage.storage.EnderItemStorage;
 import codechicken.lib.data.MCDataInput;
 import codechicken.lib.data.MCDataOutput;
 import codechicken.lib.math.MathHelper;
 import codechicken.lib.packet.PacketCustom;
-import codechicken.lib.raytracer.IndexedCuboid6;
-import codechicken.lib.vec.Cuboid6;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.inventory.Container;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.util.Direction;
+import net.minecraft.util.Hand;
 import net.minecraft.util.SoundCategory;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.CapabilityItemHandler;
+import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.items.wrapper.InvWrapper;
 
-import java.util.ArrayList;
-import java.util.List;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
-import static codechicken.enderstorage.handler.ConfigurationHandler.useVanillaEnderChestSounds;
-import static net.minecraft.init.SoundEvents.*;
+import static net.minecraft.util.SoundEvents.*;
 
 public class TileEnderChest extends TileFrequencyOwner {
 
@@ -33,6 +35,8 @@ public class TileEnderChest extends TileFrequencyOwner {
     public double b_lidAngle;
     public int c_numOpen;
     public int rotation;
+
+    private LazyOptional<IItemHandler> itemHandler = LazyOptional.empty();
 
     public static EnderDyeButton[] buttons;
 
@@ -44,25 +48,26 @@ public class TileEnderChest extends TileFrequencyOwner {
     }
 
     public TileEnderChest() {
+        super(ModContent.tileEnderChestType);
     }
 
     @Override
-    public void update() {
-        super.update();
+    public void tick() {
+        super.tick();
 
-        if (!world.isRemote && (world.getTotalWorldTime() % 20 == 0 || c_numOpen != getStorage().getNumOpen())) {
+        if (!world.isRemote && (world.getGameTime() % 20 == 0 || c_numOpen != getStorage().getNumOpen())) {
             c_numOpen = getStorage().getNumOpen();
-            world.addBlockEvent(getPos(), getBlockType(), 1, c_numOpen);
-            world.notifyNeighborsOfStateChange(pos, getBlockType(), true);
+            world.addBlockEvent(getPos(), getBlockState().getBlock(), 1, c_numOpen);
+            world.notifyNeighborsOfStateChange(pos, getBlockState().getBlock());
         }
 
         b_lidAngle = a_lidAngle;
         a_lidAngle = MathHelper.approachLinear(a_lidAngle, c_numOpen > 0 ? 1 : 0, 0.1);
 
         if (b_lidAngle >= 0.5 && a_lidAngle < 0.5) {
-            world.playSound(null, getPos(), useVanillaEnderChestSounds ? BLOCK_ENDERCHEST_CLOSE : BLOCK_CHEST_CLOSE, SoundCategory.BLOCKS, 0.5F, world.rand.nextFloat() * 0.1F + 0.9F);
+            world.playSound(null, getPos(), EnderStorageConfig.useVanillaEnderChestSounds ? BLOCK_ENDER_CHEST_CLOSE : BLOCK_CHEST_CLOSE, SoundCategory.BLOCKS, 0.5F, world.rand.nextFloat() * 0.1F + 0.9F);
         } else if (b_lidAngle == 0 && a_lidAngle > 0) {
-            world.playSound(null, getPos(), useVanillaEnderChestSounds ? BLOCK_ENDERCHEST_OPEN : BLOCK_CHEST_OPEN, SoundCategory.BLOCKS, 0.5F, world.rand.nextFloat() * 0.1F + 0.9F);
+            world.playSound(null, getPos(), EnderStorageConfig.useVanillaEnderChestSounds ? BLOCK_ENDER_CHEST_OPEN : BLOCK_CHEST_OPEN, SoundCategory.BLOCKS, 0.5F, world.rand.nextFloat() * 0.1F + 0.9F);
         }
     }
 
@@ -84,7 +89,19 @@ public class TileEnderChest extends TileFrequencyOwner {
 
     @Override
     public EnderItemStorage getStorage() {
-        return (EnderItemStorage) EnderStorageManager.instance(world.isRemote).getStorage(frequency, "item");
+        return EnderStorageManager.instance(world.isRemote).getStorage(frequency, EnderItemStorage.TYPE);
+    }
+
+    @Override
+    public void onFrequencySet() {
+        itemHandler.invalidate();
+        itemHandler = LazyOptional.of(() -> new InvWrapper(getStorage()));
+    }
+
+    @Override
+    public void remove() {
+        super.remove();
+        itemHandler.invalidate();
     }
 
     @Override
@@ -100,52 +117,28 @@ public class TileEnderChest extends TileFrequencyOwner {
     }
 
     @Override
-    public void onPlaced(EntityLivingBase entity) {
+    public void onPlaced(LivingEntity entity) {
         rotation = (int) Math.floor(entity.rotationYaw * 4 / 360 + 2.5D) & 3;
+        onFrequencySet();
     }
 
     @Override
-    public NBTTagCompound writeToNBT(NBTTagCompound tag) {
-        super.writeToNBT(tag);
-        tag.setByte("rot", (byte) rotation);
+    public CompoundNBT write(CompoundNBT tag) {
+        super.write(tag);
+        tag.putByte("rot", (byte) rotation);
         return tag;
     }
 
     @Override
-    public void readFromNBT(NBTTagCompound tag) {
-        super.readFromNBT(tag);
+    public void read(CompoundNBT tag) {
+        super.read(tag);
         rotation = tag.getByte("rot") & 3;
     }
 
     @Override
-    public boolean activate(EntityPlayer player, int subHit, EnumHand hand) {
-        getStorage().openSMPGui(player, "tile.enderChest.name");
+    public boolean activate(PlayerEntity player, int subHit, Hand hand) {
+        getStorage().openContainer((ServerPlayerEntity) player, new TranslationTextComponent(getBlockState().getBlock().getTranslationKey()));
         return true;
-    }
-
-    @Override
-    public List<IndexedCuboid6> getIndexedCuboids() {
-        List<IndexedCuboid6> cuboids = new ArrayList<>();
-
-        cuboids.add(new IndexedCuboid6(0, new Cuboid6(1 / 16D, 0, 1 / 16D, 15 / 16D, 14 / 16D, 15 / 16D)));
-
-        // Remove other boxes if the chest has lid open.
-        if (getRadianLidAngle(0) < 0) {
-            return cuboids;
-        }
-
-        // DyeButtons.
-        for (int button = 0; button < 3; button++) {
-            EnderDyeButton ebutton = TileEnderChest.buttons[button].copy();
-            ebutton.rotate(0, 0.5625, 0.0625, 1, 0, 0, 0);
-            ebutton.rotateMeta(rotation);
-
-            cuboids.add(new IndexedCuboid6(button + 1, new Cuboid6(ebutton.getMin(), ebutton.getMax())));
-        }
-
-        //Lock Button.
-        cuboids.add(new IndexedCuboid6(4, new Cuboid6(new EnderKnobSlot(rotation).getSelectionBB())));
-        return cuboids;
     }
 
     @Override
@@ -154,26 +147,20 @@ public class TileEnderChest extends TileFrequencyOwner {
             rotation = (rotation + 1) % 4;
             PacketCustom.sendToChunk(getUpdatePacket(), world, pos.getX() >> 4, pos.getZ() >> 4);
         }
-
         return true;
     }
 
     @Override
     public int comparatorInput() {
-        return Container.calcRedstoneFromInventory(getStorage());
+        return itemHandler.map(ItemHandlerHelper::calcRedstoneFromInventory).orElse(0);
     }
 
+    @Nonnull
     @Override
-    public boolean hasCapability(Capability<?> capability, EnumFacing facing) {
-        return capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY;
-    }
-
-    @SuppressWarnings ("unchecked")
-    @Override
-    public <T> T getCapability(Capability<T> capability, EnumFacing facing) {
-        if (capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
-            return (T) new InvWrapper(getStorage());
+    public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
+        if (!removed && cap == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
+            return itemHandler.cast();
         }
-        return super.getCapability(capability, facing);
+        return super.getCapability(cap, side);
     }
 }

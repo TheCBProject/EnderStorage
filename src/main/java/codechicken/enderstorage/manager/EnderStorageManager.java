@@ -3,15 +3,14 @@ package codechicken.enderstorage.manager;
 import codechicken.enderstorage.api.AbstractEnderStorage;
 import codechicken.enderstorage.api.EnderStoragePlugin;
 import codechicken.enderstorage.api.Frequency;
-import codechicken.lib.config.ConfigFile;
+import codechicken.lib.util.ServerUtils;
 import com.google.common.collect.ImmutableMap;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.CompressedStreamTools;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraftforge.common.DimensionManager;
+import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.world.WorldEvent;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.gameevent.PlayerEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 import java.io.DataOutputStream;
 import java.io.File;
@@ -25,52 +24,77 @@ public class EnderStorageManager {
 
         @SubscribeEvent
         public void onWorldLoad(WorldEvent.Load event) {
-            if (event.getWorld().isRemote) {
+            if (event.getWorld().isRemote()) {
                 reloadManager(true);
             }
         }
 
         @SubscribeEvent
         public void onWorldSave(WorldEvent.Save event) {
-            if (!event.getWorld().isRemote && instance(false) != null) {
+            if (!event.getWorld().isRemote() && instance(false) != null) {
                 instance(false).save(false);
             }
         }
 
         @SubscribeEvent
         public void onPlayerLogin(PlayerEvent.PlayerLoggedInEvent event) {
-            instance(false).sendClientInfo(event.player);
+            instance(false).sendClientInfo((ServerPlayerEntity) event.getPlayer());
         }
 
         @SubscribeEvent
         public void onPlayerChangedDimension(PlayerEvent.PlayerChangedDimensionEvent event) {
-            instance(false).sendClientInfo(event.player);
+            instance(false).sendClientInfo((ServerPlayerEntity) event.getPlayer());
+        }
+    }
+
+    public static class StorageType<T extends AbstractEnderStorage> {
+
+        public final String name;
+
+        public StorageType(String name) {
+            this.name = name;
+        }
+
+        @Override
+        public int hashCode() {
+            return name.hashCode();
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (super.equals(obj)) {
+                return true;
+            }
+            if (!(obj instanceof StorageType)) {
+                return false;
+            }
+            StorageType<?> other = (StorageType<?>) obj;
+            return other.name.equals(name);
         }
     }
 
     private static EnderStorageManager serverManager;
     private static EnderStorageManager clientManager;
-    private static ConfigFile config;
-    private static HashMap<String, EnderStoragePlugin> plugins = new HashMap<>();
+    private static Map<StorageType<?>, EnderStoragePlugin<?>> plugins = new HashMap<>();
 
     private Map<String, AbstractEnderStorage> storageMap;
-    private Map<String, List<AbstractEnderStorage>> storageList;
+    private Map<StorageType<?>, List<AbstractEnderStorage>> storageList;
     public final boolean client;
 
     private File saveDir;
     private File[] saveFiles;
     private int saveTo;
     private List<AbstractEnderStorage> dirtyStorage;
-    private NBTTagCompound saveTag;
+    private CompoundNBT saveTag;
 
     public EnderStorageManager(boolean client) {
         this.client = client;
 
-        storageMap = Collections.synchronizedMap(new HashMap<String, AbstractEnderStorage>());
-        storageList = Collections.synchronizedMap(new HashMap<String, List<AbstractEnderStorage>>());
-        dirtyStorage = Collections.synchronizedList(new LinkedList<AbstractEnderStorage>());
+        storageMap = Collections.synchronizedMap(new HashMap<>());
+        storageList = Collections.synchronizedMap(new HashMap<>());
+        dirtyStorage = Collections.synchronizedList(new LinkedList<>());
 
-        for (String key : plugins.keySet()) {
+        for (StorageType<?> key : plugins.keySet()) {
             storageList.put(key, new ArrayList<>());
         }
 
@@ -79,14 +103,20 @@ public class EnderStorageManager {
         }
     }
 
-    private void sendClientInfo(EntityPlayer player) {
-        for (Map.Entry<String, EnderStoragePlugin> plugin : plugins.entrySet()) {
-            plugin.getValue().sendClientInfo(player, storageList.get(plugin.getKey()));
+    private void sendClientInfo(ServerPlayerEntity player) {
+        for (Map.Entry<StorageType<?>, EnderStoragePlugin<?>> plugin : plugins.entrySet()) {
+            plugin.getValue().sendClientInfo(player, unsafeCast(storageList.get(plugin.getKey())));
         }
     }
 
+    @SuppressWarnings ("unchecked")
+    private static <T> T unsafeCast(Object object) {
+        return (T) object;
+    }
+
     private void load() {
-        saveDir = new File(DimensionManager.getCurrentSaveRootDirectory(), "EnderStorage");
+
+        saveDir = new File(ServerUtils.getSaveDirectory(), "EnderStorage");
         try {
             if (!saveDir.exists()) {
                 saveDir.mkdirs();
@@ -104,10 +134,10 @@ public class EnderStorageManager {
                     saveTag = CompressedStreamTools.readCompressed(in);
                     in.close();
                 } else {
-                    saveTag = new NBTTagCompound();
+                    saveTag = new CompoundNBT();
                 }
             } else {
-                saveTag = new NBTTagCompound();
+                saveTag = new CompoundNBT();
             }
         } catch (Exception e) {
             throw new RuntimeException(String.format("EnderStorage was unable to read it's data, please delete the 'EnderStorage' folder Here: %s and start the server again.", saveDir), e);
@@ -117,7 +147,7 @@ public class EnderStorageManager {
     private void save(boolean force) {
         if (!dirtyStorage.isEmpty() || force) {
             for (AbstractEnderStorage inv : dirtyStorage) {
-                saveTag.setTag(inv.freq + ",type=" + inv.type(), inv.saveToTag());
+                saveTag.put(inv.freq + ",type=" + inv.type(), inv.saveToTag());
                 inv.setClean();
             }
 
@@ -163,32 +193,23 @@ public class EnderStorageManager {
         return manager;
     }
 
-    public AbstractEnderStorage getStorage(Frequency freq, String type) {
-        String key = freq + ",type=" + type;
+    @SuppressWarnings ("unchecked")
+    public <T extends AbstractEnderStorage> T getStorage(Frequency freq, StorageType<T> type) {
+        String key = freq + ",type=" + type.name;
         AbstractEnderStorage storage = storageMap.get(key);
         if (storage == null) {
             storage = plugins.get(type).createEnderStorage(this, freq);
-            if (!client && saveTag.hasKey(key)) {
-                storage.loadFromTag(saveTag.getCompoundTag(key));
+            if (!client && saveTag.contains(key)) {
+                storage.loadFromTag(saveTag.getCompound(key));
             }
             storageMap.put(key, storage);
             storageList.get(type).add(storage);
         }
-        return storage;
+        return (T) storage;
     }
 
-    public static void loadConfig(ConfigFile config2) {
-        config = config2;
-        for (Map.Entry<String, EnderStoragePlugin> plugin : plugins.entrySet()) {
-            plugin.getValue().loadConfig(config.getTag(plugin.getKey()));
-        }
-    }
-
-    public static void registerPlugin(EnderStoragePlugin plugin) {
+    public static void registerPlugin(EnderStoragePlugin<?> plugin) {
         plugins.put(plugin.identifier(), plugin);
-        if (config != null) {
-            plugin.loadConfig(config.getTag(plugin.identifier()));
-        }
 
         if (serverManager != null) {
             serverManager.storageList.put(plugin.identifier(), new ArrayList<>());
@@ -198,17 +219,17 @@ public class EnderStorageManager {
         }
     }
 
-    public static EnderStoragePlugin getPlugin(String identifier) {
+    public static EnderStoragePlugin<?> getPlugin(StorageType<?> identifier) {
         return plugins.get(identifier);
     }
 
-    public static Map<String, EnderStoragePlugin> getPlugins() {
+    public static Map<StorageType<?>, EnderStoragePlugin<?>> getPlugins() {
         return ImmutableMap.copyOf(plugins);
     }
 
     public List<String> getValidKeys(String identifer) {
         List<String> list = new ArrayList<>();
-        for (String key : saveTag.getKeySet()) {
+        for (String key : saveTag.keySet()) {
             if (key.endsWith(",type=" + identifer)) {
                 list.add(key.replace(",type=" + identifer, ""));
             }

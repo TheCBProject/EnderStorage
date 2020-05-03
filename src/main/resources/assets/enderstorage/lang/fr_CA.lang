@@ -1,9 +1,0 @@
-tile.ender_chest.name=Coffre des limbes
-tile.ender_tank.name=Tank des limbes
-item.ender_pouch.name=Sac des limbes
-enderstorage.serverop=Opérateur
-
-enderstorage.command.usage=enderstorage <fréquence>|(<couleur> <couleur> <couleur>) [propriétaire]
-enderstorage.command.no_arguments=Nombre invalide d'arguments
-enderstorage.command.no_freq=Fréquence invalide
-enderstorage.command.no_colour=Couleur invalide : %s

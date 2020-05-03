@@ -1,9 +1,0 @@
-tile.ender_chest.name=Baú do Fim
-tile.ender_tank.name=Tanque do Fim
-item.ender_pouch.name=Bolsa do Fim
-enderstorage.serverop=Operador
-
-enderstorage.command.usage=/enderstorage <frequência>|(<cor> <cor> <cor>) [dono]
-enderstorage.command.no_arguments=Número de argumentos inválidos
-enderstorage.command.no_freq=Frequência inválida
-enderstorage.command.no_colour=Cor inválida: %s

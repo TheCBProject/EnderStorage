@@ -1,0 +1,10 @@
+{
+  "item.enderstorage.ender_pouch": "Vak z Konca",
+  "block.enderstorage.ender_chest": "Truhlica z Konca",
+  "enderstorage.command.no_colour": "Neplatná farba: %s",
+  "enderstorage.command.usage": "enderstorage <frekvencia>|(<farba> <farba> <farba>) [majiteľ]",
+  "enderstorage.command.no_freq": "Neplatná frekvencia",
+  "block.enderstorage.ender_tank": "Nádrž z Konca",
+  "enderstorage.command.no_arguments": "Nesprávny počet parametrov",
+  "enderstorage.serverop": "Operátor"
+}

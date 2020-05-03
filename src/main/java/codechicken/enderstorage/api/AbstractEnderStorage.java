@@ -1,7 +1,7 @@
 package codechicken.enderstorage.api;
 
 import codechicken.enderstorage.manager.EnderStorageManager;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
 
 public abstract class AbstractEnderStorage {
 
@@ -39,7 +39,7 @@ public abstract class AbstractEnderStorage {
 
     public abstract String type();
 
-    public abstract NBTTagCompound saveToTag();
+    public abstract CompoundNBT saveToTag();
 
-    public abstract void loadFromTag(NBTTagCompound tag);
+    public abstract void loadFromTag(CompoundNBT tag);
 }

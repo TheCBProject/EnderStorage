@@ -2,17 +2,16 @@ package codechicken.enderstorage.api;
 
 import codechicken.enderstorage.manager.EnderStorageManager;
 import codechicken.lib.config.ConfigTag;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
 
 import java.util.List;
 
-public interface EnderStoragePlugin {
+public interface EnderStoragePlugin<T extends AbstractEnderStorage> {
 
-    AbstractEnderStorage createEnderStorage(EnderStorageManager manager, Frequency freq);
+    T createEnderStorage(EnderStorageManager manager, Frequency freq);
 
-    String identifier();
+    EnderStorageManager.StorageType<T> identifier();
 
-    void sendClientInfo(EntityPlayer player, List<AbstractEnderStorage> list);
-
-    void loadConfig(ConfigTag tag);
+    void sendClientInfo(ServerPlayerEntity player, List<T> list);
 }

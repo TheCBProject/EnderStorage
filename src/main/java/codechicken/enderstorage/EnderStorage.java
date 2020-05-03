@@ -1,72 +1,64 @@
 package codechicken.enderstorage;
 
-import codechicken.enderstorage.command.EnderStorageCommand;
-import codechicken.enderstorage.handler.ConfigurationHandler;
+import codechicken.enderstorage.config.EnderStorageConfig;
 import codechicken.enderstorage.manager.EnderStorageManager;
 import codechicken.enderstorage.proxy.Proxy;
-import codechicken.lib.CodeChickenLib;
-import codechicken.lib.internal.ModDescriptionEnhancer;
+import codechicken.enderstorage.proxy.ProxyClient;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.ModMetadata;
-import net.minecraftforge.fml.common.SidedProxy;
-import net.minecraftforge.fml.common.event.FMLInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLServerStartedEvent;
-import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
+import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
+import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.minecraftforge.fml.event.lifecycle.FMLDedicatedServerSetupEvent;
+import net.minecraftforge.fml.event.server.FMLServerStartedEvent;
+import net.minecraftforge.fml.event.server.FMLServerStartingEvent;
+import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
-import static codechicken.enderstorage.EnderStorage.*;
-import static codechicken.lib.CodeChickenLib.MC_VERSION;
-import static codechicken.lib.CodeChickenLib.MC_VERSION_DEP;
+import static codechicken.enderstorage.EnderStorage.MOD_ID;
 
-@Mod (modid = MOD_ID, name = MOD_NAME, dependencies = DEPENDENCIES, acceptedMinecraftVersions = MC_VERSION_DEP, certificateFingerprint = "f1850c39b2516232a2108a7bd84d1cb5df93b261", updateJSON = UPDATE_URL)
+@Mod (MOD_ID)
 public class EnderStorage {
 
-    public static final String MOD_ID = "enderstorage";
-    public static final String MOD_NAME = "EnderStorage";
-    public static final String VERSION = "${mod_version}";
-    public static final String DEPENDENCIES = "required-after:forge@[14.23.4,);" + CodeChickenLib.MOD_VERSION_DEP;
-    static final String UPDATE_URL = "http://chickenbones.net/Files/notification/version.php?query=forge&version=" + MC_VERSION + "&file=EnderStorage";
+    public static final Logger logger = LogManager.getLogger("EnderStorage");
 
-    @SidedProxy (clientSide = "codechicken.enderstorage.proxy.ProxyClient", serverSide = "codechicken.enderstorage.proxy.Proxy")
+    public static final String MOD_ID = "enderstorage";
+
     public static Proxy proxy;
 
-    @Mod.Instance (EnderStorage.MOD_ID)
-    public static EnderStorage instance;
-
     public EnderStorage() {
-        instance = this;
+        proxy = DistExecutor.runForDist(() -> ProxyClient::new, () -> Proxy::new);
+        FMLJavaModLoadingContext.get().getModEventBus().register(this);
+        EnderStorageConfig.load("EnderStorage.cfg");
     }
 
-    @Mod.EventHandler
-    public void preInit(FMLPreInitializationEvent event) {
-        ConfigurationHandler.init(event.getSuggestedConfigurationFile());
-        proxy.preInit();
-        ModMetadata metadata = event.getModMetadata();
-        metadata.description = modifyDesc(metadata.description);
-        ModDescriptionEnhancer.registerEnhancement(MOD_ID, MOD_NAME);
+    @SubscribeEvent
+    public void onCommonSetup(FMLCommonSetupEvent event) {
+        proxy.commonSetup(event);
     }
 
-    @Mod.EventHandler
-    public void init(FMLInitializationEvent event) {
-        ConfigurationHandler.loadConfig();
-        proxy.init();
+    @SubscribeEvent
+    public void onClientSetup(FMLClientSetupEvent event) {
+        proxy.clientSetup(event);
     }
 
-    @Mod.EventHandler
-    public void serverStarting(FMLServerStartingEvent event) {
-        event.registerServerCommand(new EnderStorageCommand());
+    @SubscribeEvent
+    public void onServerSetup(FMLDedicatedServerSetupEvent event) {
+
     }
 
-    @Mod.EventHandler
+    @SubscribeEvent
+    public void onServerStarting(FMLServerStartingEvent event) {
+    }
+
+    //    @Mod.EventHandler
+    //    public void serverStarting(FMLServerStartingEvent event) {
+    //        event.registerServerCommand(new EnderStorageCommand());
+    //    }
+
+    @SubscribeEvent
     public void preServerStart(FMLServerStartedEvent event) {
         EnderStorageManager.reloadManager(false);
-    }
-
-    private static String modifyDesc(String desc) {
-        desc += "\n";
-        desc += "    Credits: Ecu - original idea, design, chest and pouch texture\n";
-        desc += "    Rosethorns - tank model\n";
-        desc += "    Soaryn - tank texture\n";
-        return desc;
     }
 }

@@ -7,13 +7,12 @@ import codechicken.lib.colour.EnumColour;
 import codechicken.lib.model.ItemQuadBakery;
 import codechicken.lib.model.bakedmodels.ModelProperties.PerspectiveProperties;
 import codechicken.lib.model.bakery.generation.IItemBakery;
-import codechicken.lib.texture.TextureUtils.IIconRegister;
-import net.minecraft.client.renderer.block.model.BakedQuad;
+import codechicken.lib.texture.AtlasRegistrar;
+import codechicken.lib.texture.IIconRegister;
+import net.minecraft.client.renderer.model.BakedQuad;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.Direction;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,11 +30,11 @@ public class EnderPouchBakery implements IItemBakery, IIconRegister {
     public static TextureAtlasSprite[][] COLOUR_TEXTURES;
 
     @Override
-    public List<BakedQuad> bakeItemQuads(EnumFacing face, ItemStack stack) {
+    public List<BakedQuad> bakeItemQuads(Direction face, ItemStack stack) {
         List<BakedQuad> quads = new ArrayList<>();
         if (face == null) {
             Frequency frequency = Frequency.readFromStack(stack);
-            boolean open = ((EnderItemStorage) EnderStorageManager.instance(true).getStorage(frequency, "item")).openCount() > 0;
+            boolean open =  EnderStorageManager.instance(true).getStorage(frequency, EnderItemStorage.TYPE).openCount() > 0;
             TextureAtlasSprite bagTexture = BAG_TEXTURES[frequency.hasOwner() ? 1 : 0][open ? 1 : 0];
             TextureAtlasSprite leftButton = COLOUR_TEXTURES[0][frequency.getLeft().getWoolMeta()];
             TextureAtlasSprite middleButton = COLOUR_TEXTURES[1][frequency.getMiddle().getWoolMeta()];
@@ -51,7 +50,7 @@ public class EnderPouchBakery implements IItemBakery, IIconRegister {
     }
 
     @Override
-    public void registerIcons(TextureMap map) {
+    public void registerIcons(AtlasRegistrar registrar) {
         String POUCH_PREFIX = "enderstorage:items/pouch/";
         String BUTTONS_PREFIX = POUCH_PREFIX + "buttons/";
         String[] position_prefixes = { "left/", "middle/", "right/" };
@@ -59,21 +58,16 @@ public class EnderPouchBakery implements IItemBakery, IIconRegister {
         BAG_TEXTURES = new TextureAtlasSprite[2][2];
         COLOUR_TEXTURES = new TextureAtlasSprite[3][16];
 
-        BAG_TEXTURES[0][0] = register(map, POUCH_PREFIX + "closed");
-        BAG_TEXTURES[0][1] = register(map, POUCH_PREFIX + "open");
-        BAG_TEXTURES[1][0] = register(map, POUCH_PREFIX + "owned_closed");
-        BAG_TEXTURES[1][1] = register(map, POUCH_PREFIX + "owned_open");
-
+        registrar.registerSprite(POUCH_PREFIX + "closed", e -> BAG_TEXTURES[0][0] = e);
+        registrar.registerSprite(POUCH_PREFIX + "open", e -> BAG_TEXTURES[0][1] = e);
+        registrar.registerSprite(POUCH_PREFIX + "owned_closed", e -> BAG_TEXTURES[1][0] = e);
+        registrar.registerSprite(POUCH_PREFIX + "owned_open", e -> BAG_TEXTURES[1][1] = e);
         for (int i = 0; i < 3; i++) {
+            int finalI = i;//LAMBDAS REEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE
             for (EnumColour colour : EnumColour.values()) {
-                COLOUR_TEXTURES[i][colour.ordinal()] = register(map, BUTTONS_PREFIX + position_prefixes[i] + colour.getName());
+                registrar.registerSprite(BUTTONS_PREFIX + position_prefixes[i] + colour.getName(), e -> COLOUR_TEXTURES[finalI][colour.ordinal()] = e);
             }
         }
 
-    }
-
-    // Bouncer because reasons.
-    private static TextureAtlasSprite register(TextureMap map, String sprite) {
-        return map.registerSprite(new ResourceLocation(sprite));
     }
 }

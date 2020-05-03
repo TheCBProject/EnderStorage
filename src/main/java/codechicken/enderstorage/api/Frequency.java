@@ -4,9 +4,12 @@ import codechicken.lib.colour.EnumColour;
 import codechicken.lib.data.MCDataInput;
 import codechicken.lib.data.MCDataOutput;
 import codechicken.lib.util.Copyable;
-import codechicken.lib.util.ItemNBTUtils;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TranslationTextComponent;
+
+import java.util.UUID;
 
 /**
  * Created by covers1624 on 4/26/2016.
@@ -16,32 +19,34 @@ public final class Frequency implements Copyable<Frequency> {
     public EnumColour left;
     public EnumColour middle;
     public EnumColour right;
-    public String owner;
+    public UUID owner;
+    public ITextComponent ownerName;
 
     public Frequency() {
         this(EnumColour.WHITE, EnumColour.WHITE, EnumColour.WHITE);
     }
 
     public Frequency(EnumColour left, EnumColour middle, EnumColour right) {
-        this(left, middle, right, null);
+        this(left, middle, right, null, null);
     }
 
-    public Frequency(EnumColour left, EnumColour middle, EnumColour right, String owner) {
+    public Frequency(EnumColour left, EnumColour middle, EnumColour right, UUID owner, ITextComponent ownerName) {
         this.left = left;
         this.middle = middle;
         this.right = right;
         this.owner = owner;
+        this.ownerName = ownerName;
     }
 
-    public Frequency(NBTTagCompound tagCompound) {
+    public Frequency(CompoundNBT tagCompound) {
         read_internal(tagCompound);
     }
 
     public static Frequency fromString(String left, String middle, String right) {
-        return fromString(left, middle, right, null);
+        return fromString(left, middle, right, null, null);
     }
 
-    public static Frequency fromString(String left, String middle, String right, String owner) {
+    public static Frequency fromString(String left, String middle, String right, UUID owner, ITextComponent ownerName) {
         EnumColour c1 = EnumColour.fromName(left);
         EnumColour c2 = EnumColour.fromName(middle);
         EnumColour c3 = EnumColour.fromName(right);
@@ -54,7 +59,7 @@ public final class Frequency implements Copyable<Frequency> {
         if (c3 == null) {
             throw new RuntimeException(right + " is an invalid colour!");
         }
-        return new Frequency(c1, c2, c3, owner);
+        return new Frequency(c1, c2, c3, owner, ownerName);
     }
 
     public Frequency setLeft(EnumColour left) {
@@ -78,13 +83,18 @@ public final class Frequency implements Copyable<Frequency> {
         return this;
     }
 
-    public Frequency setOwner(String owner) {
+    public Frequency setOwner(UUID owner) {
         this.owner = owner;
         return this;
     }
 
+    public Frequency setOwnerName(ITextComponent ownerName) {
+        this.ownerName = ownerName;
+        return this;
+    }
+
     public boolean hasOwner() {
-        return owner != null;
+        return owner != null && ownerName != null;
     }
 
     public Frequency set(EnumColour[] colours) {
@@ -99,6 +109,7 @@ public final class Frequency implements Copyable<Frequency> {
         setMiddle(frequency.middle);
         setRight(frequency.right);
         setOwner(frequency.owner);
+        setOwnerName(frequency.ownerName);
         return this;
     }
 
@@ -114,56 +125,70 @@ public final class Frequency implements Copyable<Frequency> {
         return right;
     }
 
+    public UUID getOwner() {
+        return owner;
+    }
+
+    public ITextComponent getOwnerName() {
+        return ownerName;
+    }
+
     public EnumColour[] toArray() {
         return new EnumColour[] { left, middle, right };
     }
 
-    protected Frequency read_internal(NBTTagCompound tagCompound) {
-        left = EnumColour.fromWoolMeta(tagCompound.getInteger("left"));
-        middle = EnumColour.fromWoolMeta(tagCompound.getInteger("middle"));
-        right = EnumColour.fromWoolMeta(tagCompound.getInteger("right"));
-        if (tagCompound.hasKey("owner")) {
-            owner = tagCompound.getString("owner");
+    protected Frequency read_internal(CompoundNBT tagCompound) {
+        left = EnumColour.fromWoolMeta(tagCompound.getInt("left"));
+        middle = EnumColour.fromWoolMeta(tagCompound.getInt("middle"));
+        right = EnumColour.fromWoolMeta(tagCompound.getInt("right"));
+        if (tagCompound.hasUniqueId("owner")) {
+            owner = tagCompound.getUniqueId("owner");
+        }
+        if (tagCompound.contains("owner_name")) {
+            ownerName = ITextComponent.Serializer.fromJson(tagCompound.getString("owner_name"));
         }
         return this;
     }
 
-    protected NBTTagCompound write_internal(NBTTagCompound tagCompound) {
-        tagCompound.setInteger("left", left.getWoolMeta());
-        tagCompound.setInteger("middle", middle.getWoolMeta());
-        tagCompound.setInteger("right", right.getWoolMeta());
+    protected CompoundNBT write_internal(CompoundNBT tagCompound) {
+        tagCompound.putInt("left", left.getWoolMeta());
+        tagCompound.putInt("middle", middle.getWoolMeta());
+        tagCompound.putInt("right", right.getWoolMeta());
         if (owner != null) {
-            tagCompound.setString("owner", owner);
+            tagCompound.putUniqueId("owner", owner);
+        }
+        if (ownerName != null) {
+            tagCompound.putString("owner_name", ITextComponent.Serializer.toJson(ownerName));
         }
         return tagCompound;
     }
 
-    public NBTTagCompound writeToNBT(NBTTagCompound tagCompound) {
+    public CompoundNBT writeToNBT(CompoundNBT tagCompound) {
         write_internal(tagCompound);
         return tagCompound;
     }
 
     public void writeToPacket(MCDataOutput packet) {
-        packet.writeNBTTagCompound(write_internal(new NBTTagCompound()));
+        packet.writeCompoundNBT(write_internal(new CompoundNBT()));
     }
 
     public static Frequency readFromPacket(MCDataInput packet) {
-        return new Frequency(packet.readNBTTagCompound());
+        return new Frequency(packet.readCompoundNBT());
     }
 
     public static Frequency readFromStack(ItemStack stack) {
-        if (stack.hasTagCompound()) {
-            NBTTagCompound stackTag = stack.getTagCompound();
-            if (stackTag.hasKey("Frequency")) {
-                return new Frequency(stackTag.getCompoundTag("Frequency"));
+        if (stack.hasTag()) {
+            CompoundNBT stackTag = stack.getTag();
+            if (stackTag.contains("Frequency")) {
+                return new Frequency(stackTag.getCompound("Frequency"));
             }
         }
         return new Frequency();
     }
 
     public ItemStack writeToStack(ItemStack stack) {
-        NBTTagCompound tagCompound = ItemNBTUtils.validateTagExists(stack);
-        tagCompound.setTag("Frequency", write_internal(new NBTTagCompound()));
+        CompoundNBT tagCompound = stack.getOrCreateTag();
+        tagCompound.put("Frequency", write_internal(new CompoundNBT()));
         return stack;
     }
 
@@ -180,8 +205,12 @@ public final class Frequency implements Copyable<Frequency> {
         return "left=" + getLeft().getName() + ",middle=" + getMiddle().getName() + ",right=" + getRight().getName() + owner;
     }
 
-    public String getTooltip() {
-        return String.format("%s/%s/%s", getLeft().getLocalizedName(), getMiddle().getLocalizedName(), getRight().getLocalizedName());
+    public ITextComponent getTooltip() {
+        return new TranslationTextComponent(getLeft().getUnlocalizedName())//
+                .appendText("/")//
+                .appendSibling(new TranslationTextComponent(getMiddle().getUnlocalizedName()))//
+                .appendText("/")//
+                .appendSibling(new TranslationTextComponent(getRight().getUnlocalizedName()));
     }
 
     @Override
@@ -191,6 +220,6 @@ public final class Frequency implements Copyable<Frequency> {
 
     @Override
     public Frequency copy() {
-        return new Frequency(this.left, this.middle, this.right, this.owner);
+        return new Frequency(this.left, this.middle, this.right, this.owner, this.ownerName);
     }
 }

@@ -1,9 +1,0 @@
-{
-	"ingredients": {
-		"wool": "codechicken.enderstorage.recipe.Factories$WoolIngredientFactory"
-	},
-	"recipes": {
-		"crafting_recipe": "codechicken.enderstorage.recipe.Factories$RecipeFactory",
-		"recolour_recipe": "codechicken.enderstorage.recipe.Factories$ReColourFactory"
-	}
-}

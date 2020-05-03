@@ -3,28 +3,29 @@ package codechicken.enderstorage.storage;
 import codechicken.enderstorage.api.AbstractEnderStorage;
 import codechicken.enderstorage.api.Frequency;
 import codechicken.enderstorage.client.gui.GuiEnderItemStorage;
+import codechicken.enderstorage.config.EnderStorageConfig;
 import codechicken.enderstorage.container.ContainerEnderItemStorage;
 import codechicken.enderstorage.manager.EnderStorageManager;
 import codechicken.enderstorage.network.EnderStorageSPH;
+import codechicken.lib.data.MCDataInput;
 import codechicken.lib.inventory.InventoryUtils;
-import codechicken.lib.packet.PacketCustom;
 import codechicken.lib.util.ArrayUtils;
 import codechicken.lib.util.ClientUtils;
 import codechicken.lib.util.ServerUtils;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.entity.player.InventoryPlayer;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.inventory.IInventory;
+import net.minecraft.inventory.container.SimpleNamedContainerProvider;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
-
-import static codechicken.enderstorage.plugin.EnderItemStoragePlugin.configSize;
-import static codechicken.enderstorage.plugin.EnderItemStoragePlugin.sizes;
 
 public class EnderItemStorage extends AbstractEnderStorage implements IInventory {
+
+    public static final EnderStorageManager.StorageType<EnderItemStorage> TYPE = new EnderStorageManager.StorageType<>("item");
+
+    public static final int[] sizes = new int[] { 9, 27, 54 };
 
     private ItemStack[] items;
     private int open;
@@ -32,7 +33,7 @@ public class EnderItemStorage extends AbstractEnderStorage implements IInventory
 
     public EnderItemStorage(EnderStorageManager manager, Frequency freq) {
         super(manager, freq);
-        size = configSize;
+        size = EnderStorageConfig.storageSize;
         empty();
     }
 
@@ -44,22 +45,21 @@ public class EnderItemStorage extends AbstractEnderStorage implements IInventory
         }
     }
 
-    public void loadFromTag(NBTTagCompound tag) {
+    public void loadFromTag(CompoundNBT tag) {
         size = tag.getByte("size");
         empty();
-        InventoryUtils.readItemStacksFromTag(items, tag.getTagList("Items", 10));
-        if (size != configSize) {
+        InventoryUtils.readItemStacksFromTag(items, tag.getList("Items", 10));
+        if (size != EnderStorageConfig.storageSize) {
             alignSize();
         }
     }
 
     private void alignSize() {
-        if (configSize > size) {
-            ItemStack[] newItems = new ItemStack[sizes[configSize]];
-            ArrayUtils.fillArray(newItems, ItemStack.EMPTY);
+        if (EnderStorageConfig.storageSize > size) {
+            ItemStack[] newItems = ArrayUtils.fill(new ItemStack[sizes[EnderStorageConfig.storageSize]], ItemStack.EMPTY);
             System.arraycopy(items, 0, newItems, 0, items.length);
             items = newItems;
-            size = configSize;
+            size = EnderStorageConfig.storageSize;
             markDirty();
         } else {
             int numStacks = 0;
@@ -69,9 +69,8 @@ public class EnderItemStorage extends AbstractEnderStorage implements IInventory
                 }
             }
 
-            if (numStacks <= sizes[configSize]) {
-                ItemStack[] newItems = new ItemStack[sizes[configSize]];
-                ArrayUtils.fillArray(newItems, ItemStack.EMPTY);
+            if (numStacks <= sizes[EnderStorageConfig.storageSize]) {
+                ItemStack[] newItems = ArrayUtils.fill(new ItemStack[sizes[EnderStorageConfig.storageSize]], ItemStack.EMPTY);
                 int copyTo = 0;
                 for (ItemStack item : items) {
                     if (!item.isEmpty()) {
@@ -80,7 +79,7 @@ public class EnderItemStorage extends AbstractEnderStorage implements IInventory
                     }
                 }
                 items = newItems;
-                size = configSize;
+                size = EnderStorageConfig.storageSize;
                 markDirty();
             }
         }
@@ -91,14 +90,14 @@ public class EnderItemStorage extends AbstractEnderStorage implements IInventory
         return "item";
     }
 
-    public NBTTagCompound saveToTag() {
-        if (size != configSize && open == 0) {
+    public CompoundNBT saveToTag() {
+        if (size != EnderStorageConfig.storageSize && open == 0) {
             alignSize();
         }
 
-        NBTTagCompound compound = new NBTTagCompound();
-        compound.setTag("Items", InventoryUtils.writeItemStacksToTag(items));
-        compound.setByte("size", (byte) size);
+        CompoundNBT compound = new CompoundNBT();
+        compound.put("Items", InventoryUtils.writeItemStacksToTag(items));
+        compound.putByte("size", (byte) size);
 
         return compound;
     }
@@ -179,27 +178,26 @@ public class EnderItemStorage extends AbstractEnderStorage implements IInventory
     }
 
     @Override
-    public boolean isUsableByPlayer(EntityPlayer var1) {
+    public boolean isUsableByPlayer(PlayerEntity var1) {
         return true;
     }
 
     public void empty() {
         items = new ItemStack[getSizeInventory()];
-        ArrayUtils.fillArray(items, ItemStack.EMPTY);
+        ArrayUtils.fill(items, ItemStack.EMPTY);
     }
 
-    public void openSMPGui(EntityPlayer player, final String name) {
-        ServerUtils.openSMPContainer((EntityPlayerMP) player, new ContainerEnderItemStorage(player.inventory, this, false), (player1, windowId) -> {
+    public void openContainer(ServerPlayerEntity player, ITextComponent title) {
+        ServerUtils.openContainer(player, new SimpleNamedContainerProvider((id, inv, p) -> new ContainerEnderItemStorage(id, inv, EnderItemStorage.this), title),//
+                packet -> {
+                    freq.writeToPacket(packet);
+                    packet.writeByte(size);
+                });
+    }
 
-            PacketCustom packet = new PacketCustom(EnderStorageSPH.channel, 2);
-            packet.writeByte(windowId);
-            //packet.writeString(owner);
-            freq.writeToPacket(packet);
-            packet.writeString(name);
-            packet.writeByte(size);
-
-            packet.sendToPlayer(player1);
-        });
+    public void handleContainerPacket(MCDataInput packet) {
+        size = packet.readByte();
+        empty();
     }
 
     public int getSize() {
@@ -216,54 +214,17 @@ public class EnderItemStorage extends AbstractEnderStorage implements IInventory
         }
     }
 
-    @SideOnly (Side.CLIENT)
-    public void openClientGui(int windowID, InventoryPlayer playerInv, String name, int size) {
-        this.size = size;
-        empty();
-        ClientUtils.openSMPGui(windowID, new GuiEnderItemStorage(playerInv, this, name));
-    }
-
     @Override
     public boolean isItemValidForSlot(int slot, ItemStack stack) {
         return true;
     }
 
     @Override
-    public String getName() {
-        return null;
+    public void openInventory(PlayerEntity player) {
     }
 
     @Override
-    public boolean hasCustomName() {
-        return true;
-    }
-
-    @Override
-    public ITextComponent getDisplayName() {
-        return null;
-    }
-
-    @Override
-    public void openInventory(EntityPlayer player) {
-    }
-
-    @Override
-    public void closeInventory(EntityPlayer player) {
-    }
-
-    @Override
-    public int getField(int id) {
-        return 0;
-    }
-
-    @Override
-    public void setField(int id, int value) {
-    }
-
-    @Override
-    public int getFieldCount() {
-
-        return 0;
+    public void closeInventory(PlayerEntity player) {
     }
 
     @Override

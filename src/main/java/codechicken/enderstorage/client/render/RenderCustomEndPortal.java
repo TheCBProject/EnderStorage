@@ -1,28 +1,44 @@
 package codechicken.enderstorage.client.render;
 
-import net.minecraft.client.renderer.*;
-import net.minecraft.client.renderer.texture.TextureManager;
+import codechicken.lib.vec.Matrix4;
+import com.google.common.collect.ImmutableList;
+import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.IVertexBuilder;
+import net.minecraft.client.renderer.GLAllocation;
+import net.minecraft.client.renderer.IRenderTypeBuffer;
+import net.minecraft.client.renderer.RenderState;
+import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.tileentity.EndPortalTileEntityRenderer;
+import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.util.ResourceLocation;
-import org.lwjgl.opengl.ARBVertexBlend;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
+import org.lwjgl.opengl.GL11;
 
 import java.nio.FloatBuffer;
+import java.util.List;
 import java.util.Random;
-
-import static org.lwjgl.opengl.GL11.GL_QUADS;
+import java.util.stream.IntStream;
 
 public class RenderCustomEndPortal {
 
-    private static final ResourceLocation end_skyTex = new ResourceLocation("textures/environment/end_sky.png");
-    private static final ResourceLocation end_portalTex = new ResourceLocation("textures/entity/end_portal.png");
+    private static final FloatBuffer texBuffer = GLAllocation.createDirectFloatBuffer(16);
+    private static final List<RenderType.State> RENDER_STATES = IntStream.range(0, 16)//
+            .mapToObj(i -> RenderType.State.getBuilder()//
+                    .transparency(i == 0 ? RenderType.TRANSLUCENT_TRANSPARENCY : RenderType.ADDITIVE_TRANSPARENCY)//
+                    .texture(new RenderState.TextureState(i == 0 ? EndPortalTileEntityRenderer.END_SKY_TEXTURE : EndPortalTileEntityRenderer.END_PORTAL_TEXTURE, false, false))//
+                    .build(false)//
+            )//
+            .collect(ImmutableList.toImmutableList());
 
-    private double surfaceY;
-    private double surfaceX1;
-    private double surfaceX2;
-    private double surfaceZ1;
-    private double surfaceZ2;
+    private final Random randy = new Random();
 
-    FloatBuffer texBuffer;
+    private final double surfaceY;
+    private final double surfaceX1;
+    private final double surfaceX2;
+    private final double surfaceZ1;
+    private final double surfaceZ2;
 
     public RenderCustomEndPortal(double y, double x1, double x2, double z1, double z2) {
         surfaceY = y;
@@ -30,96 +46,123 @@ public class RenderCustomEndPortal {
         surfaceX2 = x2;
         surfaceZ1 = z1;
         surfaceZ2 = z2;
-        texBuffer = GLAllocation.createDirectFloatBuffer(16);
     }
 
-    public void render(double posX, double posY, double posZ, float frame, double playerX, double playerY, double playerZ, TextureManager r) {
-        if (r == null) {
-            return;
-        }
-        GlStateManager.disableLighting();
-        Random random = new Random(31100L);
+    public void render(Matrix4 mat, IRenderTypeBuffer getter, double yToCamera) {
+        Vec3d projectedView = TileEntityRendererDispatcher.instance.renderInfo.getProjectedView();
+        mat = mat.copy();//Defensive copy, prevent external modifications.
+        randy.setSeed(31100L);
         for (int i = 0; i < 16; i++) {
-            GlStateManager.pushMatrix();
-            float f5 = 16 - i;
-            float f6 = 0.0625F;
-            float f7 = 1.0F / (f5 + 1.0F);
+            RenderType.State state = RENDER_STATES.get(i);
+            EndPortalRenderType renderType = new EndPortalRenderType(i, yToCamera, projectedView, mat, state);
+            IVertexBuilder builder = getter.getBuffer(renderType);
+            float r = (randy.nextFloat() * 0.5F + 0.1F) * renderType.f7;
+            float g = (randy.nextFloat() * 0.5F + 0.4F) * renderType.f7;
+            float b = (randy.nextFloat() * 0.5F + 0.5F) * renderType.f7;
             if (i == 0) {
-                r.bindTexture(end_skyTex);
-                f7 = 0.1F;
-                f5 = 65F;
-                f6 = 0.125F;
-                GlStateManager.enableBlend();
-                GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
+                r = g = b = 1.0F * renderType.f7;
             }
-            if (i == 1) {
-                r.bindTexture(end_portalTex);
-                GlStateManager.enableBlend();
-                GlStateManager.blendFunc(GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ONE);
-                f6 = 0.5F;
-            }
-            float f8 = (float) (-(posY + surfaceY));
-            float f9 = (float) (f8 + ActiveRenderInfo.position.y);
-            float f10 = (float) (f8 + f5 + ActiveRenderInfo.position.y);
-            float f11 = f9 / f10;
-            f11 = (float) (posY + surfaceY) + f11;
-            GlStateManager.translate(playerX, f11, playerZ);
-            GlStateManager.texGen(GlStateManager.TexGen.S, 9217);
-            GlStateManager.texGen(GlStateManager.TexGen.T, 9217);
-            GlStateManager.texGen(GlStateManager.TexGen.R, 9217);
-            GlStateManager.texGen(GlStateManager.TexGen.Q, 9216);
-            GlStateManager.texGen(GlStateManager.TexGen.S, 9473, this.bufferTexData(1.0F, 0.0F, 0.0F, 0.0F));
-            GlStateManager.texGen(GlStateManager.TexGen.T, 9473, this.bufferTexData(0.0F, 0.0F, 1.0F, 0.0F));
-            GlStateManager.texGen(GlStateManager.TexGen.R, 9473, this.bufferTexData(0.0F, 0.0F, 0.0F, 1.0F));
-            GlStateManager.texGen(GlStateManager.TexGen.Q, 9474, this.bufferTexData(0.0F, 1.0F, 0.0F, 0.0F));
-            GlStateManager.enableTexGenCoord(GlStateManager.TexGen.S);
-            GlStateManager.enableTexGenCoord(GlStateManager.TexGen.T);
-            GlStateManager.enableTexGenCoord(GlStateManager.TexGen.R);
-            GlStateManager.enableTexGenCoord(GlStateManager.TexGen.Q);
-            GlStateManager.popMatrix();
-            GlStateManager.matrixMode(5890);
-            GlStateManager.pushMatrix();
-            GlStateManager.loadIdentity();
-            GlStateManager.translate(0.0F, System.currentTimeMillis() % 0xaae60L / 700000F, 0.0F);
-            GlStateManager.scale(f6, f6, f6);
-            GlStateManager.translate(0.5F, 0.5F, 0.0F);
-            GlStateManager.rotate((i * i * 4321 + i * 9) * 2.0F, 0.0F, 0.0F, 1.0F);
-            GlStateManager.translate(-0.5F, -0.5F, 0.0F);
-            GlStateManager.translate(-playerX, -playerZ, -playerY);
-            f9 = f8 + (float) ActiveRenderInfo.position.y;
-            GlStateManager.translate(((float) ActiveRenderInfo.position.x * f5) / f9, ((float) ActiveRenderInfo.position.z * f5) / f9, -playerY + 20);
-            Tessellator tessellator = Tessellator.getInstance();
-            BufferBuilder buffer = tessellator.getBuffer();
-            buffer.begin(GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
-            f11 = (random.nextFloat() * 0.5F + 0.1F) * f7;
-            float f12 = (random.nextFloat() * 0.5F + 0.4F) * f7;
-            float f13 = (random.nextFloat() * 0.5F + 0.5F) * f7;
-            if (i == 0) {
-                f11 = f12 = f13 = 1.0F * f7;
-            }
-
-            buffer.pos(posX + surfaceX1, posY + surfaceY, posZ + surfaceZ1).color(f11, f12, f13, 1.0F).endVertex();
-            buffer.pos(posX + surfaceX1, posY + surfaceY, posZ + surfaceZ2).color(f11, f12, f13, 1.0F).endVertex();
-            buffer.pos(posX + surfaceX2, posY + surfaceY, posZ + surfaceZ2).color(f11, f12, f13, 1.0F).endVertex();
-            buffer.pos(posX + surfaceX2, posY + surfaceY, posZ + surfaceZ1).color(f11, f12, f13, 1.0F).endVertex();
-
-            tessellator.draw();
-            GlStateManager.popMatrix();
-            GlStateManager.matrixMode(ARBVertexBlend.GL_MODELVIEW0_ARB);
+            builder.pos(surfaceX1, surfaceY, surfaceZ1).color(r, g, b, 1.0F).endVertex();
+            builder.pos(surfaceX1, surfaceY, surfaceZ2).color(r, g, b, 1.0F).endVertex();
+            builder.pos(surfaceX2, surfaceY, surfaceZ2).color(r, g, b, 1.0F).endVertex();
+            builder.pos(surfaceX2, surfaceY, surfaceZ1).color(r, g, b, 1.0F).endVertex();
         }
-
-        GlStateManager.disableBlend();
-        GlStateManager.disableTexGenCoord(GlStateManager.TexGen.S);
-        GlStateManager.disableTexGenCoord(GlStateManager.TexGen.T);
-        GlStateManager.disableTexGenCoord(GlStateManager.TexGen.R);
-        GlStateManager.disableTexGenCoord(GlStateManager.TexGen.Q);
-        GlStateManager.enableLighting();
     }
 
-    private FloatBuffer bufferTexData(float f, float f1, float f2, float f3) {
+    private static FloatBuffer bufferTexData(float f, float f1, float f2, float f3) {
         texBuffer.clear();
         texBuffer.put(f).put(f1).put(f2).put(f3);
         texBuffer.flip();
         return texBuffer;
+    }
+
+    public class EndPortalRenderType extends RenderType {
+
+        private final int idx;
+        private final Vec3d projectedView;
+        private final Matrix4 mat;
+        private final State state;
+
+        //I have no idea what these field names could be changed to, blame decompiler. #borrowed form mojang
+        public final float f5;
+        public final float f6;
+        public final float f7;
+        public final float f8;
+        public final float f9;
+        public final float f10;
+        public final float f11;
+
+        public EndPortalRenderType(int idx, double posY, Vec3d projectedView, Matrix4 mat, RenderType.State state) {
+            super("enderstorage:end_portal", DefaultVertexFormats.POSITION_COLOR, GL11.GL_QUADS, 256, false, true, null, null);
+            this.idx = idx;
+            this.projectedView = projectedView;
+            this.mat = mat;
+            this.state = state;
+            f5 = idx == 0 ? 65F : 16 - idx;
+            f6 = idx == 0 ? 0.125F : (idx == 1 ? 0.5F : 0.0625F);
+            f7 = idx == 0 ? 0.1F : 1.0F / (16 - idx + 1.0F);
+            f8 = (float) (-(posY + surfaceY));
+            f9 = (float) (f8 + projectedView.y);
+            f10 = (float) (f8 + f5 + projectedView.y);
+            f11 = (float) (posY + surfaceY) + (f9 / f10);
+        }
+
+        @Override
+        @SuppressWarnings ("deprecation")
+        public void setupRenderState() {
+            state.renderStates.forEach(RenderState::setupRenderState);
+            RenderSystem.disableLighting();
+            RenderSystem.pushMatrix();//Apply stack here.
+            mat.glApply();
+            RenderSystem.pushMatrix();
+            GlStateManager.translated(projectedView.x, f11, projectedView.z);
+            GlStateManager.texGenMode(GlStateManager.TexGen.S, GL11.GL_OBJECT_LINEAR);
+            GlStateManager.texGenMode(GlStateManager.TexGen.T, GL11.GL_OBJECT_LINEAR);
+            GlStateManager.texGenMode(GlStateManager.TexGen.R, GL11.GL_OBJECT_LINEAR);
+            GlStateManager.texGenMode(GlStateManager.TexGen.Q, GL11.GL_EYE_LINEAR);
+            GlStateManager.texGenParam(GlStateManager.TexGen.S, GL11.GL_OBJECT_PLANE, bufferTexData(1.0F, 0.0F, 0.0F, 0.0F));
+            GlStateManager.texGenParam(GlStateManager.TexGen.T, GL11.GL_OBJECT_PLANE, bufferTexData(0.0F, 0.0F, 1.0F, 0.0F));
+            GlStateManager.texGenParam(GlStateManager.TexGen.R, GL11.GL_OBJECT_PLANE, bufferTexData(0.0F, 0.0F, 0.0F, 1.0F));
+            GlStateManager.texGenParam(GlStateManager.TexGen.Q, GL11.GL_EYE_PLANE, bufferTexData(0.0F, 1.0F, 0.0F, 0.0F));
+            GlStateManager.enableTexGen(GlStateManager.TexGen.S);
+            GlStateManager.enableTexGen(GlStateManager.TexGen.T);
+            GlStateManager.enableTexGen(GlStateManager.TexGen.R);
+            GlStateManager.enableTexGen(GlStateManager.TexGen.Q);
+            RenderSystem.popMatrix();
+            RenderSystem.matrixMode(GL11.GL_TEXTURE);
+            RenderSystem.pushMatrix();
+            RenderSystem.loadIdentity();
+            RenderSystem.translatef(0.0F, System.currentTimeMillis() % 700000L / 700000F, 0.0F);
+            RenderSystem.scalef(f6, f6, f6);
+            RenderSystem.translatef(0.5F, 0.5F, 0.0F);
+            RenderSystem.rotatef((idx * idx * 4321 + idx * 9) * 2.0F, 0.0F, 0.0F, 1.0F);
+            RenderSystem.translatef(-0.5F, -0.5F, 0.0F);
+            RenderSystem.translated(-projectedView.x, -projectedView.z, -projectedView.y);
+            float f92 = f8 + (float) projectedView.y;
+            RenderSystem.translated((projectedView.x * f5) / f92, (projectedView.z * f5) / f92, -projectedView.y + 20);
+        }
+
+        @Override
+        @SuppressWarnings ("deprecation")
+        public void clearRenderState() {
+            RenderSystem.popMatrix();
+            RenderSystem.matrixMode(GL11.GL_MODELVIEW);
+            RenderSystem.popMatrix();//Pop stack here.
+            GlStateManager.disableTexGen(GlStateManager.TexGen.S);
+            GlStateManager.disableTexGen(GlStateManager.TexGen.T);
+            GlStateManager.disableTexGen(GlStateManager.TexGen.R);
+            GlStateManager.disableTexGen(GlStateManager.TexGen.Q);
+            state.renderStates.forEach(RenderState::clearRenderState);
+        }
+
+        @Override
+        public boolean equals(Object other) {
+            return other == this;
+        }
+
+        @Override
+        public int hashCode() {
+            return System.identityHashCode(this);
+        }
     }
 }

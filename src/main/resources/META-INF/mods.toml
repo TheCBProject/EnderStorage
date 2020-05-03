@@ -1,0 +1,36 @@
+modLoader="javafml"
+loaderVersion="[28,)"
+issueTrackerURL="https://github.com/TheCBProject/EnderStorage"
+
+[[mods]]
+	modId="enderstorage"
+	displayName="EnderStorage"
+	version="${version}"
+
+	updateJSONURL="http://chickenbones.net/Files/notification/version.php?query=forge&file=EnderStorage&version=${mc_version}"
+	displayURL="http://chickenbones.net/Pages/links.html"
+	authors="ChickenBones, covers1624"
+	description='''
+Stores your stuff in the END!
+    Credits: Ecu - original idea, design, chest and pouch texture
+    Rosethorns - tank model
+    Soaryn - tank texture
+	'''
+[[dependencies.enderstorage]]
+	modId="forge"
+	mandatory=true
+	versionRange="[28,)"
+	ordering="NONE"
+	side="BOTH"
+[[dependencies.enderstorage]]
+    modId="minecraft"
+    mandatory=true
+    versionRange="[1.15.2]"
+    ordering="NONE"
+    side="BOTH"
+[[dependencies.enderstorage]]
+    modId="codechickenlib"
+    mandatory=true
+    versionRange="[${ccl_version},)"
+    ordering="AFTER"
+    side="BOTH"

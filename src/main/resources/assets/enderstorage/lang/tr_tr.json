@@ -1,0 +1,10 @@
+{
+  "item.enderstorage.ender_pouch": "Ender Sırt Çantası",
+  "block.enderstorage.ender_chest": "Ender Sandığı",
+  "enderstorage.command.no_colour": "Geçersiz Renk: %s",
+  "enderstorage.command.usage": "enderstorage <frekans>|(<renk> <renk> <renk>) [sahibi]",
+  "enderstorage.command.no_freq": "Geçersiz Frekans",
+  "block.enderstorage.ender_tank": "Ender Sıvı Tankı",
+  "enderstorage.command.no_arguments": "Girdiğiniz bilgiler yanlış",
+  "enderstorage.serverop": "Operatör"
+}

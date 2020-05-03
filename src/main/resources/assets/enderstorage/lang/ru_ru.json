@@ -1,0 +1,10 @@
+{
+  "item.enderstorage.ender_pouch": "Сумка Края",
+  "block.enderstorage.ender_chest": "Сундук Края",
+  "enderstorage.command.no_colour": "Неверный цвет: %s",
+  "enderstorage.command.usage": "enderstorage <частота>|(<цвет> <цвет> <цвет>) [владелец]",
+  "enderstorage.command.no_freq": "Неверная частота",
+  "block.enderstorage.ender_tank": "Цистерна Края",
+  "enderstorage.command.no_arguments": "Неверное число аргументов",
+  "enderstorage.serverop": "Оператор"
+}

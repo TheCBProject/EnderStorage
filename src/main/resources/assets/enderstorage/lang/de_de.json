@@ -1,0 +1,9 @@
+{
+  "item.enderstorage.ender_pouch": "Enderbeutel",
+  "block.enderstorage.ender_chest": "Endertruhe",
+  "enderstorage.command.no_colour": "Ungültige Farbe: %s",
+  "enderstorage.command.no_freq": "Ungültige Frequenz",
+  "block.enderstorage.ender_tank": "Endertank",
+  "enderstorage.command.no_arguments": "Ungültige Anzahl an Parametern",
+  "enderstorage.serverop": "enderstorage <Frequenz>|(<Farbe> <Farbe> <Farbe>) [Eigentümer]"
+}

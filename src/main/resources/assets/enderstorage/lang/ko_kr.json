@@ -1,0 +1,10 @@
+{
+  "item.enderstorage.ender_pouch": "엔더 파우치",
+  "block.enderstorage.ender_chest": "엔더 체스트",
+  "enderstorage.command.no_colour": "잘못된 색깔: %s",
+  "enderstorage.command.usage": "enderstorage <freq>|(<colour> <colour> <colour>) [owner]",
+  "enderstorage.command.no_freq": "잘못된 주파수",
+  "block.enderstorage.ender_tank": "엔더 탱크",
+  "enderstorage.command.no_arguments": "잘못된 개수의 인수",
+  "enderstorage.serverop": "오퍼레이터"
+}

@@ -1,0 +1,10 @@
+{
+  "item.enderstorage.ender_pouch": "Bourse du Néant",
+  "block.enderstorage.ender_chest": "Coffre du Néant",
+  "enderstorage.command.no_colour": "Couleur invalide: %s",
+  "enderstorage.command.usage": "enderstorage <fréquence>|(<couleur> <couleur> <couleur>) [propriétaire]",
+  "enderstorage.command.no_freq": "Fréquence invalide",
+  "block.enderstorage.ender_tank": "Réservoir du Néant",
+  "enderstorage.command.no_arguments": "Nombre de fréquences invalide",
+  "enderstorage.serverop": "Opérateur"
+}

@@ -1,9 +1,0 @@
-tile.ender_chest.name=Endertruhe
-tile.ender_tank.name=Endertank
-item.ender_pouch.name=Enderbeutel
-enderstorage.serverop=Operator
-
-enderstorage.serverop=enderstorage <Frequenz>|(<Farbe> <Farbe> <Farbe>) [Eigentümer]
-enderstorage.command.no_arguments=Ungültige Anzahl an Parametern
-enderstorage.command.no_freq=Ungültige Frequenz
-enderstorage.command.no_colour=Ungültige Farbe: %s
