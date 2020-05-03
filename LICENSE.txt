@@ -1,6 +1,6 @@
 The MIT License (MIT)
 
-Copyright (c) 2014 ChickenBones, Christopher R. Thompson (Ecu)
+Copyright (c) 2020 covers1624, ChickenBones, Christopher R. Thompson (Ecu)
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
