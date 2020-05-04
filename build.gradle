@@ -79,7 +79,7 @@ repositories {
 
 dependencies {
     minecraft "net.minecraftforge:forge:${config.mc_version}-${config.forge_version}"
-    compile fg.deobf("codechicken:CodeChickenLib:${config.mc_version}-${config.ccl_version}:universal")
+    compile "codechicken:CodeChickenLib:${config.mc_version}-${config.ccl_version}:deobf"
     compile fg.deobf("mezz.jei:jei-${config.mc_version}:${config.jei_version}")
 }
 
