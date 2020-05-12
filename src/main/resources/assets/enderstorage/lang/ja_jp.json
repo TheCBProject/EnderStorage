@@ -1,10 +1,10 @@
 {
   "item.enderstorage.ender_pouch": "エンダーポーチ",
   "block.enderstorage.ender_chest": "エンダーチェスト",
-  "enderstorage.command.no_colour": "無効な色 : %s",
+  "enderstorage.command.no_colour": "無効な色です：%s",
   "enderstorage.command.usage": "enderstorage <freq>|(<colour> <colour> <colour>) [owner]",
-  "enderstorage.command.no_freq": "無効な周波数",
+  "enderstorage.command.no_freq": "無効な周波数です",
   "block.enderstorage.ender_tank": "エンダータンク",
-  "enderstorage.command.no_arguments": "引数が無効です",
+  "enderstorage.command.no_arguments": "無効な数の引数です",
   "enderstorage.serverop": "管理者"
 }
