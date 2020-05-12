@@ -102,15 +102,13 @@ jar {
     finalizedBy 'signJar'
     classifier = 'universal'
     manifest {
-        attributes = [
-                'Specification-Title'     : archivesBaseName,
-                'Specification-Vendor'    : 'covers1624',
-                'Specification-Version'   : "1",
-                'Implementation-Title'    : archivesBaseName,
-                'Implementation-Vendor'   : 'covers1624',
-                'Implementation-Version'  : version,
-                'Implementation-Timestamp': new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
-        ]
+        attributes 'Specification-Title': archivesBaseName
+        attributes 'Specification-Vendor': 'covers1624'
+        attributes 'Specification-Version': "1"
+        attributes 'Implementation-Title': archivesBaseName
+        attributes 'Implementation-Vendor': 'covers1624'
+        attributes 'Implementation-Version': version
+        attributes 'Implementation-Timestamp': new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
     }
 }
 
@@ -147,7 +145,7 @@ publishing {
         }
     }
     publications {
-        CodeChickenLib(MavenPublication) {
+        EnderStorage(MavenPublication) {
             groupId project.group
             artifactId project.archivesBaseName
             version project.version

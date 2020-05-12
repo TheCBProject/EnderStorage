@@ -1,9 +1,8 @@
 package codechicken.enderstorage.config;
 
 import codechicken.enderstorage.EnderStorage;
-import codechicken.lib.configuration.ConfigSyncManager;
-import codechicken.lib.configuration.ConfigTag;
-import codechicken.lib.configuration.StandardConfigFile;
+import codechicken.lib.config.ConfigTag;
+import codechicken.lib.config.StandardConfigFile;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.util.ResourceLocation;
