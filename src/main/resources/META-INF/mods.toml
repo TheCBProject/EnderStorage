@@ -7,7 +7,7 @@ issueTrackerURL="https://github.com/TheCBProject/EnderStorage"
 	displayName="EnderStorage"
 	version="${version}"
 
-	updateJSONURL="http://chickenbones.net/Files/notification/version.php?query=forge&file=EnderStorage&version=${mc_version}"
+	updateJSONURL="https://version-check.covers1624.net/check/?mod=EnderStorage&mc=${mc_version}"
 	displayURL="http://chickenbones.net/Pages/links.html"
 	authors="ChickenBones, covers1624"
 	description='''

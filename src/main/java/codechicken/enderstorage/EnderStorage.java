@@ -30,7 +30,7 @@ public class EnderStorage {
     public EnderStorage() {
         proxy = DistExecutor.runForDist(() -> ProxyClient::new, () -> Proxy::new);
         FMLJavaModLoadingContext.get().getModEventBus().register(this);
-        EnderStorageConfig.load("EnderStorage.cfg");
+        EnderStorageConfig.load();
     }
 
     @SubscribeEvent

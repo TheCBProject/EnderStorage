@@ -24,11 +24,11 @@ public class EnderStorageConfig {
     public static boolean disableCreatorVisuals;
     public static boolean useVanillaEnderChestSounds;
 
-    public static void load(String name) {
+    public static void load() {
         if (config != null) {
             throw new IllegalStateException("Tried to load config more than once.");
         }
-        config = new StandardConfigFile(Paths.get("./config", name)).load();
+        config = new StandardConfigFile(Paths.get("./config/EnderStorage.cfg")).load();
 //        ConfigSyncManager.registerSync(new ResourceLocation("enderstorage:config"), config);
         ConfigTag personalItemTag = config.getTag("personalItem")//
                 .setComment("The RegistryName for the Item to lock EnderChests and Tanks.")//

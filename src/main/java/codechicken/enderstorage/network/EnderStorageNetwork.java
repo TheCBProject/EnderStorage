@@ -14,9 +14,6 @@ public class EnderStorageNetwork {
 
     public static void init() {
         netChannel = PacketCustomChannelBuilder.named(NET_CHANNEL)//
-                .networkProtocolVersion(() -> "1")//
-                .clientAcceptedVersions(e -> true)//
-                .serverAcceptedVersions(e -> true)//
                 .assignClientHandler(() -> EnderStorageCPH::new)//
                 .assignServerHandler(() -> EnderStorageSPH::new)//
                 .build();
