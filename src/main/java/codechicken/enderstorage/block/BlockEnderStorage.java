@@ -23,6 +23,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.IBlockReader;
+import net.minecraft.world.IEnviromentBlockReader;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
 import net.minecraft.world.storage.loot.LootContext;
@@ -87,30 +88,30 @@ public abstract class BlockEnderStorage extends Block// implements ICustomPartic
     }
 
     @Override
-    public ActionResultType onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult clientHit) {
+    public boolean onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult clientHit) {
         if (world.isRemote) {
-            return ActionResultType.SUCCESS;
+            return true;
         }
         TileEntity tile = world.getTileEntity(pos);
         if (!(tile instanceof TileFrequencyOwner)) {
-            return ActionResultType.FAIL;
+            return false;
         }
         TileFrequencyOwner owner = (TileFrequencyOwner) tile;
 
         //Normal block trace.
         RayTraceResult hit = RayTracer.retrace(player);
         if (hit == null) {
-            return ActionResultType.FAIL;
+            return false;
         }
         if (hit.subHit == 4) {
             ItemStack item = player.inventory.getCurrentItem();
-            if (player.isShiftKeyDown() && owner.getFrequency().hasOwner()) {
+            if (player.isSneaking() && owner.getFrequency().hasOwner()) {
                 if (!player.abilities.isCreativeMode && !player.inventory.addItemStackToInventory(EnderStorageConfig.personalItem.copy())) {
-                    return ActionResultType.FAIL;
+                    return false;
                 }
 
                 owner.setFreq(owner.getFrequency().copy().setOwner(null));
-                return ActionResultType.SUCCESS;
+                return true;
             } else if (!item.isEmpty() && ItemUtils.areStacksSameOrTagged(item, EnderStorageConfig.personalItem)) {
                 if (!owner.getFrequency().hasOwner()) {
                     owner.setFreq(owner.getFrequency().copy()//
@@ -120,7 +121,7 @@ public abstract class BlockEnderStorage extends Block// implements ICustomPartic
                     if (!player.abilities.isCreativeMode) {
                         item.shrink(1);
                     }
-                    return ActionResultType.SUCCESS;
+                    return true;
                 }
             }
         } else if (hit.subHit >= 1 && hit.subHit <= 3) {
@@ -130,18 +131,18 @@ public abstract class BlockEnderStorage extends Block// implements ICustomPartic
                 if (dye != null) {
                     EnumColour[] colours = { null, null, null };
                     if (colours[hit.subHit - 1] == dye) {
-                        return ActionResultType.FAIL;
+                        return false;
                     }
                     colours[hit.subHit - 1] = dye;
                     owner.setFreq(owner.getFrequency().copy().set(colours));
                     if (!player.abilities.isCreativeMode) {
                         item.shrink(1);
                     }
-                    return ActionResultType.FAIL;
+                    return true;
                 }
             }
         }
-        return !player.isShiftKeyDown() && owner.activate(player, hit.subHit, hand) ? ActionResultType.SUCCESS : ActionResultType.FAIL;
+        return !player.isSneaking() && owner.activate(player, hit.subHit, hand);
     }
 
     @Override
@@ -161,7 +162,7 @@ public abstract class BlockEnderStorage extends Block// implements ICustomPartic
     }
 
     @Override
-    public int getLightValue(BlockState state, IBlockReader world, BlockPos pos) {
+    public int getLightValue(BlockState state, IEnviromentBlockReader world, BlockPos pos) {
         TileEntity tile = world.getTileEntity(pos);
         if (tile instanceof TileFrequencyOwner) {
             return ((TileFrequencyOwner) tile).getLightValue();

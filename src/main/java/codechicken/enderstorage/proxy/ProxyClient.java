@@ -12,6 +12,8 @@ import codechicken.enderstorage.config.EnderStorageConfig;
 import codechicken.enderstorage.init.ModContent;
 import codechicken.enderstorage.manager.EnderStorageManager;
 import codechicken.enderstorage.storage.EnderItemStorage;
+import codechicken.enderstorage.tile.TileEnderChest;
+import codechicken.enderstorage.tile.TileEnderTank;
 import codechicken.lib.model.ModelRegistryHelper;
 import codechicken.lib.model.bakery.CCBakeryModel;
 import codechicken.lib.model.bakery.ModelBakery;
@@ -38,8 +40,8 @@ public class ProxyClient extends Proxy {
         ScreenManager.registerFactory(ModContent.containerItemStorage, GuiEnderItemStorage::new);
 
         spriteHelper.addIIconRegister(EnderPouchBakery.INSTANCE);
-        ClientRegistry.bindTileEntityRenderer(tileEnderChestType, RenderTileEnderChest::new);
-        ClientRegistry.bindTileEntityRenderer(tileEnderTankType, RenderTileEnderTank::new);
+        ClientRegistry.bindTileEntitySpecialRenderer(TileEnderChest.class, new RenderTileEnderChest());
+        ClientRegistry.bindTileEntitySpecialRenderer(TileEnderTank.class, new RenderTileEnderTank());
 
         if (!EnderStorageConfig.disableCreatorVisuals) {
             for (PlayerRenderer renderPlayer : Minecraft.getInstance().getRenderManager().getSkinMap().values()) {

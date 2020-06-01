@@ -54,7 +54,7 @@ public class ItemEnderPouch extends Item implements IBakeryProvider {
         }
 
         TileEntity tile = world.getTileEntity(context.getPos());
-        if (tile instanceof TileEnderChest && context.getPlayer().isShiftKeyDown()) {
+        if (tile instanceof TileEnderChest && context.getPlayer().isSneaking()) {
             TileEnderChest chest = (TileEnderChest) tile;
             Frequency frequency = chest.getFrequency().copy();
             if (EnderStorageConfig.anarchyMode && !(frequency.owner != null && frequency.owner.equals(context.getPlayer().getUniqueID()))) {
@@ -71,7 +71,7 @@ public class ItemEnderPouch extends Item implements IBakeryProvider {
     @Override
     public ActionResult<ItemStack> onItemRightClick(World world, PlayerEntity player, Hand hand) {
         ItemStack stack = player.getHeldItem(hand);
-        if (player.isShiftKeyDown()) {
+        if (player.isSneaking()) {
             return new ActionResult<>(ActionResultType.PASS, stack);
         }
         if (!world.isRemote) {

@@ -74,8 +74,8 @@ public abstract class TileFrequencyOwner extends TileEntity implements ITickable
     }
 
     @Override
-    public void setWorldAndPos(World p_226984_1_, BlockPos p_226984_2_) {
-        super.setWorldAndPos(p_226984_1_, p_226984_2_);
+    public void setWorld(World worldIn) {
+        super.setWorld(worldIn);
         onFrequencySet();
     }
 

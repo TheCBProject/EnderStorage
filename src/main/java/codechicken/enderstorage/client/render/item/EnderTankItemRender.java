@@ -5,15 +5,13 @@ import codechicken.enderstorage.client.render.tile.RenderTileEnderTank;
 import codechicken.enderstorage.network.TankSynchroniser;
 import codechicken.lib.math.MathHelper;
 import codechicken.lib.render.CCRenderState;
+import codechicken.lib.render.RenderUtils;
 import codechicken.lib.render.item.IItemRenderer;
 import codechicken.lib.util.TransformUtils;
-import codechicken.lib.vec.Matrix4;
-import com.google.common.collect.ImmutableMap;
-import com.mojang.blaze3d.matrix.MatrixStack;
-import net.minecraft.client.renderer.IRenderTypeBuffer;
-import net.minecraft.client.renderer.TransformationMatrix;
+import com.mojang.blaze3d.platform.GlStateManager;
 import net.minecraft.client.renderer.model.ItemCameraTransforms.TransformType;
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.common.model.IModelState;
 import net.minecraftforge.fluids.FluidStack;
 
 /**
@@ -22,21 +20,27 @@ import net.minecraftforge.fluids.FluidStack;
 public class EnderTankItemRender implements IItemRenderer {
 
     @Override
-    public void renderItem(ItemStack stack, TransformType transformType, MatrixStack mStack, IRenderTypeBuffer getter, int packedLight, int packedOverlay) {
+    public void renderItem(ItemStack item, TransformType transformType) {
+        GlStateManager.pushMatrix();
         CCRenderState ccrs = CCRenderState.instance();
         ccrs.reset();
-        ccrs.brightness = packedLight;
-        ccrs.overlay = packedOverlay;
-        Frequency freq = Frequency.readFromStack(stack);
-        FluidStack fluid = TankSynchroniser.getClientLiquid(freq);
-        Matrix4 mat = new Matrix4(mStack);
-        RenderTileEnderTank.renderTank(ccrs, mat, getter, 2, (float) (MathHelper.torad * 90F), 0, freq, 0);
-        mat.translate(-0.5, 0, -0.5);
-        RenderTileEnderTank.renderFluid(ccrs, mat, getter, fluid);
+        ccrs.pullLightmap();
+        Frequency frequency = Frequency.readFromStack(item);
+        FluidStack fluidStack = TankSynchroniser.getClientLiquid(frequency);
+        RenderTileEnderTank.renderTank(ccrs, 2, (float) (MathHelper.torad * 90F), frequency, 0, 0, 0, 0);
+        if (fluidStack != null && RenderUtils.shouldRenderFluid(fluidStack)) {
+            RenderTileEnderTank.renderLiquid(fluidStack, 0, 0, 0);
+        }
+        //Fixes issues with inventory rendering.
+        //The Portal renderer modifies blend and disables it.
+        //Vanillas inventory relies on the fact that items don't modify gl so it never bothers to set it again.
+        GlStateManager.enableBlend();
+        GlStateManager.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
+        GlStateManager.popMatrix();
     }
 
     @Override
-    public ImmutableMap<TransformType, TransformationMatrix> getTransforms() {
+    public IModelState getTransforms() {
         return TransformUtils.DEFAULT_BLOCK;
     }
 
@@ -47,11 +51,6 @@ public class EnderTankItemRender implements IItemRenderer {
 
     @Override
     public boolean isGui3d() {
-        return false;
-    }
-
-    @Override
-    public boolean func_230044_c_() {
         return false;
     }
 }

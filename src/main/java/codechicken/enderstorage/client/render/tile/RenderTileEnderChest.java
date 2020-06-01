@@ -12,81 +12,80 @@ import codechicken.lib.render.CCModel;
 import codechicken.lib.render.CCModelLibrary;
 import codechicken.lib.render.CCRenderState;
 import codechicken.lib.render.RenderUtils;
+import codechicken.lib.texture.TextureUtils;
 import codechicken.lib.util.ClientUtils;
 import codechicken.lib.vec.Matrix4;
 import codechicken.lib.vec.Rotation;
 import codechicken.lib.vec.Translation;
 import codechicken.lib.vec.Vector3;
 import codechicken.lib.vec.uv.UVTranslation;
-import com.mojang.blaze3d.matrix.MatrixStack;
-import net.minecraft.client.renderer.IRenderTypeBuffer;
-import net.minecraft.client.renderer.Quaternion;
-import net.minecraft.client.renderer.RenderType;
+import com.mojang.blaze3d.platform.GlStateManager;
 import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 
 /**
  * Created by covers1624 on 4/12/2016.
  */
 public class RenderTileEnderChest extends TileEntityRenderer<TileEnderChest> {
 
-    private static final RenderType chestType = RenderType.getEntityCutout(new ResourceLocation("enderstorage:textures/enderchest.png"));
-    private static final RenderType buttonType = RenderType.getEntitySolid(new ResourceLocation("enderstorage:textures/buttons.png"));
-    private static final RenderType pearlType = CCModelLibrary.getIcos4RenderType(new ResourceLocation("enderstorage:textures/hedronmap.png"), false);
     private static final ModelEnderChest model = new ModelEnderChest();
     private static final RenderCustomEndPortal renderEndPortal = new RenderCustomEndPortal(0.626, 0.188, 0.812, 0.188, 0.812);
 
-    public RenderTileEnderChest(TileEntityRendererDispatcher rendererDispatcherIn) {
-        super(rendererDispatcherIn);
-    }
-
     @Override
-    public void render(TileEnderChest enderChest, float partialTicks, MatrixStack mStack, IRenderTypeBuffer getter, int packedLight, int packedOverlay) {
-        CCRenderState ccrs = CCRenderState.instance();
-        ccrs.brightness = packedLight;
-        ccrs.overlay = packedOverlay;
-        double yToCamera = enderChest.getPos().getY() - renderDispatcher.renderInfo.getProjectedView().y;
-        renderChest(ccrs, mStack, getter, enderChest.rotation, yToCamera, enderChest.getFrequency(), (float) enderChest.getRadianLidAngle(partialTicks), RenderUtils.getTimeOffset(enderChest.getPos()));
+    public void render(TileEnderChest enderChest, double x, double y, double z, float partialTicks, int destroyStage) {
+        renderChest(enderChest.rotation, enderChest.getFrequency(), x, y, z, RenderUtils.getTimeOffset(enderChest.getPos()), (float) enderChest.getRadianLidAngle(partialTicks));
     }
 
-    public static void renderChest(CCRenderState ccrs, MatrixStack mStack, IRenderTypeBuffer getter, int rotation, double yToCamera, Frequency freq, float lidAngle, int pearlOffset) {
-        Matrix4 mat = new Matrix4(mStack);
-        if (lidAngle != 0) {//Micro optimization, lid closed, dont render starfield.
-            renderEndPortal.render(mat, getter, yToCamera);
-        }
+    public static void renderChest(int rotation, Frequency freq, double x, double y, double z, int offset, float lidAngle) {
+        TileEntityRendererDispatcher info = TileEntityRendererDispatcher.instance;
+        CCRenderState ccrs = CCRenderState.instance();
         ccrs.reset();
-        mStack.push();
-        mStack.translate(0, 1.0, 1.0);
-        mStack.scale(1.0F, -1.0F, -1.0F);
-        mStack.translate(0.5, 0.5, 0.5);
-        mStack.rotate(new Quaternion(0, rotation * 90, 0, true));
-        mStack.translate(-0.5, -0.5, -0.5);
+
+        renderEndPortal.render(x, y, z, info.renderInfo);
+        GlStateManager.color4f(1, 1, 1, 1);
+
+        TextureUtils.changeTexture("enderstorage:textures/enderchest.png");
+        GlStateManager.pushMatrix();
+        GlStateManager.enableRescaleNormal();
+        GlStateManager.color4f(1, 1, 1, 1);
+        GlStateManager.translated(x, y + 1.0, z + 1.0F);
+        GlStateManager.scalef(1.0F, -1F, -1F);
+        GlStateManager.translatef(0.5F, 0.5F, 0.5F);
+        GlStateManager.rotatef(rotation * 90, 0.0F, 1.0F, 0.0F);
+        GlStateManager.translatef(-0.5F, -0.5F, -0.5F);
         model.chestLid.rotateAngleX = lidAngle;
-        model.render(mStack, getter.getBuffer(chestType), ccrs.brightness, ccrs.overlay, freq.hasOwner());
-        mStack.pop();
+        model.render(freq.hasOwner());
+        GlStateManager.popMatrix();
 
         //Buttons
-        ccrs.bind(buttonType, getter);
+        GlStateManager.pushMatrix();
+        GlStateManager.translated(x, y, z);
+        TextureUtils.changeTexture("enderstorage:textures/buttons.png");
         EnumColour[] colours = freq.toArray();
+        ccrs.startDrawing(7, DefaultVertexFormats.POSITION_TEX_NORMAL);
         for (int i = 0; i < 3; i++) {
             CCModel button = ButtonModelLibrary.button.copy();
             button.apply(BlockEnderChest.buttonT[i]);
             button.apply(new Translation(0.5, 0, 0.5));
             button.apply(new Rotation(lidAngle, 1, 0, 0).at(new Vector3(0, 9D / 16D, 1 / 16D)));
             button.apply(new Rotation((-90 * (rotation)) * MathHelper.torad, Vector3.Y_POS).at(new Vector3(0.5, 0, 0.5)));
-            button.render(ccrs, mat, new UVTranslation(0.25 * (colours[i].getWoolMeta() % 4), 0.25 * (colours[i].getWoolMeta() / 4)));
+            button.render(ccrs, new UVTranslation(0.25 * (colours[i].getWoolMeta() % 4), 0.25 * (colours[i].getWoolMeta() / 4)));
         }
-        mat.translate(0.5, 0, 0.5);
+        ccrs.draw();
+        GlStateManager.popMatrix();
 
         //Pearl
-        if (lidAngle != 0) {//Micro optimization, lid closed, dont render pearl.
-            double time = ClientUtils.getRenderTime() + pearlOffset;
-            Matrix4 pearlMat = RenderUtils.getMatrix(mat.copy(), new Vector3(0, 0.2 + lidAngle * -0.5 + RenderUtils.getPearlBob(time), 0), new Rotation(time / 3, new Vector3(0, 1, 0)), 0.04);
-            ccrs.brightness = 15728880;
-            ccrs.bind(pearlType, getter);
-            CCModelLibrary.icosahedron4.render(ccrs, pearlMat);
-        }
-        ccrs.reset();
+        GlStateManager.disableLighting();
+        TextureUtils.changeTexture("enderstorage:textures/hedronmap.png");
+        GlStateManager.pushMatrix();
+
+        double time = ClientUtils.getRenderTime() + offset;
+        Matrix4 pearlMat = RenderUtils.getMatrix(new Vector3(x + 0.5, y + 0.2 + lidAngle * -0.5 + RenderUtils.getPearlBob(time), z + 0.5), new Rotation(time / 3, new Vector3(0, 1, 0)), 0.04);
+        ccrs.startDrawing(7, DefaultVertexFormats.POSITION_TEX_COLOR_NORMAL);
+        CCModelLibrary.icosahedron7.render(ccrs, pearlMat);
+        ccrs.draw();
+        GlStateManager.popMatrix();
+        GlStateManager.enableLighting();
     }
 }

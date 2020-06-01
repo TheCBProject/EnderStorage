@@ -25,7 +25,7 @@ Stores your stuff in the END!
 [[dependencies.enderstorage]]
     modId="minecraft"
     mandatory=true
-    versionRange="[1.15.2]"
+    versionRange="[1.14.4]"
     ordering="NONE"
     side="BOTH"
 [[dependencies.enderstorage]]

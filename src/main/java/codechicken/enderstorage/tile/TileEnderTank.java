@@ -17,7 +17,6 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.fluids.FluidStack;
@@ -47,6 +46,7 @@ public class TileEnderTank extends TileFrequencyOwner {
     @Override
     public void tick() {
         super.tick();
+        capCache.tick();
         pressure_state.update(world.isRemote);
         if (pressure_state.a_pressure) {
             ejectLiquid();
@@ -56,8 +56,7 @@ public class TileEnderTank extends TileFrequencyOwner {
     }
 
     @Override
-    public void setWorldAndPos(World world, BlockPos pos) {
-        super.setWorldAndPos(world, pos);
+    public void onLoad() {
         capCache.setWorldPos(getWorld(), getPos());
     }
 
