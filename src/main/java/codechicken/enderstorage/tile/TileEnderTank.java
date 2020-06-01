@@ -33,9 +33,9 @@ import javax.annotation.Nullable;
 public class TileEnderTank extends TileFrequencyOwner {
 
     public int rotation;
-    public EnderTankState liquid_state = new EnderTankState();
-    public PressureState pressure_state = new PressureState();
-    private CapabilityCache capCache = new CapabilityCache();
+    public final EnderTankState liquid_state = new EnderTankState();
+    public final PressureState pressure_state = new PressureState();
+    private final CapabilityCache capCache = new CapabilityCache();
     private LazyOptional<IFluidHandler> fluidHandler = LazyOptional.empty();
 
     private boolean described;
@@ -47,6 +47,7 @@ public class TileEnderTank extends TileFrequencyOwner {
     @Override
     public void tick() {
         super.tick();
+        capCache.tick();
         pressure_state.update(world.isRemote);
         if (pressure_state.a_pressure) {
             ejectLiquid();
