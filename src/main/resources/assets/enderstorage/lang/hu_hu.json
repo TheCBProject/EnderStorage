@@ -1,0 +1,10 @@
+{
+  "item.enderstorage.ender_pouch": "Ender táska",
+  "block.enderstorage.ender_chest": "Ender láda",
+  "enderstorage.command.no_colour": "Helytelen szín: %s",
+  "enderstorage.command.usage": "enderstorage <frekv.>|(<szín> <szín> <szín>) [tulaj.]",
+  "enderstorage.command.no_freq": "Helytelen frekv.",
+  "block.enderstorage.ender_tank": "Ender tank",
+  "enderstorage.command.no_arguments": "Érvénytelen számú argumentum",
+  "enderstorage.serverop": "Operátor"
+}
