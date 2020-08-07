@@ -104,7 +104,7 @@ public abstract class BlockEnderStorage extends Block// implements ICustomPartic
         }
         if (hit.subHit == 4) {
             ItemStack item = player.inventory.getCurrentItem();
-            if (player.isShiftKeyDown() && owner.getFrequency().hasOwner()) {
+            if (player.isCrouching() && owner.getFrequency().hasOwner()) {
                 if (!player.abilities.isCreativeMode && !player.inventory.addItemStackToInventory(EnderStorageConfig.personalItem.copy())) {
                     return ActionResultType.FAIL;
                 }
@@ -141,7 +141,7 @@ public abstract class BlockEnderStorage extends Block// implements ICustomPartic
                 }
             }
         }
-        return !player.isShiftKeyDown() && owner.activate(player, hit.subHit, hand) ? ActionResultType.SUCCESS : ActionResultType.FAIL;
+        return !player.isCrouching() && owner.activate(player, hit.subHit, hand) ? ActionResultType.SUCCESS : ActionResultType.FAIL;
     }
 
     @Override

@@ -52,7 +52,7 @@ public class TankLayerRenderer extends LayerRenderer<AbstractClientPlayerEntity,
             Matrix4 mat = new Matrix4(mStack);
             mat.rotate(MathHelper.torad * 180, Vector3.X_POS);
             mat.scale(0.5);
-            if (entity.isShiftKeyDown()) {
+            if (entity.isCrouching()) {
                 mat.translate(0, -0.5, 0);
             }
             if (entity.isElytraFlying()) {
