@@ -83,15 +83,17 @@ dependencies {
     compile fg.deobf("mezz.jei:jei-${config.mc_version}:${config.jei_version}")
 }
 
-processResources {
+processResources { task ->
     inputs.property "version", version
     inputs.property "mc_version", config.mc_version
 
-    from(sourceSets.main.resources.srcDirs) {
-        include 'META-INF/mods.toml'
-        expand 'version': version,
-                'mc_version': config.mc_version,
-                'ccl_version': resolve("CodeChickenLib")
+    from(sourceSets.main.resources.srcDirs) { spec ->
+        spec.include 'META-INF/mods.toml'
+        task.doFirst {
+            spec.expand 'version': version,
+                    'mc_version': config.mc_version,
+                    'ccl_version': resolve("CodeChickenLib")
+        }
     }
 }
 
