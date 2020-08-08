@@ -65,7 +65,7 @@ public class EnderPouchBakery implements IItemBakery, IIconRegister {
         for (int i = 0; i < 3; i++) {
             int finalI = i;//LAMBDAS REEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE
             for (EnumColour colour : EnumColour.values()) {
-                registrar.registerSprite(BUTTONS_PREFIX + position_prefixes[i] + colour.getName(), e -> COLOUR_TEXTURES[finalI][colour.ordinal()] = e);
+                registrar.registerSprite(BUTTONS_PREFIX + position_prefixes[i] + colour.func_176610_l(), e -> COLOUR_TEXTURES[finalI][colour.ordinal()] = e);
             }
         }
 

@@ -28,9 +28,10 @@ public class EnderStorage {
     public static Proxy proxy;
 
     public EnderStorage() {
-        proxy = DistExecutor.runForDist(() -> ProxyClient::new, () -> Proxy::new);
+        proxy = DistExecutor.unsafeRunForDist(() -> ProxyClient::new, () -> Proxy::new);
         FMLJavaModLoadingContext.get().getModEventBus().register(this);
         EnderStorageConfig.load();
+        EnderStorageManager.init();
     }
 
     @SubscribeEvent
@@ -48,17 +49,9 @@ public class EnderStorage {
 
     }
 
-    @SubscribeEvent
-    public void onServerStarting(FMLServerStartingEvent event) {
-    }
-
     //    @Mod.EventHandler
     //    public void serverStarting(FMLServerStartingEvent event) {
     //        event.registerServerCommand(new EnderStorageCommand());
     //    }
 
-    @SubscribeEvent
-    public void preServerStart(FMLServerStartedEvent event) {
-        EnderStorageManager.reloadManager(false);
-    }
 }

@@ -8,9 +8,11 @@ import com.google.common.collect.ImmutableMap;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.CompressedStreamTools;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.event.server.FMLServerStartedEvent;
 
 import java.io.DataOutputStream;
 import java.io.File;
@@ -101,6 +103,14 @@ public class EnderStorageManager {
         if (!client) {
             load();
         }
+    }
+
+    public static void init() {
+        MinecraftForge.EVENT_BUS.addListener(EnderStorageManager::onServerStarted);
+    }
+
+    private static void onServerStarted(FMLServerStartedEvent event) {
+        EnderStorageManager.reloadManager(false);
     }
 
     private void sendClientInfo(ServerPlayerEntity player) {

@@ -1,6 +1,7 @@
 modLoader="javafml"
-loaderVersion="[28,)"
+loaderVersion="[32,)"
 issueTrackerURL="https://github.com/TheCBProject/EnderStorage"
+license="The MIT License (MIT)"
 
 [[mods]]
 	modId="enderstorage"
@@ -19,13 +20,13 @@ Stores your stuff in the END!
 [[dependencies.enderstorage]]
 	modId="forge"
 	mandatory=true
-	versionRange="[28,)"
+	versionRange="[32,)"
 	ordering="NONE"
 	side="BOTH"
 [[dependencies.enderstorage]]
     modId="minecraft"
     mandatory=true
-    versionRange="[1.15.2]"
+    versionRange="[1.16.1]"
     ordering="NONE"
     side="BOTH"
 [[dependencies.enderstorage]]

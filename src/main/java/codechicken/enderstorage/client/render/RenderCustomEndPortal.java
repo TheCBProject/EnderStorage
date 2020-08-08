@@ -12,8 +12,7 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.tileentity.EndPortalTileEntityRenderer;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.vector.Vector3d;
 import org.lwjgl.opengl.GL11;
 
 import java.nio.FloatBuffer;
@@ -49,7 +48,7 @@ public class RenderCustomEndPortal {
     }
 
     public void render(Matrix4 mat, IRenderTypeBuffer getter, double yToCamera) {
-        Vec3d projectedView = TileEntityRendererDispatcher.instance.renderInfo.getProjectedView();
+        Vector3d projectedView = TileEntityRendererDispatcher.instance.renderInfo.getProjectedView();
         mat = mat.copy();//Defensive copy, prevent external modifications.
         randy.setSeed(31100L);
         for (int i = 0; i < 16; i++) {
@@ -79,7 +78,7 @@ public class RenderCustomEndPortal {
     public class EndPortalRenderType extends RenderType {
 
         private final int idx;
-        private final Vec3d projectedView;
+        private final Vector3d projectedView;
         private final Matrix4 mat;
         private final State state;
 
@@ -92,7 +91,7 @@ public class RenderCustomEndPortal {
         public final float f10;
         public final float f11;
 
-        public EndPortalRenderType(int idx, double posY, Vec3d projectedView, Matrix4 mat, RenderType.State state) {
+        public EndPortalRenderType(int idx, double posY, Vector3d projectedView, Matrix4 mat, RenderType.State state) {
             super("enderstorage:end_portal", DefaultVertexFormats.POSITION_COLOR, GL11.GL_QUADS, 256, false, true, null, null);
             this.idx = idx;
             this.projectedView = projectedView;

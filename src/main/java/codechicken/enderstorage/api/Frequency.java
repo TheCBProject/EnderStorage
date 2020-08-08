@@ -145,7 +145,7 @@ public final class Frequency implements Copyable<Frequency> {
             owner = tagCompound.getUniqueId("owner");
         }
         if (tagCompound.contains("owner_name")) {
-            ownerName = ITextComponent.Serializer.fromJson(tagCompound.getString("owner_name"));
+            ownerName = ITextComponent.Serializer.func_240643_a_(tagCompound.getString("owner_name"));
         }
         return this;
     }
@@ -193,7 +193,7 @@ public final class Frequency implements Copyable<Frequency> {
     }
 
     public String toModelLoc() {
-        return "left=" + getLeft().getName() + ",middle=" + getMiddle().getName() + ",right=" + getRight().getName() + ",owned=" + hasOwner();
+        return "left=" + getLeft().func_176610_l() + ",middle=" + getMiddle().func_176610_l() + ",right=" + getRight().func_176610_l() + ",owned=" + hasOwner();
     }
 
     @Override
@@ -202,15 +202,15 @@ public final class Frequency implements Copyable<Frequency> {
         if (hasOwner()) {
             owner = ",owner=" + this.owner;
         }
-        return "left=" + getLeft().getName() + ",middle=" + getMiddle().getName() + ",right=" + getRight().getName() + owner;
+        return "left=" + getLeft().func_176610_l() + ",middle=" + getMiddle().func_176610_l() + ",right=" + getRight().func_176610_l() + owner;
     }
 
     public ITextComponent getTooltip() {
         return new TranslationTextComponent(getLeft().getUnlocalizedName())//
-                .appendText("/")//
-                .appendSibling(new TranslationTextComponent(getMiddle().getUnlocalizedName()))//
-                .appendText("/")//
-                .appendSibling(new TranslationTextComponent(getRight().getUnlocalizedName()));
+                .func_240702_b_("/")//
+                .func_230529_a_(new TranslationTextComponent(getMiddle().getUnlocalizedName()))//
+                .func_240702_b_("/")//
+                .func_230529_a_(new TranslationTextComponent(getRight().getUnlocalizedName()));
     }
 
     @Override

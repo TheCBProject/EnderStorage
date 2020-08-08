@@ -11,6 +11,7 @@ import codechicken.lib.data.MCDataOutput;
 import codechicken.lib.fluid.FluidUtils;
 import codechicken.lib.math.MathHelper;
 import codechicken.lib.packet.PacketCustom;
+import net.minecraft.block.BlockState;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
@@ -119,8 +120,8 @@ public class TileEnderTank extends TileFrequencyOwner {
     }
 
     @Override
-    public void read(CompoundNBT tag) {
-        super.read(tag);
+    public void func_230337_a_(BlockState state, CompoundNBT tag) {
+        super.func_230337_a_(state, tag);
         liquid_state.setFrequency(frequency);
         rotation = tag.getByte("rot") & 3;
         pressure_state.invert_redstone = tag.getBoolean("ir");

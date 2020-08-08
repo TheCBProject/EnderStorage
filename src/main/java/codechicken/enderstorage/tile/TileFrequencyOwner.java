@@ -61,8 +61,8 @@ public abstract class TileFrequencyOwner extends TileEntity implements ITickable
     }
 
     @Override
-    public void read(CompoundNBT tag) {
-        super.read(tag);
+    public void func_230337_a_(BlockState state, CompoundNBT tag) {
+        super.func_230337_a_(state, tag);
         frequency.set(new Frequency(tag.getCompound("Frequency")));
     }
 
@@ -124,7 +124,7 @@ public abstract class TileFrequencyOwner extends TileEntity implements ITickable
     }
 
     @Override
-    public void handleUpdateTag(CompoundNBT tag) {
+    public void handleUpdateTag(BlockState state, CompoundNBT tag) {
         readFromPacket(PacketCustom.fromNBTTag(tag));
     }
 
