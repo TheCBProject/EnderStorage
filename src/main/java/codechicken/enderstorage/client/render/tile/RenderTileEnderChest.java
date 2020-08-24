@@ -40,7 +40,7 @@ public class RenderTileEnderChest extends TileEntitySpecialRenderer<TileEnderChe
         CCRenderState ccrs = CCRenderState.instance();
         ccrs.reset();
 
-        renderEndPortal.render(x, y, z, 0, info.entityX, info.entityY, info.entityZ, info.renderEngine);
+        //renderEndPortal.render(x, y, z, 0, info.entityX, info.entityY, info.entityZ, info.renderEngine);
         GlStateManager.color(1, 1, 1, 1);
 
         TextureUtils.changeTexture("enderstorage:textures/enderchest.png");
@@ -61,17 +61,17 @@ public class RenderTileEnderChest extends TileEntitySpecialRenderer<TileEnderChe
         renderButtons(freq, rotation, lidAngle);
         GlStateManager.popMatrix();
 
-        double time = ClientUtils.getRenderTime() + offset;
-        Matrix4 pearlMat = RenderUtils.getMatrix(new Vector3(x + 0.5, y + 0.2 + lidAngle * -0.5 + RenderUtils.getPearlBob(time), z + 0.5), new Rotation(time / 3, new Vector3(0, 1, 0)), 0.04);
+        //double time = ClientUtils.getRenderTime() + offset;
+        //Matrix4 pearlMat = RenderUtils.getMatrix(new Vector3(x + 0.5, y + 0.2 + lidAngle * -0.5 + RenderUtils.getPearlBob(time), z + 0.5), new Rotation(time / 3, new Vector3(0, 1, 0)), 0.04);
 
-        GlStateManager.disableLighting();
-        TextureUtils.changeTexture("enderstorage:textures/hedronmap.png");
-        GlStateManager.pushMatrix();
+        //GlStateManager.disableLighting();
+        //TextureUtils.changeTexture("enderstorage:textures/hedronmap.png");
+        //GlStateManager.pushMatrix();
 
-        ccrs.startDrawing(7, DefaultVertexFormats.POSITION_TEX_COLOR_NORMAL);
-        CCModelLibrary.icosahedron7.render(ccrs, pearlMat);
-        ccrs.draw();
-        GlStateManager.popMatrix();
+        //ccrs.startDrawing(7, DefaultVertexFormats.POSITION_TEX_COLOR_NORMAL);
+        //CCModelLibrary.icosahedron7.render(ccrs, pearlMat);
+        //ccrs.draw();
+        //GlStateManager.popMatrix();
         GlStateManager.enableLighting();
     }
 
