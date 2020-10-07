@@ -74,7 +74,7 @@ minecraft {
 repositories {
     mavenLocal()
     maven { url = "https://chickenbones.net/maven" }
-    maven { url = "http://dvs1.progwml6.com/files/maven" }
+    maven { url = "https://dvs1.progwml6.com/files/maven" }
 }
 
 dependencies {
