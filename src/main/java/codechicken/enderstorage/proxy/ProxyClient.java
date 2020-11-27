@@ -33,11 +33,14 @@ public class ProxyClient extends Proxy {
     public static SpriteRegistryHelper spriteHelper = new SpriteRegistryHelper();
     public static ModelRegistryHelper modelHelper = new ModelRegistryHelper();
 
+    static {
+        spriteHelper.addIIconRegister(EnderPouchBakery.INSTANCE);
+    }
+
     @Override
     public void clientSetup(FMLClientSetupEvent event) {
         ScreenManager.registerFactory(ModContent.containerItemStorage, GuiEnderItemStorage::new);
 
-        spriteHelper.addIIconRegister(EnderPouchBakery.INSTANCE);
         ClientRegistry.bindTileEntityRenderer(tileEnderChestType, RenderTileEnderChest::new);
         ClientRegistry.bindTileEntityRenderer(tileEnderTankType, RenderTileEnderTank::new);
 
