@@ -1,9 +1,5 @@
-#Stolen form AE2 Repo. :D
 # exclude all
-
 /*
-
-# Include important folders
 
 # Gradle stuff
 !gradle/
@@ -20,6 +16,7 @@
 # Include git important files
 !.gitmodules
 !.gitignore
+!.github/
 
 # Include Important Folders
 !src/
