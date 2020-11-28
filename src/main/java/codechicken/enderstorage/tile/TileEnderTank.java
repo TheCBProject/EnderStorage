@@ -120,8 +120,8 @@ public class TileEnderTank extends TileFrequencyOwner {
     }
 
     @Override
-    public void func_230337_a_(BlockState state, CompoundNBT tag) {
-        super.func_230337_a_(state, tag);
+    public void read(BlockState state, CompoundNBT tag) {
+        super.read(state, tag);
         liquid_state.setFrequency(frequency);
         rotation = tag.getByte("rot") & 3;
         pressure_state.invert_redstone = tag.getBoolean("ir");

@@ -51,7 +51,7 @@ public class EnderTankItemRender implements IItemRenderer {
     }
 
     @Override
-    public boolean func_230044_c_() {
+    public boolean isSideLit() {
         return false;
     }
 }

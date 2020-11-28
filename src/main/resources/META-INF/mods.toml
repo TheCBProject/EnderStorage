@@ -20,13 +20,13 @@ Stores your stuff in the END!
 [[dependencies.enderstorage]]
 	modId="forge"
 	mandatory=true
-	versionRange="[32,)"
+	versionRange="[35.1,)"
 	ordering="NONE"
 	side="BOTH"
 [[dependencies.enderstorage]]
     modId="minecraft"
     mandatory=true
-    versionRange="[1.16.3,1.16.4]"
+    versionRange="[1.16.4]"
     ordering="NONE"
     side="BOTH"
 [[dependencies.enderstorage]]
