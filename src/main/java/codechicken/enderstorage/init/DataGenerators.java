@@ -1,8 +1,8 @@
 package codechicken.enderstorage.init;
 
+import codechicken.lib.datagen.ItemModelProvider;
 import net.minecraft.data.DataGenerator;
 import net.minecraftforge.client.model.generators.BlockStateProvider;
-import net.minecraftforge.client.model.generators.ItemModelProvider;
 import net.minecraftforge.client.model.generators.ModelFile;
 import net.minecraftforge.common.data.ExistingFileHelper;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -37,17 +37,14 @@ public class DataGenerators {
 
         @Override
         protected void registerModels() {
-            getBuilder("ender_chest")//
-                    .parent(new ModelFile.UncheckedModelFile("builtin/generated"));
-            getBuilder("ender_tank")//
-                    .parent(new ModelFile.UncheckedModelFile("builtin/generated"));
-            getBuilder("ender_pouch")//
-                    .parent(new ModelFile.UncheckedModelFile("builtin/generated"));
+            noTexture(ModContent.itemEnderChest);
+            noTexture(ModContent.itemEnderTank);
+            noTexture(ModContent.itemEnderPouch);
         }
 
         @Override
         public String getName() {
-            return "Ender Storage Item models.";
+            return "EnderStorage Item models";
         }
     }
 
@@ -60,7 +57,7 @@ public class DataGenerators {
         @Nonnull
         @Override
         public String getName() {
-            return "Ender Storage BlockStates.";
+            return "EnderStorage BlockStates";
         }
 
         @Override
