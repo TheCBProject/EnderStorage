@@ -111,7 +111,7 @@ public abstract class BlockEnderStorage extends Block// implements ICustomPartic
 
                 owner.setFreq(owner.getFrequency().copy().setOwner(null));
                 return ActionResultType.SUCCESS;
-            } else if (!item.isEmpty() && ItemUtils.areStacksSameOrTagged(item, EnderStorageConfig.personalItem)) {
+            } else if (!item.isEmpty() && ItemUtils.areStacksSameType(item, EnderStorageConfig.personalItem)) {
                 if (!owner.getFrequency().hasOwner()) {
                     owner.setFreq(owner.getFrequency().copy()//
                             .setOwner(player.getUniqueID())//
