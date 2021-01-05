@@ -25,7 +25,7 @@ archivesBaseName = "EnderStorage"
 targetCompatibility = "1.8"
 sourceCompatibility = "1.8"
 
-sourceSets.main.resources.srcDirs += "src/generated/resources"
+sourceSets.main.resources.srcDirs += "src/main/generated"
 
 file('build.properties').withReader {
     def prop = new Properties()
@@ -71,7 +71,7 @@ minecraft {
         }
         data {
             workingDirectory file('run')
-            args '--mod', 'enderstorage', '--all', '--output', file("src/generated/resources")
+            args '--mod', 'enderstorage', '--all', '--output', file("src/main/generated"), '--existing', file("src/main/resources")
             mods { enderstorage { source sourceSets.main } }
         }
     }
@@ -106,6 +106,7 @@ signing {
 processResources { task ->
     inputs.property 'mod_version', config.mod_version
     inputs.property 'mc_version', config.mc_version
+    inputs.property 'ccl_version', config.ccl_version
 
     from(sourceSets.main.resources.srcDirs) { spec ->
         spec.include 'META-INF/mods.toml'
