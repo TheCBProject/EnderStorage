@@ -37,9 +37,9 @@ public class DataGenerators {
 
         @Override
         protected void registerModels() {
-            noTexture(ModContent.itemEnderChest);
-            noTexture(ModContent.itemEnderTank);
-            noTexture(ModContent.itemEnderPouch);
+            generated(ModContent.itemEnderChest).texture(null);
+            generated(ModContent.itemEnderTank).texture(null);
+            generated(ModContent.itemEnderPouch).texture(null);
         }
 
         @Override
