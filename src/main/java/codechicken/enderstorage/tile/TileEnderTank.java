@@ -107,7 +107,7 @@ public class TileEnderTank extends TileFrequencyOwner {
 
     @Override
     public void onPlaced(LivingEntity entity) {
-        rotation = (int) Math.floor(entity.rotationYaw * 4 / 360 + 2.5D) & 3;
+        rotation = entity != null ? (int) Math.floor(entity.rotationYaw * 4 / 360 + 2.5D) & 3 : 0;
         pressure_state.b_rotate = pressure_state.a_rotate = pressure_state.approachRotate();
     }
 

@@ -119,7 +119,7 @@ public class TileEnderChest extends TileFrequencyOwner {
 
     @Override
     public void onPlaced(LivingEntity entity) {
-        rotation = (int) Math.floor(entity.rotationYaw * 4 / 360 + 2.5D) & 3;
+        rotation = entity != null ? (int) Math.floor(entity.rotationYaw * 4 / 360 + 2.5D) & 3 : 0;
         onFrequencySet();
     }
 
