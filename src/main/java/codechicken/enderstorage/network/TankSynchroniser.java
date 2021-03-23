@@ -229,24 +229,24 @@ public class TankSynchroniser {
     }
 
     public static void handleVisiblityPacket(ServerPlayerEntity player, PacketCustom packet) {
-        playerItemTankStates.get(player.getUniqueID()).handleVisiblityPacket(packet);
+        playerItemTankStates.get(player.getUUID()).handleVisiblityPacket(packet);
     }
 
     @SubscribeEvent
     public void onPlayerLogin(PlayerEvent.PlayerLoggedInEvent event) {
-        playerItemTankStates.put(event.getPlayer().getUniqueID(), new PlayerItemTankCache((ServerPlayerEntity) event.getPlayer()));
+        playerItemTankStates.put(event.getPlayer().getUUID(), new PlayerItemTankCache((ServerPlayerEntity) event.getPlayer()));
     }
 
     @SubscribeEvent
     public void onPlayerLogout(PlayerEvent.PlayerLoggedOutEvent event) {
         if (playerItemTankStates != null) { //sometimes world unloads before players logout
-            playerItemTankStates.remove(event.getPlayer().getUniqueID());
+            playerItemTankStates.remove(event.getPlayer().getUUID());
         }
     }
 
     @SubscribeEvent
     public void onPlayerChangedDimension(PlayerEvent.PlayerChangedDimensionEvent event) {
-        playerItemTankStates.put(event.getPlayer().getUniqueID(), new PlayerItemTankCache((ServerPlayerEntity) event.getPlayer()));
+        playerItemTankStates.put(event.getPlayer().getUUID(), new PlayerItemTankCache((ServerPlayerEntity) event.getPlayer()));
     }
 
     @SubscribeEvent
@@ -269,14 +269,14 @@ public class TankSynchroniser {
 
     @SubscribeEvent
     public void onWorldUnload(WorldEvent.Unload event) {
-        if (!event.getWorld().isRemote() && !ServerUtils.getServer().isServerRunning()) {
+        if (!event.getWorld().isClientSide() && !ServerUtils.getServer().isRunning()) {
             playerItemTankStates = null;
         }
     }
 
     @SubscribeEvent
     public void onWorldLoad(WorldEvent.Load event) {
-        if (event.getWorld().isRemote()) {
+        if (event.getWorld().isClientSide()) {
             clientState = new PlayerItemTankCache();
         } else if (playerItemTankStates == null) {
             playerItemTankStates = new HashMap<>();

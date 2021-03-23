@@ -56,24 +56,24 @@ public class TileEnderChest extends TileFrequencyOwner {
     public void tick() {
         super.tick();
 
-        if (!world.isRemote && (world.getGameTime() % 20 == 0 || c_numOpen != getStorage().getNumOpen())) {
+        if (!level.isClientSide && (level.getGameTime() % 20 == 0 || c_numOpen != getStorage().getNumOpen())) {
             c_numOpen = getStorage().getNumOpen();
-            world.addBlockEvent(getPos(), getBlockState().getBlock(), 1, c_numOpen);
-            world.notifyNeighborsOfStateChange(pos, getBlockState().getBlock());
+            level.blockEvent(getBlockPos(), getBlockState().getBlock(), 1, c_numOpen);
+            level.updateNeighborsAt(worldPosition, getBlockState().getBlock());
         }
 
         b_lidAngle = a_lidAngle;
         a_lidAngle = MathHelper.approachLinear(a_lidAngle, c_numOpen > 0 ? 1 : 0, 0.1);
 
         if (b_lidAngle >= 0.5 && a_lidAngle < 0.5) {
-            world.playSound(null, getPos(), EnderStorageConfig.useVanillaEnderChestSounds ? BLOCK_ENDER_CHEST_CLOSE : BLOCK_CHEST_CLOSE, SoundCategory.BLOCKS, 0.5F, world.rand.nextFloat() * 0.1F + 0.9F);
+            level.playSound(null, getBlockPos(), EnderStorageConfig.useVanillaEnderChestSounds ? ENDER_CHEST_CLOSE : CHEST_CLOSE, SoundCategory.BLOCKS, 0.5F, level.random.nextFloat() * 0.1F + 0.9F);
         } else if (b_lidAngle == 0 && a_lidAngle > 0) {
-            world.playSound(null, getPos(), EnderStorageConfig.useVanillaEnderChestSounds ? BLOCK_ENDER_CHEST_OPEN : BLOCK_CHEST_OPEN, SoundCategory.BLOCKS, 0.5F, world.rand.nextFloat() * 0.1F + 0.9F);
+            level.playSound(null, getBlockPos(), EnderStorageConfig.useVanillaEnderChestSounds ? ENDER_CHEST_OPEN : CHEST_OPEN, SoundCategory.BLOCKS, 0.5F, level.random.nextFloat() * 0.1F + 0.9F);
         }
     }
 
     @Override
-    public boolean receiveClientEvent(int id, int type) {
+    public boolean triggerEvent(int id, int type) {
         if (id == 1) {
             c_numOpen = type;
             return true;
@@ -90,7 +90,7 @@ public class TileEnderChest extends TileFrequencyOwner {
 
     @Override
     public EnderItemStorage getStorage() {
-        return EnderStorageManager.instance(world.isRemote).getStorage(frequency, EnderItemStorage.TYPE);
+        return EnderStorageManager.instance(level.isClientSide).getStorage(frequency, EnderItemStorage.TYPE);
     }
 
     @Override
@@ -100,8 +100,8 @@ public class TileEnderChest extends TileFrequencyOwner {
     }
 
     @Override
-    public void remove() {
-        super.remove();
+    public void setRemoved() {
+        super.setRemoved();
         itemHandler.invalidate();
     }
 
@@ -119,34 +119,34 @@ public class TileEnderChest extends TileFrequencyOwner {
 
     @Override
     public void onPlaced(LivingEntity entity) {
-        rotation = entity != null ? (int) Math.floor(entity.rotationYaw * 4 / 360 + 2.5D) & 3 : 0;
+        rotation = entity != null ? (int) Math.floor(entity.yRot * 4 / 360 + 2.5D) & 3 : 0;
         onFrequencySet();
     }
 
     @Override
-    public CompoundNBT write(CompoundNBT tag) {
-        super.write(tag);
+    public CompoundNBT save(CompoundNBT tag) {
+        super.save(tag);
         tag.putByte("rot", (byte) rotation);
         return tag;
     }
 
     @Override
-    public void read(BlockState state, CompoundNBT tag) {
-        super.read(state, tag);
+    public void load(BlockState state, CompoundNBT tag) {
+        super.load(state, tag);
         rotation = tag.getByte("rot") & 3;
     }
 
     @Override
     public boolean activate(PlayerEntity player, int subHit, Hand hand) {
-        getStorage().openContainer((ServerPlayerEntity) player, new TranslationTextComponent(getBlockState().getBlock().getTranslationKey()));
+        getStorage().openContainer((ServerPlayerEntity) player, new TranslationTextComponent(getBlockState().getBlock().getDescriptionId()));
         return true;
     }
 
     @Override
     public boolean rotate() {
-        if (!world.isRemote) {
+        if (!level.isClientSide) {
             rotation = (rotation + 1) % 4;
-            PacketCustom.sendToChunk(getUpdatePacket(), world, pos.getX() >> 4, pos.getZ() >> 4);
+            PacketCustom.sendToChunk(getUpdatePacket(), level, worldPosition.getX() >> 4, worldPosition.getZ() >> 4);
         }
         return true;
     }
@@ -159,7 +159,7 @@ public class TileEnderChest extends TileFrequencyOwner {
     @Nonnull
     @Override
     public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
-        if (!removed && cap == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
+        if (!remove && cap == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
             return itemHandler.cast();
         }
         return super.getCapability(cap, side);

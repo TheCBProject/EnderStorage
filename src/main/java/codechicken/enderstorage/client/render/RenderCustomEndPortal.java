@@ -20,14 +20,16 @@ import java.util.List;
 import java.util.Random;
 import java.util.stream.IntStream;
 
+import net.minecraft.client.renderer.RenderType.State;
+
 public class RenderCustomEndPortal {
 
-    private static final FloatBuffer texBuffer = GLAllocation.createDirectFloatBuffer(16);
+    private static final FloatBuffer texBuffer = GLAllocation.createFloatBuffer(16);
     private static final List<RenderType.State> RENDER_STATES = IntStream.range(0, 16)//
-            .mapToObj(i -> RenderType.State.getBuilder()//
-                    .transparency(i == 0 ? RenderType.TRANSLUCENT_TRANSPARENCY : RenderType.ADDITIVE_TRANSPARENCY)//
-                    .texture(new RenderState.TextureState(i == 0 ? EndPortalTileEntityRenderer.END_SKY_TEXTURE : EndPortalTileEntityRenderer.END_PORTAL_TEXTURE, false, false))//
-                    .build(false)//
+            .mapToObj(i -> RenderType.State.builder()//
+                    .setTransparencyState(i == 0 ? RenderType.TRANSLUCENT_TRANSPARENCY : RenderType.ADDITIVE_TRANSPARENCY)//
+                    .setTextureState(new RenderState.TextureState(i == 0 ? EndPortalTileEntityRenderer.END_SKY_LOCATION : EndPortalTileEntityRenderer.END_PORTAL_LOCATION, false, false))//
+                    .createCompositeState(false)//
             )//
             .collect(ImmutableList.toImmutableList());
 
@@ -48,7 +50,7 @@ public class RenderCustomEndPortal {
     }
 
     public void render(Matrix4 mat, IRenderTypeBuffer getter, double yToCamera) {
-        Vector3d projectedView = TileEntityRendererDispatcher.instance.renderInfo.getProjectedView();
+        Vector3d projectedView = TileEntityRendererDispatcher.instance.camera.getPosition();
         mat = mat.copy();//Defensive copy, prevent external modifications.
         randy.setSeed(31100L);
         for (int i = 0; i < 16; i++) {
@@ -61,10 +63,10 @@ public class RenderCustomEndPortal {
             if (i == 0) {
                 r = g = b = 1.0F * renderType.f7;
             }
-            builder.pos(surfaceX1, surfaceY, surfaceZ1).color(r, g, b, 1.0F).endVertex();
-            builder.pos(surfaceX1, surfaceY, surfaceZ2).color(r, g, b, 1.0F).endVertex();
-            builder.pos(surfaceX2, surfaceY, surfaceZ2).color(r, g, b, 1.0F).endVertex();
-            builder.pos(surfaceX2, surfaceY, surfaceZ1).color(r, g, b, 1.0F).endVertex();
+            builder.vertex(surfaceX1, surfaceY, surfaceZ1).color(r, g, b, 1.0F).endVertex();
+            builder.vertex(surfaceX1, surfaceY, surfaceZ2).color(r, g, b, 1.0F).endVertex();
+            builder.vertex(surfaceX2, surfaceY, surfaceZ2).color(r, g, b, 1.0F).endVertex();
+            builder.vertex(surfaceX2, surfaceY, surfaceZ1).color(r, g, b, 1.0F).endVertex();
         }
     }
 
@@ -109,24 +111,24 @@ public class RenderCustomEndPortal {
         @Override
         @SuppressWarnings ("deprecation")
         public void setupRenderState() {
-            state.renderStates.forEach(RenderState::setupRenderState);
+            state.states.forEach(RenderState::setupRenderState);
             RenderSystem.disableLighting();
             RenderSystem.pushMatrix();//Apply stack here.
             mat.glApply();
             RenderSystem.pushMatrix();
-            GlStateManager.translated(projectedView.x, f11, projectedView.z);
-            GlStateManager.texGenMode(GlStateManager.TexGen.S, GL11.GL_OBJECT_LINEAR);
-            GlStateManager.texGenMode(GlStateManager.TexGen.T, GL11.GL_OBJECT_LINEAR);
-            GlStateManager.texGenMode(GlStateManager.TexGen.R, GL11.GL_OBJECT_LINEAR);
-            GlStateManager.texGenMode(GlStateManager.TexGen.Q, GL11.GL_EYE_LINEAR);
-            GlStateManager.texGenParam(GlStateManager.TexGen.S, GL11.GL_OBJECT_PLANE, bufferTexData(1.0F, 0.0F, 0.0F, 0.0F));
-            GlStateManager.texGenParam(GlStateManager.TexGen.T, GL11.GL_OBJECT_PLANE, bufferTexData(0.0F, 0.0F, 1.0F, 0.0F));
-            GlStateManager.texGenParam(GlStateManager.TexGen.R, GL11.GL_OBJECT_PLANE, bufferTexData(0.0F, 0.0F, 0.0F, 1.0F));
-            GlStateManager.texGenParam(GlStateManager.TexGen.Q, GL11.GL_EYE_PLANE, bufferTexData(0.0F, 1.0F, 0.0F, 0.0F));
-            GlStateManager.enableTexGen(GlStateManager.TexGen.S);
-            GlStateManager.enableTexGen(GlStateManager.TexGen.T);
-            GlStateManager.enableTexGen(GlStateManager.TexGen.R);
-            GlStateManager.enableTexGen(GlStateManager.TexGen.Q);
+            GlStateManager._translated(projectedView.x, f11, projectedView.z);
+            GlStateManager._texGenMode(GlStateManager.TexGen.S, GL11.GL_OBJECT_LINEAR);
+            GlStateManager._texGenMode(GlStateManager.TexGen.T, GL11.GL_OBJECT_LINEAR);
+            GlStateManager._texGenMode(GlStateManager.TexGen.R, GL11.GL_OBJECT_LINEAR);
+            GlStateManager._texGenMode(GlStateManager.TexGen.Q, GL11.GL_EYE_LINEAR);
+            GlStateManager._texGenParam(GlStateManager.TexGen.S, GL11.GL_OBJECT_PLANE, bufferTexData(1.0F, 0.0F, 0.0F, 0.0F));
+            GlStateManager._texGenParam(GlStateManager.TexGen.T, GL11.GL_OBJECT_PLANE, bufferTexData(0.0F, 0.0F, 1.0F, 0.0F));
+            GlStateManager._texGenParam(GlStateManager.TexGen.R, GL11.GL_OBJECT_PLANE, bufferTexData(0.0F, 0.0F, 0.0F, 1.0F));
+            GlStateManager._texGenParam(GlStateManager.TexGen.Q, GL11.GL_EYE_PLANE, bufferTexData(0.0F, 1.0F, 0.0F, 0.0F));
+            GlStateManager._enableTexGen(GlStateManager.TexGen.S);
+            GlStateManager._enableTexGen(GlStateManager.TexGen.T);
+            GlStateManager._enableTexGen(GlStateManager.TexGen.R);
+            GlStateManager._enableTexGen(GlStateManager.TexGen.Q);
             RenderSystem.popMatrix();
             RenderSystem.matrixMode(GL11.GL_TEXTURE);
             RenderSystem.pushMatrix();
@@ -147,11 +149,11 @@ public class RenderCustomEndPortal {
             RenderSystem.popMatrix();
             RenderSystem.matrixMode(GL11.GL_MODELVIEW);
             RenderSystem.popMatrix();//Pop stack here.
-            GlStateManager.disableTexGen(GlStateManager.TexGen.S);
-            GlStateManager.disableTexGen(GlStateManager.TexGen.T);
-            GlStateManager.disableTexGen(GlStateManager.TexGen.R);
-            GlStateManager.disableTexGen(GlStateManager.TexGen.Q);
-            state.renderStates.forEach(RenderState::clearRenderState);
+            GlStateManager._disableTexGen(GlStateManager.TexGen.S);
+            GlStateManager._disableTexGen(GlStateManager.TexGen.T);
+            GlStateManager._disableTexGen(GlStateManager.TexGen.R);
+            GlStateManager._disableTexGen(GlStateManager.TexGen.Q);
+            state.states.forEach(RenderState::clearRenderState);
         }
 
         @Override

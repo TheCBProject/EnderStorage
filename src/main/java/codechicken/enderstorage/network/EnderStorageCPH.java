@@ -21,7 +21,7 @@ public class EnderStorageCPH implements IClientPacketHandler {
     public void handlePacket(PacketCustom packet, Minecraft mc, IClientPlayNetHandler handler) {
         switch (packet.getType()) {
             case 1:
-                handleTilePacket(mc.world, packet, packet.readPos());
+                handleTilePacket(mc.level, packet, packet.readPos());
                 break;
             case 2:
                 int windowID = packet.readUByte();
@@ -35,20 +35,20 @@ public class EnderStorageCPH implements IClientPacketHandler {
                 break;
             case 5:
             case 6:
-                handleTankTilePacket(mc.world, packet.readPos(), packet);
+                handleTankTilePacket(mc.level, packet.readPos(), packet);
                 break;
         }
     }
 
     private void handleTankTilePacket(ClientWorld world, BlockPos pos, PacketCustom packet) {
-        TileEntity tile = world.getTileEntity(pos);
+        TileEntity tile = world.getBlockEntity(pos);
         if (tile instanceof TileEnderTank) {
             ((TileEnderTank) tile).sync(packet);
         }
     }
 
     private void handleTilePacket(ClientWorld world, PacketCustom packet, BlockPos pos) {
-        TileEntity tile = world.getTileEntity(pos);
+        TileEntity tile = world.getBlockEntity(pos);
 
         if (tile instanceof TileFrequencyOwner) {
             ((TileFrequencyOwner) tile).readFromPacket(packet);

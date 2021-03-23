@@ -21,7 +21,7 @@ public class ItemEnderStorage extends BlockItem {
 
     public ItemEnderStorage(Block block) {
         super(block, new Properties()//
-                .group(ItemGroup.TRANSPORTATION)//
+                .tab(ItemGroup.TAB_TRANSPORTATION)//
         );
     }
 
@@ -30,9 +30,9 @@ public class ItemEnderStorage extends BlockItem {
     }
 
     @Override
-    protected boolean onBlockPlaced(BlockPos pos, World world, @Nullable PlayerEntity player, ItemStack stack, BlockState state) {
-        boolean flag = super.onBlockPlaced(pos, world, player, stack, state);
-        TileFrequencyOwner tile = (TileFrequencyOwner) world.getTileEntity(pos);
+    protected boolean updateCustomBlockEntityTag(BlockPos pos, World world, @Nullable PlayerEntity player, ItemStack stack, BlockState state) {
+        boolean flag = super.updateCustomBlockEntityTag(pos, world, player, stack, state);
+        TileFrequencyOwner tile = (TileFrequencyOwner) world.getBlockEntity(pos);
         if (tile != null) {
             tile.setFreq(getFreq(stack));
             return true;
@@ -42,7 +42,7 @@ public class ItemEnderStorage extends BlockItem {
     }
 
     @Override
-    public void addInformation(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
+    public void appendHoverText(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
         Frequency frequency = Frequency.readFromStack(stack);
         if (frequency.hasOwner()) {
             tooltip.add(frequency.getOwnerName());

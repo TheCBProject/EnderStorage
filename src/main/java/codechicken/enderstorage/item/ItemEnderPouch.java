@@ -32,13 +32,13 @@ public class ItemEnderPouch extends Item implements IBakeryProvider {
 
     public ItemEnderPouch() {
         super(new Item.Properties()//
-                .maxStackSize(1)//
-                .group(ItemGroup.TRANSPORTATION)//
+                .stacksTo(1)//
+                .tab(ItemGroup.TAB_TRANSPORTATION)//
         );
     }
 
     @Override
-    public void addInformation(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
+    public void appendHoverText(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
         Frequency frequency = Frequency.readFromStack(stack);
         if (frequency.hasOwner()) {
             tooltip.add(frequency.getOwnerName());
@@ -48,16 +48,16 @@ public class ItemEnderPouch extends Item implements IBakeryProvider {
 
     @Override
     public ActionResultType onItemUseFirst(ItemStack stack, ItemUseContext context) {
-        World world = context.getWorld();
-        if (world.isRemote()) {
+        World world = context.getLevel();
+        if (world.isClientSide()) {
             return ActionResultType.PASS;
         }
 
-        TileEntity tile = world.getTileEntity(context.getPos());
+        TileEntity tile = world.getBlockEntity(context.getClickedPos());
         if (tile instanceof TileEnderChest && context.getPlayer().isCrouching()) {
             TileEnderChest chest = (TileEnderChest) tile;
             Frequency frequency = chest.getFrequency().copy();
-            if (EnderStorageConfig.anarchyMode && !(frequency.owner != null && frequency.owner.equals(context.getPlayer().getUniqueID()))) {
+            if (EnderStorageConfig.anarchyMode && !(frequency.owner != null && frequency.owner.equals(context.getPlayer().getUUID()))) {
                 frequency.setOwner(null);
             }
 
@@ -69,14 +69,14 @@ public class ItemEnderPouch extends Item implements IBakeryProvider {
     }
 
     @Override
-    public ActionResult<ItemStack> onItemRightClick(World world, PlayerEntity player, Hand hand) {
-        ItemStack stack = player.getHeldItem(hand);
+    public ActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand) {
+        ItemStack stack = player.getItemInHand(hand);
         if (player.isCrouching()) {
             return new ActionResult<>(ActionResultType.PASS, stack);
         }
-        if (!world.isRemote) {
+        if (!world.isClientSide) {
             Frequency frequency = Frequency.readFromStack(stack);
-            EnderStorageManager.instance(world.isRemote).getStorage(frequency, EnderItemStorage.TYPE).openContainer((ServerPlayerEntity) player, new TranslationTextComponent(stack.getTranslationKey()));
+            EnderStorageManager.instance(world.isClientSide).getStorage(frequency, EnderItemStorage.TYPE).openContainer((ServerPlayerEntity) player, new TranslationTextComponent(stack.getDescriptionId()));
         }
         return new ActionResult<>(ActionResultType.SUCCESS, stack);
     }

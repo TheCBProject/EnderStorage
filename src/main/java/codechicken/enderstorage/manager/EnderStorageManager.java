@@ -26,14 +26,14 @@ public class EnderStorageManager {
 
         @SubscribeEvent
         public void onWorldLoad(WorldEvent.Load event) {
-            if (event.getWorld().isRemote()) {
+            if (event.getWorld().isClientSide()) {
                 reloadManager(true);
             }
         }
 
         @SubscribeEvent
         public void onWorldSave(WorldEvent.Save event) {
-            if (!event.getWorld().isRemote() && instance(false) != null) {
+            if (!event.getWorld().isClientSide() && instance(false) != null) {
                 instance(false).save(false);
             }
         }
@@ -239,7 +239,7 @@ public class EnderStorageManager {
 
     public List<String> getValidKeys(String identifer) {
         List<String> list = new ArrayList<>();
-        for (String key : saveTag.keySet()) {
+        for (String key : saveTag.getAllKeys()) {
             if (key.endsWith(",type=" + identifer)) {
                 list.add(key.replace(",type=" + identifer, ""));
             }

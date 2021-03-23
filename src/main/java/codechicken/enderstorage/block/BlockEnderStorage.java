@@ -43,7 +43,7 @@ public abstract class BlockEnderStorage extends Block// implements ICustomPartic
     }
 
     @Override
-    public BlockRenderType getRenderType(BlockState state) {
+    public BlockRenderType getRenderShape(BlockState state) {
         return BlockRenderType.INVISIBLE;
     }
 
@@ -53,15 +53,15 @@ public abstract class BlockEnderStorage extends Block// implements ICustomPartic
     }
 
     @Override
-    public void harvestBlock(World worldIn, PlayerEntity player, BlockPos pos, BlockState state, @Nullable TileEntity te, ItemStack stack) {
-        super.harvestBlock(worldIn, player, pos, state, te, stack);
-        worldIn.setBlockState(pos, Blocks.AIR.getDefaultState());
+    public void playerDestroy(World worldIn, PlayerEntity player, BlockPos pos, BlockState state, @Nullable TileEntity te, ItemStack stack) {
+        super.playerDestroy(worldIn, player, pos, state, te, stack);
+        worldIn.setBlockAndUpdate(pos, Blocks.AIR.defaultBlockState());
     }
 
     @Override
     public List<ItemStack> getDrops(BlockState state, LootContext.Builder builder) {
         List<ItemStack> drops = new ArrayList<>();
-        TileFrequencyOwner tile = (TileFrequencyOwner) builder.get(LootParameters.BLOCK_ENTITY);
+        TileFrequencyOwner tile = (TileFrequencyOwner) builder.getOptionalParameter(LootParameters.BLOCK_ENTITY);
         if (tile != null) {
             drops.add(createItem(tile.getFrequency()));
             if (EnderStorageConfig.anarchyMode && tile.getFrequency().hasOwner()) {
@@ -73,7 +73,7 @@ public abstract class BlockEnderStorage extends Block// implements ICustomPartic
 
     @Override
     public ItemStack getPickBlock(BlockState state, RayTraceResult rayTraceResult, IBlockReader world, BlockPos pos, PlayerEntity player) {
-        TileFrequencyOwner tile = (TileFrequencyOwner) world.getTileEntity(pos);
+        TileFrequencyOwner tile = (TileFrequencyOwner) world.getBlockEntity(pos);
         return createItem(tile.getFrequency());
     }
 
@@ -87,11 +87,11 @@ public abstract class BlockEnderStorage extends Block// implements ICustomPartic
     }
 
     @Override
-    public ActionResultType onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult clientHit) {
-        if (world.isRemote) {
+    public ActionResultType use(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult clientHit) {
+        if (world.isClientSide) {
             return ActionResultType.SUCCESS;
         }
-        TileEntity tile = world.getTileEntity(pos);
+        TileEntity tile = world.getBlockEntity(pos);
         if (!(tile instanceof TileFrequencyOwner)) {
             return ActionResultType.FAIL;
         }
@@ -103,9 +103,9 @@ public abstract class BlockEnderStorage extends Block// implements ICustomPartic
             return ActionResultType.FAIL;
         }
         if (hit.subHit == 4) {
-            ItemStack item = player.inventory.getCurrentItem();
+            ItemStack item = player.inventory.getSelected();
             if (player.isCrouching() && owner.getFrequency().hasOwner()) {
-                if (!player.abilities.isCreativeMode && !player.inventory.addItemStackToInventory(EnderStorageConfig.personalItem.copy())) {
+                if (!player.abilities.instabuild && !player.inventory.add(EnderStorageConfig.personalItem.copy())) {
                     return ActionResultType.FAIL;
                 }
 
@@ -114,17 +114,17 @@ public abstract class BlockEnderStorage extends Block// implements ICustomPartic
             } else if (!item.isEmpty() && ItemUtils.areStacksSameType(item, EnderStorageConfig.personalItem)) {
                 if (!owner.getFrequency().hasOwner()) {
                     owner.setFreq(owner.getFrequency().copy()//
-                            .setOwner(player.getUniqueID())//
+                            .setOwner(player.getUUID())//
                             .setOwnerName(player.getName())//
                     );
-                    if (!player.abilities.isCreativeMode) {
+                    if (!player.abilities.instabuild) {
                         item.shrink(1);
                     }
                     return ActionResultType.SUCCESS;
                 }
             }
         } else if (hit.subHit >= 1 && hit.subHit <= 3) {
-            ItemStack item = player.inventory.getCurrentItem();
+            ItemStack item = player.inventory.getSelected();
             if (!item.isEmpty()) {
                 EnumColour dye = EnumColour.fromDyeStack(item);
                 if (dye != null) {
@@ -134,7 +134,7 @@ public abstract class BlockEnderStorage extends Block// implements ICustomPartic
                     }
                     colours[hit.subHit - 1] = dye;
                     owner.setFreq(owner.getFrequency().copy().set(colours));
-                    if (!player.abilities.isCreativeMode) {
+                    if (!player.abilities.instabuild) {
                         item.shrink(1);
                     }
                     return ActionResultType.FAIL;
@@ -146,15 +146,15 @@ public abstract class BlockEnderStorage extends Block// implements ICustomPartic
 
     @Override
     public void neighborChanged(BlockState state, World world, BlockPos pos, Block blockIn, BlockPos fromPos, boolean isMoving) {
-        TileEntity tile = world.getTileEntity(pos);
+        TileEntity tile = world.getBlockEntity(pos);
         if (tile instanceof TileFrequencyOwner) {
             ((TileFrequencyOwner) tile).onNeighborChange(fromPos);
         }
     }
 
     @Override
-    public void onBlockPlacedBy(World world, BlockPos pos, BlockState state, LivingEntity placer, ItemStack stack) {
-        TileEntity tile = world.getTileEntity(pos);
+    public void setPlacedBy(World world, BlockPos pos, BlockState state, LivingEntity placer, ItemStack stack) {
+        TileEntity tile = world.getBlockEntity(pos);
         if (tile instanceof TileFrequencyOwner) {
             ((TileFrequencyOwner) tile).onPlaced(placer);
         }
@@ -162,7 +162,7 @@ public abstract class BlockEnderStorage extends Block// implements ICustomPartic
 
     @Override
     public int getLightValue(BlockState state, IBlockReader world, BlockPos pos) {
-        TileEntity tile = world.getTileEntity(pos);
+        TileEntity tile = world.getBlockEntity(pos);
         if (tile instanceof TileFrequencyOwner) {
             return ((TileFrequencyOwner) tile).getLightValue();
         }
@@ -171,19 +171,19 @@ public abstract class BlockEnderStorage extends Block// implements ICustomPartic
 
     @Override
     public boolean canConnectRedstone(BlockState state, IBlockReader world, BlockPos pos, Direction side) {
-        TileEntity tile = world.getTileEntity(pos);
+        TileEntity tile = world.getBlockEntity(pos);
         return tile instanceof TileFrequencyOwner && ((TileFrequencyOwner) tile).redstoneInteraction();
     }
 
     @Override
-    public int getComparatorInputOverride(BlockState state, World world, BlockPos pos) {
-        TileEntity tile = world.getTileEntity(pos);
+    public int getAnalogOutputSignal(BlockState state, World world, BlockPos pos) {
+        TileEntity tile = world.getBlockEntity(pos);
         return tile instanceof TileFrequencyOwner ? ((TileFrequencyOwner) tile).comparatorInput() : 0;
     }
 
     @Override
     public BlockState rotate(BlockState state, IWorld world, BlockPos pos, Rotation direction) {
-        TileEntity tile = world.getTileEntity(pos);
+        TileEntity tile = world.getBlockEntity(pos);
         if (tile instanceof TileFrequencyOwner) {
             ((TileFrequencyOwner) tile).rotate();
         }
@@ -191,9 +191,9 @@ public abstract class BlockEnderStorage extends Block// implements ICustomPartic
     }
 
     @Override
-    public boolean eventReceived(BlockState state, World worldIn, BlockPos pos, int eventID, int eventParam) {
-        super.eventReceived(state, worldIn, pos, eventID, eventParam);
-        TileEntity tileentity = worldIn.getTileEntity(pos);
-        return tileentity != null && tileentity.receiveClientEvent(eventID, eventParam);
+    public boolean triggerEvent(BlockState state, World worldIn, BlockPos pos, int eventID, int eventParam) {
+        super.triggerEvent(state, worldIn, pos, eventID, eventParam);
+        TileEntity tileentity = worldIn.getBlockEntity(pos);
+        return tileentity != null && tileentity.triggerEvent(eventID, eventParam);
     }
 }

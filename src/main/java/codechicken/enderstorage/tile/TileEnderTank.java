@@ -49,18 +49,18 @@ public class TileEnderTank extends TileFrequencyOwner {
     public void tick() {
         super.tick();
         capCache.tick();
-        pressure_state.update(world.isRemote);
+        pressure_state.update(level.isClientSide);
         if (pressure_state.a_pressure) {
             ejectLiquid();
         }
 
-        liquid_state.update(world.isRemote);
+        liquid_state.update(level.isClientSide);
     }
 
     @Override
-    public void setWorldAndPos(World world, BlockPos pos) {
-        super.setWorldAndPos(world, pos);
-        capCache.setWorldPos(getWorld(), getPos());
+    public void setLevelAndPosition(World world, BlockPos pos) {
+        super.setLevelAndPosition(world, pos);
+        capCache.setWorldPos(getLevel(), getBlockPos());
     }
 
     @Override
@@ -70,7 +70,7 @@ public class TileEnderTank extends TileFrequencyOwner {
 
     private void ejectLiquid() {
         IFluidHandler source = getStorage();
-        for (Direction side : Direction.BY_INDEX) {
+        for (Direction side : Direction.BY_3D_DATA) {
             IFluidHandler dest = capCache.getCapabilityOr(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, side, EmptyFluidHandler.INSTANCE);
             FluidStack drain = source.drain(100, IFluidHandler.FluidAction.SIMULATE);
             if (!drain.isEmpty()) {
@@ -84,10 +84,10 @@ public class TileEnderTank extends TileFrequencyOwner {
 
     @Override
     public void onFrequencySet() {
-        if (world == null) {
+        if (level == null) {
             return;
         }
-        if (!world.isRemote) {
+        if (!level.isClientSide) {
             liquid_state.setFrequency(frequency);
         }
         fluidHandler.invalidate();
@@ -95,33 +95,33 @@ public class TileEnderTank extends TileFrequencyOwner {
     }
 
     @Override
-    public void remove() {
-        super.remove();
+    public void setRemoved() {
+        super.setRemoved();
         fluidHandler.invalidate();
     }
 
     @Override
     public EnderLiquidStorage getStorage() {
-        return EnderStorageManager.instance(world.isRemote).getStorage(frequency, EnderLiquidStorage.TYPE);
+        return EnderStorageManager.instance(level.isClientSide).getStorage(frequency, EnderLiquidStorage.TYPE);
     }
 
     @Override
     public void onPlaced(LivingEntity entity) {
-        rotation = entity != null ? (int) Math.floor(entity.rotationYaw * 4 / 360 + 2.5D) & 3 : 0;
+        rotation = entity != null ? (int) Math.floor(entity.yRot * 4 / 360 + 2.5D) & 3 : 0;
         pressure_state.b_rotate = pressure_state.a_rotate = pressure_state.approachRotate();
     }
 
     @Override
-    public CompoundNBT write(CompoundNBT tag) {
-        super.write(tag);
+    public CompoundNBT save(CompoundNBT tag) {
+        super.save(tag);
         tag.putByte("rot", (byte) rotation);
         tag.putBoolean("ir", pressure_state.invert_redstone);
         return tag;
     }
 
     @Override
-    public void read(BlockState state, CompoundNBT tag) {
-        super.read(state, tag);
+    public void load(BlockState state, CompoundNBT tag) {
+        super.load(state, tag);
         liquid_state.setFrequency(frequency);
         rotation = tag.getByte("rot") & 3;
         pressure_state.invert_redstone = tag.getBoolean("ir");
@@ -182,9 +182,9 @@ public class TileEnderTank extends TileFrequencyOwner {
 
     @Override
     public boolean rotate() {
-        if (!world.isRemote) {
+        if (!level.isClientSide) {
             rotation = (rotation + 1) % 4;
-            PacketCustom.sendToChunk(getUpdatePacket(), world, pos.getX() >> 4, pos.getZ() >> 4);
+            PacketCustom.sendToChunk(getUpdatePacket(), level, worldPosition.getX() >> 4, worldPosition.getZ() >> 4);
         }
 
         return true;
@@ -203,7 +203,7 @@ public class TileEnderTank extends TileFrequencyOwner {
     @Nonnull
     @Override
     public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
-        if (!removed && cap == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY) {
+        if (!remove && cap == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY) {
             return fluidHandler.cast();
         }
         return super.getCapability(cap, side);
@@ -214,14 +214,14 @@ public class TileEnderTank extends TileFrequencyOwner {
         @Override
         public void sendSyncPacket() {
             PacketCustom packet = new PacketCustom(EnderStorageNetwork.NET_CHANNEL, 5);
-            packet.writePos(getPos());
+            packet.writePos(getBlockPos());
             packet.writeFluidStack(s_liquid);
             packet.sendToChunk(TileEnderTank.this);
         }
 
         @Override
         public void onLiquidChanged() {
-            world.getChunkProvider().getLightManager().checkBlock(pos);
+            level.getChunkSource().getLightEngine().checkBlock(worldPosition);
         }
     }
 
@@ -240,7 +240,7 @@ public class TileEnderTank extends TileFrequencyOwner {
                 a_rotate = MathHelper.approachExp(a_rotate, approachRotate(), 0.5, 20);
             } else {
                 b_pressure = a_pressure;
-                a_pressure = world.isBlockPowered(getPos()) != invert_redstone;
+                a_pressure = level.hasNeighborSignal(getBlockPos()) != invert_redstone;
                 if (a_pressure != b_pressure) {
                     sendSyncPacket();
                 }
@@ -253,14 +253,14 @@ public class TileEnderTank extends TileFrequencyOwner {
 
         private void sendSyncPacket() {
             PacketCustom packet = new PacketCustom(EnderStorageNetwork.NET_CHANNEL, 6);
-            packet.writePos(getPos());
+            packet.writePos(getBlockPos());
             packet.writeBoolean(a_pressure);
             packet.sendToChunk(TileEnderTank.this);
         }
 
         public void invert() {
             invert_redstone = !invert_redstone;
-            world.getChunk(pos).setModified(true);
+            level.getChunk(worldPosition).setUnsaved(true);
         }
     }
 }

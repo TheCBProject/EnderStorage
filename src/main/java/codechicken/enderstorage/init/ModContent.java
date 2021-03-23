@@ -77,8 +77,8 @@ public class ModContent {
     public static void onRegisterBlocks(RegistryEvent.Register<Block> event) {
         IForgeRegistry<Block> registry = event.getRegistry();
 
-        Block.Properties properties = Block.Properties.create(Material.ROCK)//
-                .hardnessAndResistance(20, 100);
+        Block.Properties properties = Block.Properties.of(Material.STONE)//
+                .strength(20, 100);
         registry.register(new BlockEnderChest(properties).setRegistryName("ender_chest"));
         registry.register(new BlockEnderTank(properties).setRegistryName("ender_tank"));
     }
@@ -98,8 +98,8 @@ public class ModContent {
     @SubscribeEvent
     public static void onRegisterTiles(RegistryEvent.Register<TileEntityType<?>> event) {
         IForgeRegistry<TileEntityType<?>> registry = event.getRegistry();
-        registry.register(TileEntityType.Builder.create(TileEnderChest::new, blockEnderChest).build(null).setRegistryName("ender_chest"));
-        registry.register(TileEntityType.Builder.create(TileEnderTank::new, blockEnderTank).build(null).setRegistryName("ender_tank"));
+        registry.register(TileEntityType.Builder.of(TileEnderChest::new, blockEnderChest).build(null).setRegistryName("ender_chest"));
+        registry.register(TileEntityType.Builder.of(TileEnderTank::new, blockEnderTank).build(null).setRegistryName("ender_tank"));
     }
 
     @SubscribeEvent

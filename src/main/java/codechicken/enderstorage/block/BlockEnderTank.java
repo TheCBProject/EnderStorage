@@ -64,7 +64,7 @@ public class BlockEnderTank extends BlockEnderStorage {
     @Override
     public VoxelShape getShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
         VoxelShape shape = TANK_SHAPE;
-        TileEntity t = worldIn.getTileEntity(pos);
+        TileEntity t = worldIn.getBlockEntity(pos);
         if (t instanceof TileEnderTank) {
             TileEnderTank tile = (TileEnderTank) t;
             shape = SHAPES[tile.rotation];

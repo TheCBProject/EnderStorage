@@ -38,7 +38,7 @@ public abstract class RecipeBase implements ICraftingRecipe, IShapedRecipe<Craft
                     ingredient = this.input.get(i + j * 3);
                 }
 
-                if (!ingredient.test(inv.getStackInSlot(i + j * inv.getWidth()))) {
+                if (!ingredient.test(inv.getItem(i + j * inv.getWidth()))) {
                     return false;
                 }
             }
@@ -48,12 +48,12 @@ public abstract class RecipeBase implements ICraftingRecipe, IShapedRecipe<Craft
     }
 
     @Override
-    public ItemStack getCraftingResult(CraftingInventory inv) {
+    public ItemStack assemble(CraftingInventory inv) {
         return output.copy();
     }
 
     @Override
-    public boolean canFit(int width, int height) {
+    public boolean canCraftInDimensions(int width, int height) {
         return width >= 3 && height >= 3;
     }
 
@@ -73,7 +73,7 @@ public abstract class RecipeBase implements ICraftingRecipe, IShapedRecipe<Craft
     }
 
     @Override
-    public ItemStack getRecipeOutput() {
+    public ItemStack getResultItem() {
         return output;
     }
 

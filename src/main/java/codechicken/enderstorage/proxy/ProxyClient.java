@@ -39,13 +39,13 @@ public class ProxyClient extends Proxy {
 
     @Override
     public void clientSetup(FMLClientSetupEvent event) {
-        ScreenManager.registerFactory(ModContent.containerItemStorage, GuiEnderItemStorage::new);
+        ScreenManager.register(ModContent.containerItemStorage, GuiEnderItemStorage::new);
 
         ClientRegistry.bindTileEntityRenderer(tileEnderChestType, RenderTileEnderChest::new);
         ClientRegistry.bindTileEntityRenderer(tileEnderTankType, RenderTileEnderTank::new);
 
         if (!EnderStorageConfig.disableCreatorVisuals) {
-            for (PlayerRenderer renderPlayer : Minecraft.getInstance().getRenderManager().getSkinMap().values()) {
+            for (PlayerRenderer renderPlayer : Minecraft.getInstance().getEntityRenderDispatcher().getSkinMap().values()) {
                 renderPlayer.addLayer(new TankLayerRenderer(renderPlayer));
             }
         }

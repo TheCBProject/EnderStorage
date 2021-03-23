@@ -25,8 +25,8 @@ import java.util.Map;
 
 public class RenderTileEnderTank extends TileEntityRenderer<TileEnderTank> {
 
-    private static final RenderType baseType = RenderType.getEntityCutout(new ResourceLocation("enderstorage:textures/endertank.png"));
-    private static final RenderType buttonType = RenderType.getEntitySolid(new ResourceLocation("enderstorage:textures/buttons.png"));
+    private static final RenderType baseType = RenderType.entityCutout(new ResourceLocation("enderstorage:textures/endertank.png"));
+    private static final RenderType buttonType = RenderType.entitySolid(new ResourceLocation("enderstorage:textures/buttons.png"));
     private static final RenderType pearlType = CCModelLibrary.getIcos4RenderType(new ResourceLocation("enderstorage:textures/hedronmap.png"), false);
 
     public static final CCModel tankModel;
@@ -56,9 +56,9 @@ public class RenderTileEnderTank extends TileEntityRenderer<TileEnderTank> {
         ccrs.brightness = packedLight;
         ccrs.overlay = packedOverlay;
         float valveRot = (float) MathHelper.interpolate(enderTank.pressure_state.b_rotate, enderTank.pressure_state.a_rotate, partialTicks) * 0.01745F;
-        int pearlOffset = RenderUtils.getTimeOffset(enderTank.getPos());
+        int pearlOffset = RenderUtils.getTimeOffset(enderTank.getBlockPos());
         Matrix4 mat = new Matrix4(mStack);
-        double yToCamera = enderTank.getPos().getY() - renderDispatcher.renderInfo.getProjectedView().y;
+        double yToCamera = enderTank.getBlockPos().getY() - renderer.camera.getPosition().y;
         renderTank(ccrs, mat.copy(), getter, enderTank.rotation, valveRot, yToCamera, enderTank.getFrequency(), pearlOffset);
         renderFluid(ccrs, mat, getter, enderTank.liquid_state.c_liquid);
         ccrs.reset();

@@ -141,11 +141,11 @@ public final class Frequency implements Copyable<Frequency> {
         left = EnumColour.fromWoolMeta(tagCompound.getInt("left"));
         middle = EnumColour.fromWoolMeta(tagCompound.getInt("middle"));
         right = EnumColour.fromWoolMeta(tagCompound.getInt("right"));
-        if (tagCompound.hasUniqueId("owner")) {
-            owner = tagCompound.getUniqueId("owner");
+        if (tagCompound.hasUUID("owner")) {
+            owner = tagCompound.getUUID("owner");
         }
         if (tagCompound.contains("owner_name")) {
-            ownerName = ITextComponent.Serializer.getComponentFromJson(tagCompound.getString("owner_name"));
+            ownerName = ITextComponent.Serializer.fromJson(tagCompound.getString("owner_name"));
         }
         return this;
     }
@@ -155,7 +155,7 @@ public final class Frequency implements Copyable<Frequency> {
         tagCompound.putInt("middle", middle.getWoolMeta());
         tagCompound.putInt("right", right.getWoolMeta());
         if (owner != null) {
-            tagCompound.putUniqueId("owner", owner);
+            tagCompound.putUUID("owner", owner);
         }
         if (ownerName != null) {
             tagCompound.putString("owner_name", ITextComponent.Serializer.toJson(ownerName));
@@ -193,7 +193,7 @@ public final class Frequency implements Copyable<Frequency> {
     }
 
     public String toModelLoc() {
-        return "left=" + getLeft().getString() + ",middle=" + getMiddle().getString() + ",right=" + getRight().getString() + ",owned=" + hasOwner();
+        return "left=" + getLeft().getSerializedName() + ",middle=" + getMiddle().getSerializedName() + ",right=" + getRight().getSerializedName() + ",owned=" + hasOwner();
     }
 
     @Override
@@ -202,14 +202,14 @@ public final class Frequency implements Copyable<Frequency> {
         if (hasOwner()) {
             owner = ",owner=" + this.owner;
         }
-        return "left=" + getLeft().getString() + ",middle=" + getMiddle().getString() + ",right=" + getRight().getString() + owner;
+        return "left=" + getLeft().getSerializedName() + ",middle=" + getMiddle().getSerializedName() + ",right=" + getRight().getSerializedName() + owner;
     }
 
     public ITextComponent getTooltip() {
         return new TranslationTextComponent(getLeft().getUnlocalizedName())//
-                .appendString("/")//
+                .append("/")//
                 .append(new TranslationTextComponent(getMiddle().getUnlocalizedName()))//
-                .appendString("/")//
+                .append("/")//
                 .append(new TranslationTextComponent(getRight().getUnlocalizedName()));
     }
 

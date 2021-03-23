@@ -30,12 +30,12 @@ public class CreateRecipe extends RecipeBase {
 
     @Nonnull
     @Override
-    public ItemStack getCraftingResult(CraftingInventory inv) {
+    public ItemStack assemble(CraftingInventory inv) {
         EnumColour colour = EnumColour.WHITE;
         finish:
         for (int x = 0; x < 3; x++) {
             for (int y = 0; y < 3; y++) {
-                ItemStack stack = inv.getStackInSlot(x + y * inv.getWidth());
+                ItemStack stack = inv.getItem(x + y * inv.getWidth());
                 if (!stack.isEmpty()) {
                     EnumColour c = EnumColour.fromWoolStack(stack);
                     if (c != null) {
@@ -46,7 +46,7 @@ public class CreateRecipe extends RecipeBase {
             }
         }
         Frequency frequency = new Frequency(colour, colour, colour);
-        return frequency.writeToStack(super.getCraftingResult(inv));
+        return frequency.writeToStack(super.assemble(inv));
     }
 
     @Override
@@ -57,40 +57,40 @@ public class CreateRecipe extends RecipeBase {
     public static class Serializer extends ForgeRegistryEntry<IRecipeSerializer<?>> implements IRecipeSerializer<CreateRecipe> {
 
         @Override
-        public CreateRecipe read(ResourceLocation recipeId, JsonObject json) {
-            String group = JSONUtils.getString(json, "group", "");
-            Map<String, Ingredient> key = ShapedRecipe.deserializeKey(JSONUtils.getJsonObject(json, "key"));
-            String[] pattern = ShapedRecipe.shrink(ShapedRecipe.patternFromJson(JSONUtils.getJsonArray(json, "pattern")));
+        public CreateRecipe fromJson(ResourceLocation recipeId, JsonObject json) {
+            String group = JSONUtils.getAsString(json, "group", "");
+            Map<String, Ingredient> key = ShapedRecipe.keyFromJson(JSONUtils.getAsJsonObject(json, "key"));
+            String[] pattern = ShapedRecipe.shrink(ShapedRecipe.patternFromJson(JSONUtils.getAsJsonArray(json, "pattern")));
             int width = pattern[0].length();
             int height = pattern.length;
-            NonNullList<Ingredient> ingredients = ShapedRecipe.deserializeIngredients(pattern, key, width, height);
-            ItemStack result = ShapedRecipe.deserializeItem(JSONUtils.getJsonObject(json, "result"));
+            NonNullList<Ingredient> ingredients = ShapedRecipe.dissolvePattern(pattern, key, width, height);
+            ItemStack result = ShapedRecipe.itemFromJson(JSONUtils.getAsJsonObject(json, "result"));
             return new CreateRecipe(recipeId, group, result, ingredients);
         }
 
         @Nullable
         @Override
-        public CreateRecipe read(ResourceLocation recipeId, PacketBuffer buffer) {
-            String s = buffer.readString(32767);
+        public CreateRecipe fromNetwork(ResourceLocation recipeId, PacketBuffer buffer) {
+            String s = buffer.readUtf(32767);
             NonNullList<Ingredient> ingredients = NonNullList.withSize(3 * 3, Ingredient.EMPTY);
 
             for (int k = 0; k < ingredients.size(); ++k) {
-                ingredients.set(k, Ingredient.read(buffer));
+                ingredients.set(k, Ingredient.fromNetwork(buffer));
             }
 
-            ItemStack result = buffer.readItemStack();
+            ItemStack result = buffer.readItem();
             return new CreateRecipe(recipeId, s, result, ingredients);
         }
 
         @Override
-        public void write(PacketBuffer buffer, CreateRecipe recipe) {
-            buffer.writeString(recipe.group);
+        public void toNetwork(PacketBuffer buffer, CreateRecipe recipe) {
+            buffer.writeUtf(recipe.group);
 
             for (Ingredient ingredient : recipe.input) {
-                ingredient.write(buffer);
+                ingredient.toNetwork(buffer);
             }
 
-            buffer.writeItemStack(recipe.output);
+            buffer.writeItem(recipe.output);
         }
     }
 

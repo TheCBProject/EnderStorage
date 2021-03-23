@@ -45,7 +45,7 @@ public class TankLayerRenderer extends LayerRenderer<AbstractClientPlayerEntity,
 
     @Override
     public void render(MatrixStack mStack, IRenderTypeBuffer getter, int packedLight, AbstractClientPlayerEntity entity, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch) {
-        if (UUIDS.contains(entity.getUniqueID())) {
+        if (UUIDS.contains(entity.getUUID())) {
             CCRenderState ccrs = CCRenderState.instance();
             ccrs.brightness = packedLight;
             ccrs.overlay = OverlayTexture.NO_OVERLAY;
@@ -55,7 +55,7 @@ public class TankLayerRenderer extends LayerRenderer<AbstractClientPlayerEntity,
             if (entity.isCrouching()) {
                 mat.translate(0, -0.5, 0);
             }
-            if (entity.isElytraFlying()) {
+            if (entity.isFallFlying()) {
                 headPitch = -45;
             }
             mat.rotate(netHeadYaw * MathHelper.torad, Vector3.Y_NEG);

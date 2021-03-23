@@ -66,7 +66,7 @@ public class BlockEnderChest extends BlockEnderStorage {
     @Override
     public VoxelShape getShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
         VoxelShape shape = CHEST;
-        TileEntity t = worldIn.getTileEntity(pos);
+        TileEntity t = worldIn.getBlockEntity(pos);
         if (t instanceof TileEnderChest) {
             TileEnderChest tile = (TileEnderChest) t;
             shape = SHAPES[tile.rotation][tile.getRadianLidAngle(0) >= 0 ? 0 : 1];
@@ -75,7 +75,7 @@ public class BlockEnderChest extends BlockEnderStorage {
     }
 
     @Override
-    public boolean hasComparatorInputOverride(BlockState state) {
+    public boolean hasAnalogOutputSignal(BlockState state) {
         return true;
     }
 

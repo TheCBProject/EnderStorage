@@ -69,39 +69,39 @@ public class ContainerEnderItemStorage extends Container {
     }
 
     @Override
-    public boolean canInteractWith(PlayerEntity entityplayer) {
-        return chestInv.isUsableByPlayer(entityplayer);
+    public boolean stillValid(PlayerEntity entityplayer) {
+        return chestInv.stillValid(entityplayer);
     }
 
     @Override
-    public ItemStack transferStackInSlot(PlayerEntity par1EntityPlayer, int i) {
+    public ItemStack quickMoveStack(PlayerEntity par1EntityPlayer, int i) {
         ItemStack itemstack = ItemStack.EMPTY;
-        Slot slot = inventorySlots.get(i);
+        Slot slot = slots.get(i);
 
-        if (slot != null && slot.getHasStack()) {
-            ItemStack itemstack1 = slot.getStack();
+        if (slot != null && slot.hasItem()) {
+            ItemStack itemstack1 = slot.getItem();
             itemstack = itemstack1.copy();
 
             int chestSlots = EnderItemStorage.sizes[chestInv.getSize()];
             if (i < chestSlots) {
-                if (!mergeItemStack(itemstack1, chestSlots, inventorySlots.size(), true)) {
+                if (!moveItemStackTo(itemstack1, chestSlots, slots.size(), true)) {
                     return ItemStack.EMPTY;
                 }
-            } else if (!mergeItemStack(itemstack1, 0, chestSlots, false)) {
+            } else if (!moveItemStackTo(itemstack1, 0, chestSlots, false)) {
                 return ItemStack.EMPTY;
             }
             if (itemstack1.getCount() == 0) {
-                slot.putStack(ItemStack.EMPTY);
+                slot.set(ItemStack.EMPTY);
             } else {
-                slot.onSlotChanged();
+                slot.setChanged();
             }
         }
         return itemstack;
     }
 
     @Override
-    public void onContainerClosed(PlayerEntity entityplayer) {
-        super.onContainerClosed(entityplayer);
+    public void removed(PlayerEntity entityplayer) {
+        super.removed(entityplayer);
         chestInv.closeInventory();
     }
 

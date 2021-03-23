@@ -60,7 +60,7 @@ public class EnderItemStorage extends AbstractEnderStorage implements IInventory
             System.arraycopy(items, 0, newItems, 0, items.length);
             items = newItems;
             size = EnderStorageConfig.storageSize;
-            markDirty();
+            setChanged();
         } else {
             int numStacks = 0;
             for (ItemStack item : items) {
@@ -80,7 +80,7 @@ public class EnderItemStorage extends AbstractEnderStorage implements IInventory
                 }
                 items = newItems;
                 size = EnderStorageConfig.storageSize;
-                markDirty();
+                setChanged();
             }
         }
     }
@@ -102,22 +102,22 @@ public class EnderItemStorage extends AbstractEnderStorage implements IInventory
         return compound;
     }
 
-    public ItemStack getStackInSlot(int slot) {
+    public ItemStack getItem(int slot) {
         synchronized (this) {
             return items[slot];
         }
     }
 
-    public ItemStack removeStackFromSlot(int slot) {
+    public ItemStack removeItemNoUpdate(int slot) {
         synchronized (this) {
             return InventoryUtils.removeStackFromSlot(this, slot);
         }
     }
 
-    public void setInventorySlotContents(int slot, ItemStack stack) {
+    public void setItem(int slot, ItemStack stack) {
         synchronized (this) {
             items[slot] = stack;
-            markDirty();
+            setChanged();
         }
     }
 
@@ -152,7 +152,7 @@ public class EnderItemStorage extends AbstractEnderStorage implements IInventory
     }
 
     @Override
-    public int getSizeInventory() {
+    public int getContainerSize() {
         return sizes[size];
     }
 
@@ -161,29 +161,29 @@ public class EnderItemStorage extends AbstractEnderStorage implements IInventory
         return ArrayUtils.count(items, (stack -> !stack.isEmpty())) <= 0;
     }
 
-    public ItemStack decrStackSize(int slot, int size) {
+    public ItemStack removeItem(int slot, int size) {
         synchronized (this) {
             return InventoryUtils.decrStackSize(this, slot, size);
         }
     }
 
     @Override
-    public int getInventoryStackLimit() {
+    public int getMaxStackSize() {
         return 64;
     }
 
     @Override
-    public void markDirty() {
+    public void setChanged() {
         setDirty();
     }
 
     @Override
-    public boolean isUsableByPlayer(PlayerEntity var1) {
+    public boolean stillValid(PlayerEntity var1) {
         return true;
     }
 
     public void empty() {
-        items = new ItemStack[getSizeInventory()];
+        items = new ItemStack[getContainerSize()];
         ArrayUtils.fill(items, ItemStack.EMPTY);
     }
 
@@ -215,19 +215,19 @@ public class EnderItemStorage extends AbstractEnderStorage implements IInventory
     }
 
     @Override
-    public boolean isItemValidForSlot(int slot, ItemStack stack) {
+    public boolean canPlaceItem(int slot, ItemStack stack) {
         return true;
     }
 
     @Override
-    public void openInventory(PlayerEntity player) {
+    public void startOpen(PlayerEntity player) {
     }
 
     @Override
-    public void closeInventory(PlayerEntity player) {
+    public void stopOpen(PlayerEntity player) {
     }
 
     @Override
-    public void clear() {
+    public void clearContent() {
     }
 }

@@ -38,10 +38,10 @@ public abstract class TileFrequencyOwner extends TileEntity implements ITickable
     public void setFreq(Frequency frequency) {
         this.frequency = frequency;
         onFrequencySet();
-        markDirty();
-        BlockState state = world.getBlockState(pos);
-        world.notifyBlockUpdate(pos, state, state, 3);
-        if (!world.isRemote) {
+        setChanged();
+        BlockState state = level.getBlockState(worldPosition);
+        level.sendBlockUpdated(worldPosition, state, state, 3);
+        if (!level.isClientSide) {
             sendUpdatePacket();
         }
     }
@@ -49,7 +49,7 @@ public abstract class TileFrequencyOwner extends TileEntity implements ITickable
     @Override
     public void tick() {
         if (getStorage().getChangeCount() > changeCount) {
-            world.updateComparatorOutputLevel(pos, getBlockState().getBlock());
+            level.updateNeighbourForOutputSignal(worldPosition, getBlockState().getBlock());
             changeCount = getStorage().getChangeCount();
         }
     }
@@ -61,21 +61,21 @@ public abstract class TileFrequencyOwner extends TileEntity implements ITickable
     }
 
     @Override
-    public void read(BlockState state, CompoundNBT tag) {
-        super.read(state, tag);
+    public void load(BlockState state, CompoundNBT tag) {
+        super.load(state, tag);
         frequency.set(new Frequency(tag.getCompound("Frequency")));
     }
 
     @Override
-    public CompoundNBT write(CompoundNBT tag) {
-        super.write(tag);
+    public CompoundNBT save(CompoundNBT tag) {
+        super.save(tag);
         tag.put("Frequency", frequency.writeToNBT(new CompoundNBT()));
         return tag;
     }
 
     @Override
-    public void setWorldAndPos(World p_226984_1_, BlockPos p_226984_2_) {
-        super.setWorldAndPos(p_226984_1_, p_226984_2_);
+    public void setLevelAndPosition(World p_226984_1_, BlockPos p_226984_2_) {
+        super.setLevelAndPosition(p_226984_1_, p_226984_2_);
         onFrequencySet();
     }
 
@@ -90,7 +90,7 @@ public abstract class TileFrequencyOwner extends TileEntity implements ITickable
     }
 
     protected void sendUpdatePacket() {
-        createPacket().sendToChunk(world, getPos().getX() >> 4, getPos().getZ() >> 4);
+        createPacket().sendToChunk(level, getBlockPos().getX() >> 4, getBlockPos().getZ() >> 4);
     }
 
     public PacketCustom createPacket() {
@@ -101,7 +101,7 @@ public abstract class TileFrequencyOwner extends TileEntity implements ITickable
 
     @Override
     public final SUpdateTileEntityPacket getUpdatePacket() {
-        return createPacket().toTilePacket(getPos());
+        return createPacket().toTilePacket(getBlockPos());
     }
 
     @Override

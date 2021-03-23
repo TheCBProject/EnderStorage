@@ -31,8 +31,8 @@ import net.minecraft.util.math.vector.Quaternion;
  */
 public class RenderTileEnderChest extends TileEntityRenderer<TileEnderChest> {
 
-    private static final RenderType chestType = RenderType.getEntityCutout(new ResourceLocation("enderstorage:textures/enderchest.png"));
-    private static final RenderType buttonType = RenderType.getEntitySolid(new ResourceLocation("enderstorage:textures/buttons.png"));
+    private static final RenderType chestType = RenderType.entityCutout(new ResourceLocation("enderstorage:textures/enderchest.png"));
+    private static final RenderType buttonType = RenderType.entitySolid(new ResourceLocation("enderstorage:textures/buttons.png"));
     private static final RenderType pearlType = CCModelLibrary.getIcos4RenderType(new ResourceLocation("enderstorage:textures/hedronmap.png"), false);
     private static final ModelEnderChest model = new ModelEnderChest();
     private static final RenderCustomEndPortal renderEndPortal = new RenderCustomEndPortal(0.626, 0.188, 0.812, 0.188, 0.812);
@@ -46,8 +46,8 @@ public class RenderTileEnderChest extends TileEntityRenderer<TileEnderChest> {
         CCRenderState ccrs = CCRenderState.instance();
         ccrs.brightness = packedLight;
         ccrs.overlay = packedOverlay;
-        double yToCamera = enderChest.getPos().getY() - renderDispatcher.renderInfo.getProjectedView().y;
-        renderChest(ccrs, mStack, getter, enderChest.rotation, yToCamera, enderChest.getFrequency(), (float) enderChest.getRadianLidAngle(partialTicks), RenderUtils.getTimeOffset(enderChest.getPos()));
+        double yToCamera = enderChest.getBlockPos().getY() - renderer.camera.getPosition().y;
+        renderChest(ccrs, mStack, getter, enderChest.rotation, yToCamera, enderChest.getFrequency(), (float) enderChest.getRadianLidAngle(partialTicks), RenderUtils.getTimeOffset(enderChest.getBlockPos()));
     }
 
     public static void renderChest(CCRenderState ccrs, MatrixStack mStack, IRenderTypeBuffer getter, int rotation, double yToCamera, Frequency freq, float lidAngle, int pearlOffset) {
@@ -56,15 +56,15 @@ public class RenderTileEnderChest extends TileEntityRenderer<TileEnderChest> {
             renderEndPortal.render(mat, getter, yToCamera);
         }
         ccrs.reset();
-        mStack.push();
+        mStack.pushPose();
         mStack.translate(0, 1.0, 1.0);
         mStack.scale(1.0F, -1.0F, -1.0F);
         mStack.translate(0.5, 0.5, 0.5);
-        mStack.rotate(new Quaternion(0, rotation * 90, 0, true));
+        mStack.mulPose(new Quaternion(0, rotation * 90, 0, true));
         mStack.translate(-0.5, -0.5, -0.5);
-        model.chestLid.rotateAngleX = lidAngle;
+        model.chestLid.xRot = lidAngle;
         model.render(mStack, getter.getBuffer(chestType), ccrs.brightness, ccrs.overlay, freq.hasOwner());
-        mStack.pop();
+        mStack.popPose();
 
         //Buttons
         ccrs.bind(buttonType, getter);
