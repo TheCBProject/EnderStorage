@@ -1,5 +1,5 @@
 modLoader="javafml"
-loaderVersion="[32,)"
+loaderVersion="[${forge_version},)"
 issueTrackerURL="https://github.com/TheCBProject/EnderStorage"
 license="The MIT License (MIT)"
 
@@ -20,7 +20,7 @@ Stores your stuff in the END!
 [[dependencies.enderstorage]]
 	modId="forge"
 	mandatory=true
-	versionRange="[35.1,)"
+	versionRange="[${forge_version},)"
 	ordering="NONE"
 	side="BOTH"
 [[dependencies.enderstorage]]
@@ -32,6 +32,6 @@ Stores your stuff in the END!
 [[dependencies.enderstorage]]
     modId="codechickenlib"
     mandatory=true
-    versionRange="[${ccl_version},)"
+    versionRange="${ccl_version_range}"
     ordering="AFTER"
     side="BOTH"
