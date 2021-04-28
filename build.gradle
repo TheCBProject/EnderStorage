@@ -1,7 +1,8 @@
 buildscript {
     repositories {
-        jcenter()
-        maven { url "https://files.minecraftforge.net/maven" }
+        mavenLocal()
+        mavenCentral()
+        maven { url "https://maven.minecraftforge.net/" }
     }
     dependencies {
         classpath 'net.minecraftforge.gradle:ForgeGradle:4.1.+'
@@ -19,8 +20,7 @@ apply plugin: 'net.minecraftforge.gradle'
 group = "codechicken"
 archivesBaseName = "EnderStorage"
 
-targetCompatibility = "1.8"
-sourceCompatibility = "1.8"
+java.toolchain.languageVersion = JavaLanguageVersion.of(8)
 
 sourceSets.main.resources.srcDirs += "src/main/generated"
 
