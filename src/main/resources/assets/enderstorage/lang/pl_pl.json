@@ -1,9 +1,9 @@
 {
-  "item.enderstorage.ender_pouch": "Międzywymiarowa skawa",
+  "item.enderstorage.ender_pouch": "Międzywymiarowa sakwa",
   "block.enderstorage.ender_chest": "Międzywymiarowa skrzynia",
-  "enderstorage.command.no_colour": "Nieprawidłwy kolor: %s",
+  "enderstorage.command.no_colour": "Nieprawidłowy kolor: %s",
   "enderstorage.command.usage": "enderstorage <częstotliwość>|(<kolor> <kolor> <kolor>) [właściciel]",
-  "enderstorage.command.no_freq": "Niepraidłowa szęstotliwość",
+  "enderstorage.command.no_freq": "Nieprawidłowa częstotliwość",
   "block.enderstorage.ender_tank": "Międzywymiarowy zbiornik",
   "enderstorage.command.no_arguments": "Nieprawidłowa ilość argumentów",
   "enderstorage.serverop": "Operator"
