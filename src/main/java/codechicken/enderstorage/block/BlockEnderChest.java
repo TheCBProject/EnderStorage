@@ -1,5 +1,6 @@
 package codechicken.enderstorage.block;
 
+import codechicken.enderstorage.init.EnderStorageModContent;
 import codechicken.enderstorage.misc.EnderKnobSlot;
 import codechicken.enderstorage.tile.TileEnderChest;
 import codechicken.enderstorage.tile.TileFrequencyOwner;
@@ -9,12 +10,16 @@ import codechicken.lib.raytracer.MultiIndexedVoxelShape;
 import codechicken.lib.raytracer.VoxelShapeCache;
 import codechicken.lib.vec.*;
 import com.google.common.collect.ImmutableSet;
-import net.minecraft.block.BlockState;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.shapes.ISelectionContext;
-import net.minecraft.util.math.shapes.VoxelShape;
-import net.minecraft.world.IBlockReader;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityTicker;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.VoxelShape;
 
 import javax.annotation.Nullable;
 
@@ -38,7 +43,7 @@ public class BlockEnderChest extends BlockEnderStorage {
         for (int rot = 0; rot < 4; rot++) {
             //Build buttons and latch.
             for (int button = 0; button < 3; button++) {
-                Cuboid6 cuboid = TileFrequencyOwner.selection_button.copy();
+                Cuboid6 cuboid = TileFrequencyOwner.SELECTION_BUTTON.copy();
                 cuboid.apply(new Translation(0.5, 0, 0.5));
                 cuboid.apply(buttonT[button]);
                 cuboid.apply(new Rotation((-90 * (rot)) * MathHelper.torad, Vector3.Y_POS).at(new Vector3(0.5, 0, 0.5)));
@@ -59,16 +64,15 @@ public class BlockEnderChest extends BlockEnderStorage {
         }
     }
 
-    public BlockEnderChest(Properties properties) {
+    public BlockEnderChest(BlockBehaviour.Properties properties) {
         super(properties);
     }
 
     @Override
-    public VoxelShape getShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
+    public VoxelShape getShape(BlockState state, BlockGetter worldIn, BlockPos pos, CollisionContext context) {
         VoxelShape shape = CHEST;
-        TileEntity t = worldIn.getBlockEntity(pos);
-        if (t instanceof TileEnderChest) {
-            TileEnderChest tile = (TileEnderChest) t;
+        BlockEntity t = worldIn.getBlockEntity(pos);
+        if (t instanceof TileEnderChest tile) {
             shape = SHAPES[tile.rotation][tile.getRadianLidAngle(0) >= 0 ? 0 : 1];
         }
         return shape;
@@ -79,15 +83,15 @@ public class BlockEnderChest extends BlockEnderStorage {
         return true;
     }
 
+    @Nullable
     @Override
-    public boolean hasTileEntity(BlockState state) {
-        return true;
+    public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
+        return new TileEnderChest(pos, state);
     }
 
     @Nullable
     @Override
-    public TileEntity createTileEntity(BlockState state, IBlockReader world) {
-        return new TileEnderChest();
+    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level p_153212_, BlockState p_153213_, BlockEntityType<T> p_153214_) {
+        return createTickerHelper(p_153214_, EnderStorageModContent.ENDER_CHEST_TILE.get(), (level, pos, state, tile) -> tile.tick());
     }
-
 }

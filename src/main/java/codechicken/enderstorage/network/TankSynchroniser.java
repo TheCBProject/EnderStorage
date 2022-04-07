@@ -3,14 +3,13 @@ package codechicken.enderstorage.network;
 import codechicken.enderstorage.api.Frequency;
 import codechicken.enderstorage.manager.EnderStorageManager;
 import codechicken.enderstorage.storage.EnderLiquidStorage;
-import codechicken.lib.fluid.FluidUtils;
 import codechicken.lib.math.MathHelper;
 import codechicken.lib.packet.PacketCustom;
 import codechicken.lib.util.ClientUtils;
 import codechicken.lib.util.ServerUtils;
 import com.google.common.collect.Sets;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.fluid.Fluids;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.level.material.Fluids;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.world.WorldEvent;
@@ -91,10 +90,10 @@ public class TankSynchroniser {
 
     public static class PlayerItemTankState extends TankState {
 
-        private ServerPlayerEntity player;
+        private ServerPlayer player;
         private boolean tracking;
 
-        public PlayerItemTankState(ServerPlayerEntity player, EnderLiquidStorage storage) {
+        public PlayerItemTankState(ServerPlayer player, EnderLiquidStorage storage) {
             this.player = player;
             setFrequency(storage.freq);
             tracking = true;
@@ -109,9 +108,8 @@ public class TankSynchroniser {
                 return;
             }
 
-            PacketCustom packet = new PacketCustom(EnderStorageNetwork.NET_CHANNEL, 4);
+            PacketCustom packet = new PacketCustom(EnderStorageNetwork.NET_CHANNEL, EnderStorageNetwork.C_TANK_SYNC);
             getStorage(false).freq.writeToPacket(packet);
-            //packet.writeString(storage.owner);
             packet.writeFluidStack(s_liquid);
             packet.sendToPlayer(player);
         }
@@ -136,9 +134,9 @@ public class TankSynchroniser {
         private HashSet<Frequency> b_visible;
         private HashSet<Frequency> a_visible;
         //server
-        private ServerPlayerEntity player;
+        private ServerPlayer player;
 
-        public PlayerItemTankCache(ServerPlayerEntity player) {
+        public PlayerItemTankCache(ServerPlayer player) {
             this.player = player;
             client = false;
         }
@@ -177,7 +175,7 @@ public class TankSynchroniser {
                 Sets.SetView<Frequency> old_visible = Sets.difference(b_visible, a_visible);
 
                 if (!new_visible.isEmpty() || !old_visible.isEmpty()) {
-                    PacketCustom packet = new PacketCustom(EnderStorageNetwork.NET_CHANNEL, 1);
+                    PacketCustom packet = new PacketCustom(EnderStorageNetwork.NET_CHANNEL, EnderStorageNetwork.S_VISIBILITY);
 
                     packet.writeShort(new_visible.size());
                     new_visible.forEach(freq -> freq.writeToPacket(packet));
@@ -228,13 +226,13 @@ public class TankSynchroniser {
         return FluidStack.EMPTY;
     }
 
-    public static void handleVisiblityPacket(ServerPlayerEntity player, PacketCustom packet) {
+    public static void handleVisiblityPacket(ServerPlayer player, PacketCustom packet) {
         playerItemTankStates.get(player.getUUID()).handleVisiblityPacket(packet);
     }
 
     @SubscribeEvent
     public void onPlayerLogin(PlayerEvent.PlayerLoggedInEvent event) {
-        playerItemTankStates.put(event.getPlayer().getUUID(), new PlayerItemTankCache((ServerPlayerEntity) event.getPlayer()));
+        playerItemTankStates.put(event.getPlayer().getUUID(), new PlayerItemTankCache((ServerPlayer) event.getPlayer()));
     }
 
     @SubscribeEvent
@@ -246,7 +244,7 @@ public class TankSynchroniser {
 
     @SubscribeEvent
     public void onPlayerChangedDimension(PlayerEvent.PlayerChangedDimensionEvent event) {
-        playerItemTankStates.put(event.getPlayer().getUUID(), new PlayerItemTankCache((ServerPlayerEntity) event.getPlayer()));
+        playerItemTankStates.put(event.getPlayer().getUUID(), new PlayerItemTankCache((ServerPlayer) event.getPlayer()));
     }
 
     @SubscribeEvent

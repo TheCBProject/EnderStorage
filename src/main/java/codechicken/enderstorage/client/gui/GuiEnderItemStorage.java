@@ -1,16 +1,17 @@
 package codechicken.enderstorage.client.gui;
 
 import codechicken.enderstorage.container.ContainerEnderItemStorage;
-import codechicken.lib.texture.TextureUtils;
-import com.mojang.blaze3d.matrix.MatrixStack;
-import com.mojang.blaze3d.platform.GlStateManager;
-import net.minecraft.client.gui.screen.inventory.ContainerScreen;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.util.text.ITextComponent;
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.player.Inventory;
 
-public class GuiEnderItemStorage extends ContainerScreen<ContainerEnderItemStorage> {
+public class GuiEnderItemStorage extends AbstractContainerScreen<ContainerEnderItemStorage> {
 
-    public GuiEnderItemStorage(ContainerEnderItemStorage container, PlayerInventory playerInv, ITextComponent title) {
+    public GuiEnderItemStorage(ContainerEnderItemStorage container, Inventory playerInv, Component title) {
         super(container, playerInv, title);
         passEvents = false;
 
@@ -20,26 +21,27 @@ public class GuiEnderItemStorage extends ContainerScreen<ContainerEnderItemStora
     }
 
     @Override
-    public void render(MatrixStack mStack, int mouseX, int mouseY, float partialTicks) {
-        renderBackground(mStack);
-        super.render(mStack, mouseX, mouseY, partialTicks);
-        renderTooltip(mStack, mouseX, mouseY);
+    public void render(PoseStack stack, int mouseX, int mouseY, float partialTicks) {
+        renderBackground(stack);
+        super.render(stack, mouseX, mouseY, partialTicks);
+        renderTooltip(stack, mouseX, mouseY);
     }
 
     @Override
-    protected void renderLabels(MatrixStack mStack, int mouseX, int mouseY) {
+    protected void renderLabels(PoseStack mStack, int mouseX, int mouseY) {
         font.draw(mStack, title.getVisualOrderText(), 8, 6, 0x404040);
-        font.draw(mStack, inventory.getName().getVisualOrderText(), 8, imageHeight - 94, 0x404040);
+        font.draw(mStack, playerInventoryTitle.getVisualOrderText(), 8, imageHeight - 94, 0x404040);
         if (menu.chestInv.freq.hasOwner()) {
-            ITextComponent name = menu.chestInv.freq.getOwnerName();
+            Component name = menu.chestInv.freq.getOwnerName();
             font.draw(mStack, name.getVisualOrderText(), 170 - font.width(name), 6, 0x404040);
         }
     }
 
     @Override
-    protected void renderBg(MatrixStack mStack, float partialTicks, int mouseX, int mouseY) {
-        GlStateManager._color4f(1.0F, 1.0F, 1.0F, 1.0F);
-        TextureUtils.changeTexture(menu.chestInv.getSize() == 0 ? "textures/gui/container/dispenser.png" : "textures/gui/container/generic_54.png");
+    protected void renderBg(PoseStack mStack, float partialTicks, int mouseX, int mouseY) {
+        RenderSystem.setShader(GameRenderer::getPositionTexShader);
+        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+        RenderSystem.setShaderTexture(0, new ResourceLocation(menu.chestInv.getSize() == 0 ? "textures/gui/container/dispenser.png" : "textures/gui/container/generic_54.png"));
         int x = (width - imageWidth) / 2;
         int y = (height - imageHeight) / 2;
 

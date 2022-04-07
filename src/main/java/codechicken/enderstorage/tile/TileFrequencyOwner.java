@@ -7,28 +7,27 @@ import codechicken.lib.data.MCDataInput;
 import codechicken.lib.data.MCDataOutput;
 import codechicken.lib.packet.PacketCustom;
 import codechicken.lib.vec.Cuboid6;
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.network.NetworkManager;
-import net.minecraft.network.play.server.SUpdateTileEntityPacket;
-import net.minecraft.tileentity.ITickableTileEntity;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.tileentity.TileEntityType;
-import net.minecraft.util.Hand;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.Connection;
+import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockState;
 
-public abstract class TileFrequencyOwner extends TileEntity implements ITickableTileEntity {
+public abstract class TileFrequencyOwner extends BlockEntity {
 
-    public static Cuboid6 selection_button = new Cuboid6(-1 / 16D, 0, -2 / 16D, 1 / 16D, 1 / 16D, 2 / 16D);
+    public static final Cuboid6 SELECTION_BUTTON = new Cuboid6(-1 / 16D, 0, -2 / 16D, 1 / 16D, 1 / 16D, 2 / 16D);
 
     protected Frequency frequency = new Frequency();
     private int changeCount;
 
-    public TileFrequencyOwner(TileEntityType<?> tileEntityTypeIn) {
-        super(tileEntityTypeIn);
+    public TileFrequencyOwner(BlockEntityType<?> tileEntityTypeIn, BlockPos pos, BlockState state) {
+        super(tileEntityTypeIn, pos, state);
     }
 
     public Frequency getFrequency() {
@@ -46,7 +45,6 @@ public abstract class TileFrequencyOwner extends TileEntity implements ITickable
         }
     }
 
-    @Override
     public void tick() {
         if (getStorage().getChangeCount() > changeCount) {
             level.updateNeighbourForOutputSignal(worldPosition, getBlockState().getBlock());
@@ -57,29 +55,26 @@ public abstract class TileFrequencyOwner extends TileEntity implements ITickable
     public abstract AbstractEnderStorage getStorage();
 
     public void onFrequencySet() {
-
     }
 
     @Override
-    public void load(BlockState state, CompoundNBT tag) {
-        super.load(state, tag);
+    public void load(CompoundTag tag) {
+        super.load(tag);
         frequency.set(new Frequency(tag.getCompound("Frequency")));
     }
 
     @Override
-    public CompoundNBT save(CompoundNBT tag) {
-        super.save(tag);
-        tag.put("Frequency", frequency.writeToNBT(new CompoundNBT()));
-        return tag;
+    public void saveAdditional(CompoundTag tag) {
+        tag.put("Frequency", frequency.writeToNBT(new CompoundTag()));
     }
 
     @Override
-    public void setLevelAndPosition(World p_226984_1_, BlockPos p_226984_2_) {
-        super.setLevelAndPosition(p_226984_1_, p_226984_2_);
+    public void setLevel(Level p_155231_) {
+        super.setLevel(p_155231_);
         onFrequencySet();
     }
 
-    public boolean activate(PlayerEntity player, int subHit, Hand hand) {
+    public boolean activate(Player player, int subHit, InteractionHand hand) {
         return false;
     }
 
@@ -94,19 +89,10 @@ public abstract class TileFrequencyOwner extends TileEntity implements ITickable
     }
 
     public PacketCustom createPacket() {
-        PacketCustom packet = new PacketCustom(EnderStorageNetwork.NET_CHANNEL, 1);
+        PacketCustom packet = new PacketCustom(EnderStorageNetwork.NET_CHANNEL, EnderStorageNetwork.C_TILE_UPDATE);
+        packet.writePos(getBlockPos());
         writeToPacket(packet);
         return packet;
-    }
-
-    @Override
-    public final SUpdateTileEntityPacket getUpdatePacket() {
-        return createPacket().toTilePacket(getBlockPos());
-    }
-
-    @Override
-    public CompoundNBT getUpdateTag() {
-        return createPacket().writeToNBT(super.getUpdateTag());
     }
 
     public void writeToPacket(MCDataOutput packet) {
@@ -119,13 +105,13 @@ public abstract class TileFrequencyOwner extends TileEntity implements ITickable
     }
 
     @Override
-    public void onDataPacket(NetworkManager net, SUpdateTileEntityPacket pkt) {
-        readFromPacket(PacketCustom.fromTilePacket(pkt));
+    public CompoundTag getUpdateTag() {
+        return saveWithoutMetadata();
     }
 
     @Override
-    public void handleUpdateTag(BlockState state, CompoundNBT tag) {
-        readFromPacket(PacketCustom.fromNBTTag(tag));
+    public void handleUpdateTag(CompoundTag tag) {
+        load(tag);
     }
 
     public int getLightValue() {

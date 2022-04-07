@@ -1,18 +1,19 @@
 package codechicken.enderstorage.recipe;
 
 import codechicken.enderstorage.api.Frequency;
-import codechicken.enderstorage.init.ModContent;
+import codechicken.enderstorage.init.EnderStorageModContent;
 import codechicken.lib.colour.EnumColour;
 import com.google.gson.JsonObject;
-import net.minecraft.inventory.CraftingInventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.IRecipeSerializer;
-import net.minecraft.item.crafting.Ingredient;
-import net.minecraft.item.crafting.ShapedRecipe;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.JSONUtils;
-import net.minecraft.util.NonNullList;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.core.NonNullList;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.GsonHelper;
+import net.minecraft.world.inventory.CraftingContainer;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraft.world.item.crafting.ShapedRecipe;
+import net.minecraftforge.common.crafting.CraftingHelper;
 import net.minecraftforge.registries.ForgeRegistryEntry;
 
 import javax.annotation.Nonnull;
@@ -30,7 +31,7 @@ public class CreateRecipe extends RecipeBase {
 
     @Nonnull
     @Override
-    public ItemStack assemble(CraftingInventory inv) {
+    public ItemStack assemble(CraftingContainer inv) {
         EnumColour colour = EnumColour.WHITE;
         finish:
         for (int x = 0; x < 3; x++) {
@@ -50,27 +51,27 @@ public class CreateRecipe extends RecipeBase {
     }
 
     @Override
-    public IRecipeSerializer<?> getSerializer() {
-        return ModContent.createRecipeSerializer;
+    public RecipeSerializer<?> getSerializer() {
+        return EnderStorageModContent.CREATE_RECIPE_SERIALIZER.get();
     }
 
-    public static class Serializer extends ForgeRegistryEntry<IRecipeSerializer<?>> implements IRecipeSerializer<CreateRecipe> {
+    public static class Serializer extends ForgeRegistryEntry<RecipeSerializer<?>> implements RecipeSerializer<CreateRecipe> {
 
         @Override
         public CreateRecipe fromJson(ResourceLocation recipeId, JsonObject json) {
-            String group = JSONUtils.getAsString(json, "group", "");
-            Map<String, Ingredient> key = ShapedRecipe.keyFromJson(JSONUtils.getAsJsonObject(json, "key"));
-            String[] pattern = ShapedRecipe.shrink(ShapedRecipe.patternFromJson(JSONUtils.getAsJsonArray(json, "pattern")));
+            String group = GsonHelper.getAsString(json, "group", "");
+            Map<String, Ingredient> key = ShapedRecipe.keyFromJson(GsonHelper.getAsJsonObject(json, "key"));
+            String[] pattern = ShapedRecipe.shrink(ShapedRecipe.patternFromJson(GsonHelper.getAsJsonArray(json, "pattern")));
             int width = pattern[0].length();
             int height = pattern.length;
             NonNullList<Ingredient> ingredients = ShapedRecipe.dissolvePattern(pattern, key, width, height);
-            ItemStack result = ShapedRecipe.itemFromJson(JSONUtils.getAsJsonObject(json, "result"));
+            ItemStack result = ShapedRecipe.itemStackFromJson(GsonHelper.getAsJsonObject(json, "result"));
             return new CreateRecipe(recipeId, group, result, ingredients);
         }
 
         @Nullable
         @Override
-        public CreateRecipe fromNetwork(ResourceLocation recipeId, PacketBuffer buffer) {
+        public CreateRecipe fromNetwork(ResourceLocation recipeId, FriendlyByteBuf buffer) {
             String s = buffer.readUtf(32767);
             NonNullList<Ingredient> ingredients = NonNullList.withSize(3 * 3, Ingredient.EMPTY);
 
@@ -83,7 +84,7 @@ public class CreateRecipe extends RecipeBase {
         }
 
         @Override
-        public void toNetwork(PacketBuffer buffer, CreateRecipe recipe) {
+        public void toNetwork(FriendlyByteBuf buffer, CreateRecipe recipe) {
             buffer.writeUtf(recipe.group);
 
             for (Ingredient ingredient : recipe.input) {

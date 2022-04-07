@@ -1,15 +1,15 @@
 modLoader="javafml"
-loaderVersion="[${forge_version},)"
+loaderVersion="[${lang_version},)"
 issueTrackerURL="https://github.com/TheCBProject/EnderStorage"
 license="The MIT License (MIT)"
 
 [[mods]]
 	modId="enderstorage"
 	displayName="EnderStorage"
-	version="${version}"
+	version="${file.jarVersion}"
 
 	updateJSONURL="https://version-check.covers1624.net/check/?mod=EnderStorage&mc=${mc_version}"
-	displayURL="http://chickenbones.net/Pages/links.html"
+	displayURL="https://www.curseforge.com/minecraft/mc-mods/ender-storage-1-8"
 	authors="ChickenBones, covers1624"
 	description='''
 Stores your stuff in the END!
@@ -26,7 +26,7 @@ Stores your stuff in the END!
 [[dependencies.enderstorage]]
     modId="minecraft"
     mandatory=true
-    versionRange="[1.16.4]"
+    versionRange="[1.18.2]"
     ordering="NONE"
     side="BOTH"
 [[dependencies.enderstorage]]

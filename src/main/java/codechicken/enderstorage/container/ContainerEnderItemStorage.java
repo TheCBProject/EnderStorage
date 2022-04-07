@@ -1,29 +1,29 @@
 package codechicken.enderstorage.container;
 
 import codechicken.enderstorage.api.Frequency;
-import codechicken.enderstorage.init.ModContent;
+import codechicken.enderstorage.init.EnderStorageModContent;
 import codechicken.enderstorage.manager.EnderStorageManager;
 import codechicken.enderstorage.storage.EnderItemStorage;
 import codechicken.lib.data.MCDataInput;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.IInventory;
-import net.minecraft.inventory.container.Container;
-import net.minecraft.inventory.container.Slot;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.Container;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.ItemStack;
 
 //@ChestContainer
-public class ContainerEnderItemStorage extends Container {
+public class ContainerEnderItemStorage extends AbstractContainerMenu {
 
     public EnderItemStorage chestInv;
 
-    public ContainerEnderItemStorage(int windowId, PlayerInventory playerInv, MCDataInput packet) {
+    public ContainerEnderItemStorage(int windowId, Inventory playerInv, MCDataInput packet) {
         this(windowId, playerInv, EnderStorageManager.instance(true).getStorage(Frequency.readFromPacket(packet), EnderItemStorage.TYPE));
         chestInv.handleContainerPacket(packet);
     }
 
-    public ContainerEnderItemStorage(int windowId, PlayerInventory playerInv, EnderItemStorage chestInv) {
-        super(ModContent.containerItemStorage, windowId);
+    public ContainerEnderItemStorage(int windowId, Inventory playerInv, EnderItemStorage chestInv) {
+        super(EnderStorageModContent.ENDER_ITEM_STORAGE.get(), windowId);
         this.chestInv = chestInv;
         chestInv.openInventory();
 
@@ -56,7 +56,7 @@ public class ContainerEnderItemStorage extends Container {
 
     }
 
-    private void addPlayerSlots(IInventory invplayer, int yOffset) {
+    private void addPlayerSlots(Container invplayer, int yOffset) {
         for (int row = 0; row < 3; row++) {
             for (int col = 0; col < 9; col++) {
                 addSlot(new Slot(invplayer, col + row * 9 + 9, 8 + col * 18, yOffset + row * 18));
@@ -69,12 +69,12 @@ public class ContainerEnderItemStorage extends Container {
     }
 
     @Override
-    public boolean stillValid(PlayerEntity entityplayer) {
+    public boolean stillValid(Player entityplayer) {
         return chestInv.stillValid(entityplayer);
     }
 
     @Override
-    public ItemStack quickMoveStack(PlayerEntity par1EntityPlayer, int i) {
+    public ItemStack quickMoveStack(Player par1EntityPlayer, int i) {
         ItemStack itemstack = ItemStack.EMPTY;
         Slot slot = slots.get(i);
 
@@ -100,7 +100,7 @@ public class ContainerEnderItemStorage extends Container {
     }
 
     @Override
-    public void removed(PlayerEntity entityplayer) {
+    public void removed(Player entityplayer) {
         super.removed(entityplayer);
         chestInv.closeInventory();
     }

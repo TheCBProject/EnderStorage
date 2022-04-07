@@ -4,10 +4,10 @@ import codechicken.lib.colour.EnumColour;
 import codechicken.lib.data.MCDataInput;
 import codechicken.lib.data.MCDataOutput;
 import codechicken.lib.util.Copyable;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.world.item.ItemStack;
 
 import java.util.UUID;
 
@@ -20,7 +20,7 @@ public final class Frequency implements Copyable<Frequency> {
     public EnumColour middle;
     public EnumColour right;
     public UUID owner;
-    public ITextComponent ownerName;
+    public Component ownerName;
 
     public Frequency() {
         this(EnumColour.WHITE, EnumColour.WHITE, EnumColour.WHITE);
@@ -30,7 +30,7 @@ public final class Frequency implements Copyable<Frequency> {
         this(left, middle, right, null, null);
     }
 
-    public Frequency(EnumColour left, EnumColour middle, EnumColour right, UUID owner, ITextComponent ownerName) {
+    public Frequency(EnumColour left, EnumColour middle, EnumColour right, UUID owner, Component ownerName) {
         this.left = left;
         this.middle = middle;
         this.right = right;
@@ -38,7 +38,7 @@ public final class Frequency implements Copyable<Frequency> {
         this.ownerName = ownerName;
     }
 
-    public Frequency(CompoundNBT tagCompound) {
+    public Frequency(CompoundTag tagCompound) {
         read_internal(tagCompound);
     }
 
@@ -46,7 +46,7 @@ public final class Frequency implements Copyable<Frequency> {
         return fromString(left, middle, right, null, null);
     }
 
-    public static Frequency fromString(String left, String middle, String right, UUID owner, ITextComponent ownerName) {
+    public static Frequency fromString(String left, String middle, String right, UUID owner, Component ownerName) {
         EnumColour c1 = EnumColour.fromName(left);
         EnumColour c2 = EnumColour.fromName(middle);
         EnumColour c3 = EnumColour.fromName(right);
@@ -88,7 +88,7 @@ public final class Frequency implements Copyable<Frequency> {
         return this;
     }
 
-    public Frequency setOwnerName(ITextComponent ownerName) {
+    public Frequency setOwnerName(Component ownerName) {
         this.ownerName = ownerName;
         return this;
     }
@@ -129,7 +129,7 @@ public final class Frequency implements Copyable<Frequency> {
         return owner;
     }
 
-    public ITextComponent getOwnerName() {
+    public Component getOwnerName() {
         return ownerName;
     }
 
@@ -137,7 +137,7 @@ public final class Frequency implements Copyable<Frequency> {
         return new EnumColour[] { left, middle, right };
     }
 
-    protected Frequency read_internal(CompoundNBT tagCompound) {
+    protected Frequency read_internal(CompoundTag tagCompound) {
         left = EnumColour.fromWoolMeta(tagCompound.getInt("left"));
         middle = EnumColour.fromWoolMeta(tagCompound.getInt("middle"));
         right = EnumColour.fromWoolMeta(tagCompound.getInt("right"));
@@ -145,12 +145,12 @@ public final class Frequency implements Copyable<Frequency> {
             owner = tagCompound.getUUID("owner");
         }
         if (tagCompound.contains("owner_name")) {
-            ownerName = ITextComponent.Serializer.fromJson(tagCompound.getString("owner_name"));
+            ownerName = Component.Serializer.fromJson(tagCompound.getString("owner_name"));
         }
         return this;
     }
 
-    protected CompoundNBT write_internal(CompoundNBT tagCompound) {
+    protected CompoundTag write_internal(CompoundTag tagCompound) {
         tagCompound.putInt("left", left.getWoolMeta());
         tagCompound.putInt("middle", middle.getWoolMeta());
         tagCompound.putInt("right", right.getWoolMeta());
@@ -158,18 +158,18 @@ public final class Frequency implements Copyable<Frequency> {
             tagCompound.putUUID("owner", owner);
         }
         if (ownerName != null) {
-            tagCompound.putString("owner_name", ITextComponent.Serializer.toJson(ownerName));
+            tagCompound.putString("owner_name", Component.Serializer.toJson(ownerName));
         }
         return tagCompound;
     }
 
-    public CompoundNBT writeToNBT(CompoundNBT tagCompound) {
+    public CompoundTag writeToNBT(CompoundTag tagCompound) {
         write_internal(tagCompound);
         return tagCompound;
     }
 
     public void writeToPacket(MCDataOutput packet) {
-        packet.writeCompoundNBT(write_internal(new CompoundNBT()));
+        packet.writeCompoundNBT(write_internal(new CompoundTag()));
     }
 
     public static Frequency readFromPacket(MCDataInput packet) {
@@ -178,7 +178,7 @@ public final class Frequency implements Copyable<Frequency> {
 
     public static Frequency readFromStack(ItemStack stack) {
         if (stack.hasTag()) {
-            CompoundNBT stackTag = stack.getTag();
+            CompoundTag stackTag = stack.getTag();
             if (stackTag.contains("Frequency")) {
                 return new Frequency(stackTag.getCompound("Frequency"));
             }
@@ -187,8 +187,8 @@ public final class Frequency implements Copyable<Frequency> {
     }
 
     public ItemStack writeToStack(ItemStack stack) {
-        CompoundNBT tagCompound = stack.getOrCreateTag();
-        tagCompound.put("Frequency", write_internal(new CompoundNBT()));
+        CompoundTag tagCompound = stack.getOrCreateTag();
+        tagCompound.put("Frequency", write_internal(new CompoundTag()));
         return stack;
     }
 
@@ -205,12 +205,12 @@ public final class Frequency implements Copyable<Frequency> {
         return "left=" + getLeft().getSerializedName() + ",middle=" + getMiddle().getSerializedName() + ",right=" + getRight().getSerializedName() + owner;
     }
 
-    public ITextComponent getTooltip() {
-        return new TranslationTextComponent(getLeft().getUnlocalizedName())//
+    public Component getTooltip() {
+        return new TranslatableComponent(getLeft().getUnlocalizedName())//
                 .append("/")//
-                .append(new TranslationTextComponent(getMiddle().getUnlocalizedName()))//
+                .append(new TranslatableComponent(getMiddle().getUnlocalizedName()))//
                 .append("/")//
-                .append(new TranslationTextComponent(getRight().getUnlocalizedName()));
+                .append(new TranslatableComponent(getRight().getUnlocalizedName()));
     }
 
     @Override

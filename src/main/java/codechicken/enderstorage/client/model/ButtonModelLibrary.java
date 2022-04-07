@@ -15,8 +15,8 @@ public class ButtonModelLibrary {
 
     private static void generateButton() {
         button = CCModel.quadModel(20);
-        Vector3 min = TileFrequencyOwner.selection_button.min;
-        Vector3 max = TileFrequencyOwner.selection_button.max;
+        Vector3 min = TileFrequencyOwner.SELECTION_BUTTON.min;
+        Vector3 max = TileFrequencyOwner.SELECTION_BUTTON.max;
         Vector3[] corners = new Vector3[8];
         corners[0] = new Vector3(min.x, min.y, min.z);
         corners[1] = new Vector3(max.x, min.y, min.z);

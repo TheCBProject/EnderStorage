@@ -1,9 +1,7 @@
 package codechicken.enderstorage.api;
 
 import codechicken.enderstorage.manager.EnderStorageManager;
-import codechicken.lib.config.ConfigTag;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.server.level.ServerPlayer;
 
 import java.util.List;
 
@@ -13,5 +11,5 @@ public interface EnderStoragePlugin<T extends AbstractEnderStorage> {
 
     EnderStorageManager.StorageType<T> identifier();
 
-    void sendClientInfo(ServerPlayerEntity player, List<T> list);
+    void sendClientInfo(ServerPlayer player, List<T> list);
 }

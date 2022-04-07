@@ -1,20 +1,21 @@
 package codechicken.enderstorage.recipe;
 
 import codechicken.enderstorage.api.Frequency;
-import codechicken.enderstorage.init.ModContent;
+import codechicken.enderstorage.init.EnderStorageModContent;
 import codechicken.lib.colour.EnumColour;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import net.minecraft.inventory.CraftingInventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.IRecipeSerializer;
-import net.minecraft.item.crafting.Ingredient;
-import net.minecraft.item.crafting.ShapedRecipe;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.JSONUtils;
-import net.minecraft.util.NonNullList;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.world.World;
+import net.minecraft.core.NonNullList;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.GsonHelper;
+import net.minecraft.world.inventory.CraftingContainer;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraft.world.item.crafting.ShapedRecipe;
+import net.minecraft.world.level.Level;
+import net.minecraftforge.common.crafting.CraftingHelper;
 import net.minecraftforge.registries.ForgeRegistryEntry;
 
 import javax.annotation.Nonnull;
@@ -25,7 +26,7 @@ import javax.annotation.Nullable;
  */
 public class ReColourRecipe extends RecipeBase {
 
-    private Ingredient ingredient;
+    private final Ingredient ingredient;
 
     public ReColourRecipe(ResourceLocation id, String group, @Nonnull ItemStack result, Ingredient ingredient) {
         super(id, group, result, NonNullList.of(Ingredient.EMPTY, ingredient));
@@ -33,7 +34,7 @@ public class ReColourRecipe extends RecipeBase {
     }
 
     @Override
-    public ItemStack assemble(CraftingInventory inv) {
+    public ItemStack assemble(CraftingContainer inv) {
         int foundRow = 0;
         Frequency currFreq = new Frequency();
         for (int row = 1; row < 3; row++) {//Grab the input frequency, and store it's row.
@@ -68,7 +69,7 @@ public class ReColourRecipe extends RecipeBase {
     }
 
     @Override
-    public boolean matches(CraftingInventory inv, World worldIn) {
+    public boolean matches(CraftingContainer inv, Level worldIn) {
         if (inv.isEmpty()) {
             return false;
         }
@@ -137,16 +138,16 @@ public class ReColourRecipe extends RecipeBase {
     }
 
     @Override
-    public IRecipeSerializer<?> getSerializer() {
-        return ModContent.reColourRecipeSerializer;
+    public RecipeSerializer<?> getSerializer() {
+        return EnderStorageModContent.RECOLOUR_RECIPE_SERIALIZER.get();
     }
 
-    public static class Serializer extends ForgeRegistryEntry<IRecipeSerializer<?>> implements IRecipeSerializer<ReColourRecipe> {
+    public static class Serializer extends ForgeRegistryEntry<RecipeSerializer<?>> implements RecipeSerializer<ReColourRecipe> {
 
         @Override
         public ReColourRecipe fromJson(ResourceLocation recipeId, JsonObject json) {
-            String group = JSONUtils.getAsString(json, "group", "");
-            ItemStack result = ShapedRecipe.itemFromJson(JSONUtils.getAsJsonObject(json, "result"));
+            String group = GsonHelper.getAsString(json, "group", "");
+            ItemStack result = ShapedRecipe.itemStackFromJson(GsonHelper.getAsJsonObject(json, "result"));
             Ingredient ingredient;
             JsonElement ing = json.get("ingredient");
             if (ing != null) {
@@ -160,7 +161,7 @@ public class ReColourRecipe extends RecipeBase {
 
         @Nullable
         @Override
-        public ReColourRecipe fromNetwork(ResourceLocation recipeId, PacketBuffer buffer) {
+        public ReColourRecipe fromNetwork(ResourceLocation recipeId, FriendlyByteBuf buffer) {
             String s = buffer.readUtf(32767);
             Ingredient ing = Ingredient.fromNetwork(buffer);
             ItemStack result = buffer.readItem();
@@ -168,7 +169,7 @@ public class ReColourRecipe extends RecipeBase {
         }
 
         @Override
-        public void toNetwork(PacketBuffer buffer, ReColourRecipe recipe) {
+        public void toNetwork(FriendlyByteBuf buffer, ReColourRecipe recipe) {
             buffer.writeUtf(recipe.group);
             recipe.ingredient.toNetwork(buffer);
             buffer.writeItem(recipe.output);

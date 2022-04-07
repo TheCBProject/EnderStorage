@@ -1,12 +1,12 @@
 package codechicken.enderstorage.recipe;
 
-import net.minecraft.inventory.CraftingInventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.ICraftingRecipe;
-import net.minecraft.item.crafting.Ingredient;
-import net.minecraft.util.NonNullList;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.world.World;
+import net.minecraft.core.NonNullList;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.inventory.CraftingContainer;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.CraftingRecipe;
+import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.common.crafting.IShapedRecipe;
 
 import javax.annotation.Nonnull;
@@ -14,7 +14,7 @@ import javax.annotation.Nonnull;
 /**
  * Created by covers1624 on 7/07/2017.
  */
-public abstract class RecipeBase implements ICraftingRecipe, IShapedRecipe<CraftingInventory> {
+public abstract class RecipeBase implements CraftingRecipe, IShapedRecipe<CraftingContainer> {
 
     protected final ResourceLocation id;
     protected final String group;
@@ -29,7 +29,7 @@ public abstract class RecipeBase implements ICraftingRecipe, IShapedRecipe<Craft
     }
 
     @Override
-    public boolean matches(CraftingInventory inv, World worldIn) {
+    public boolean matches(CraftingContainer inv, Level worldIn) {
         for (int i = 0; i < 3; ++i) {
             for (int j = 0; j < 3; ++j) {
                 Ingredient ingredient = Ingredient.EMPTY;
@@ -48,7 +48,7 @@ public abstract class RecipeBase implements ICraftingRecipe, IShapedRecipe<Craft
     }
 
     @Override
-    public ItemStack assemble(CraftingInventory inv) {
+    public ItemStack assemble(CraftingContainer inv) {
         return output.copy();
     }
 

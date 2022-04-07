@@ -9,10 +9,10 @@ import codechicken.lib.model.bakedmodels.ModelProperties.PerspectiveProperties;
 import codechicken.lib.model.bakery.generation.IItemBakery;
 import codechicken.lib.texture.AtlasRegistrar;
 import codechicken.lib.texture.IIconRegister;
-import net.minecraft.client.renderer.model.BakedQuad;
+import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.Direction;
+import net.minecraft.core.Direction;
+import net.minecraft.world.item.ItemStack;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,7 +34,7 @@ public class EnderPouchBakery implements IItemBakery, IIconRegister {
         List<BakedQuad> quads = new ArrayList<>();
         if (face == null) {
             Frequency frequency = Frequency.readFromStack(stack);
-            boolean open =  EnderStorageManager.instance(true).getStorage(frequency, EnderItemStorage.TYPE).openCount() > 0;
+            boolean open = EnderStorageManager.instance(true).getStorage(frequency, EnderItemStorage.TYPE).openCount() > 0;
             TextureAtlasSprite bagTexture = BAG_TEXTURES[frequency.hasOwner() ? 1 : 0][open ? 1 : 0];
             TextureAtlasSprite leftButton = COLOUR_TEXTURES[0][frequency.getLeft().getWoolMeta()];
             TextureAtlasSprite middleButton = COLOUR_TEXTURES[1][frequency.getMiddle().getWoolMeta()];

@@ -4,7 +4,7 @@ import codechicken.enderstorage.api.AbstractEnderStorage;
 import codechicken.enderstorage.api.Frequency;
 import codechicken.enderstorage.manager.EnderStorageManager;
 import codechicken.lib.fluid.FluidUtils;
-import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.IFluidTank;
 import net.minecraftforge.fluids.capability.IFluidHandler;
@@ -42,7 +42,7 @@ public class EnderLiquidStorage extends AbstractEnderStorage implements IFluidHa
     }
 
     @Override
-    public void loadFromTag(CompoundNBT tag) {
+    public void loadFromTag(CompoundTag tag) {
         tank.readFromNBT(tag.getCompound("tank"));
     }
 
@@ -51,9 +51,9 @@ public class EnderLiquidStorage extends AbstractEnderStorage implements IFluidHa
         return "liquid";
     }
 
-    public CompoundNBT saveToTag() {
-        CompoundNBT compound = new CompoundNBT();
-        compound.put("tank", tank.writeToNBT(new CompoundNBT()));
+    public CompoundTag saveToTag() {
+        CompoundTag compound = new CompoundTag();
+        compound.put("tank", tank.writeToNBT(new CompoundTag()));
 
         return compound;
     }

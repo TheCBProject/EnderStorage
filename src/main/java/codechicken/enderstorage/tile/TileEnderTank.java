@@ -1,6 +1,6 @@
 package codechicken.enderstorage.tile;
 
-import codechicken.enderstorage.init.ModContent;
+import codechicken.enderstorage.init.EnderStorageModContent;
 import codechicken.enderstorage.manager.EnderStorageManager;
 import codechicken.enderstorage.network.EnderStorageNetwork;
 import codechicken.enderstorage.network.TankSynchroniser;
@@ -11,14 +11,14 @@ import codechicken.lib.data.MCDataOutput;
 import codechicken.lib.fluid.FluidUtils;
 import codechicken.lib.math.MathHelper;
 import codechicken.lib.packet.PacketCustom;
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.Direction;
-import net.minecraft.util.Hand;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.fluids.FluidStack;
@@ -41,8 +41,8 @@ public class TileEnderTank extends TileFrequencyOwner {
 
     private boolean described;
 
-    public TileEnderTank() {
-        super(ModContent.tileEnderTankType);
+    public TileEnderTank(BlockPos pos, BlockState state) {
+        super(EnderStorageModContent.ENDER_TANK_TILE.get(), pos, state);
     }
 
     @Override
@@ -58,8 +58,8 @@ public class TileEnderTank extends TileFrequencyOwner {
     }
 
     @Override
-    public void setLevelAndPosition(World world, BlockPos pos) {
-        super.setLevelAndPosition(world, pos);
+    public void setLevel(Level p_155231_) {
+        super.setLevel(p_155231_);
         capCache.setWorldPos(getLevel(), getBlockPos());
     }
 
@@ -107,21 +107,23 @@ public class TileEnderTank extends TileFrequencyOwner {
 
     @Override
     public void onPlaced(LivingEntity entity) {
-        rotation = entity != null ? (int) Math.floor(entity.yRot * 4 / 360 + 2.5D) & 3 : 0;
+        rotation = entity != null ? (int) Math.floor(entity.getYRot() * 4 / 360 + 2.5D) & 3 : 0;
         pressure_state.b_rotate = pressure_state.a_rotate = pressure_state.approachRotate();
+        if (!level.isClientSide) {
+            sendUpdatePacket();
+        }
     }
 
     @Override
-    public CompoundNBT save(CompoundNBT tag) {
-        super.save(tag);
+    public void saveAdditional(CompoundTag tag) {
+        super.saveAdditional(tag);
         tag.putByte("rot", (byte) rotation);
         tag.putBoolean("ir", pressure_state.invert_redstone);
-        return tag;
     }
 
     @Override
-    public void load(BlockState state, CompoundNBT tag) {
-        super.load(state, tag);
+    public void load(CompoundTag tag) {
+        super.load(tag);
         liquid_state.setFrequency(frequency);
         rotation = tag.getByte("rot") & 3;
         pressure_state.invert_redstone = tag.getBoolean("ir");
@@ -150,7 +152,7 @@ public class TileEnderTank extends TileFrequencyOwner {
     }
 
     @Override
-    public boolean activate(PlayerEntity player, int subHit, Hand hand) {
+    public boolean activate(Player player, int subHit, InteractionHand hand) {
         if (subHit == 4) {
             pressure_state.invert();
             return true;
@@ -170,14 +172,6 @@ public class TileEnderTank extends TileFrequencyOwner {
     @Override
     public boolean redstoneInteraction() {
         return true;
-    }
-
-    public void sync(PacketCustom packet) {
-        if (packet.getType() == 5) {
-            liquid_state.sync(packet.readFluidStack());
-        } else if (packet.getType() == 6) {
-            pressure_state.a_pressure = packet.readBoolean();
-        }
     }
 
     @Override
@@ -213,7 +207,7 @@ public class TileEnderTank extends TileFrequencyOwner {
 
         @Override
         public void sendSyncPacket() {
-            PacketCustom packet = new PacketCustom(EnderStorageNetwork.NET_CHANNEL, 5);
+            PacketCustom packet = new PacketCustom(EnderStorageNetwork.NET_CHANNEL, EnderStorageNetwork.C_LIQUID_SYNC);
             packet.writePos(getBlockPos());
             packet.writeFluidStack(s_liquid);
             packet.sendToChunk(TileEnderTank.this);
@@ -252,7 +246,7 @@ public class TileEnderTank extends TileFrequencyOwner {
         }
 
         private void sendSyncPacket() {
-            PacketCustom packet = new PacketCustom(EnderStorageNetwork.NET_CHANNEL, 6);
+            PacketCustom packet = new PacketCustom(EnderStorageNetwork.NET_CHANNEL, EnderStorageNetwork.C_PRESSURE_SYNC);
             packet.writePos(getBlockPos());
             packet.writeBoolean(a_pressure);
             packet.sendToChunk(TileEnderTank.this);

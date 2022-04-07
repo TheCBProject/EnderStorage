@@ -2,12 +2,16 @@ package codechicken.enderstorage.init;
 
 import codechicken.lib.datagen.ItemModelProvider;
 import net.minecraft.data.DataGenerator;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.CropBlock;
 import net.minecraftforge.client.model.generators.BlockStateProvider;
+import net.minecraftforge.client.model.generators.ConfiguredModel;
 import net.minecraftforge.client.model.generators.ModelFile;
 import net.minecraftforge.common.data.ExistingFileHelper;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.event.lifecycle.GatherDataEvent;
+import net.minecraftforge.forge.event.lifecycle.GatherDataEvent;
 
 import javax.annotation.Nonnull;
 
@@ -37,9 +41,9 @@ public class DataGenerators {
 
         @Override
         protected void registerModels() {
-            generated(ModContent.itemEnderChest).texture(null);
-            generated(ModContent.itemEnderTank).texture(null);
-            generated(ModContent.itemEnderPouch).texture(null);
+            generated(EnderStorageModContent.ENDER_CHEST_ITEM).noTexture();
+            generated(EnderStorageModContent.ENDER_TANK_ITEM).noTexture();
+            generated(EnderStorageModContent.ENDER_POUCH).noTexture();
         }
 
         @Override
@@ -62,11 +66,21 @@ public class DataGenerators {
 
         @Override
         protected void registerStatesAndModels() {
-            ModelFile model = models()//
-                    .withExistingParent("dummy", "block")//
+            ModelFile model = models()
+                    .withExistingParent("dummy", "block")
                     .texture("particle", "minecraft:block/obsidian");
-            simpleBlock(ModContent.blockEnderChest, model);
-            simpleBlock(ModContent.blockEnderTank, model);
+            simpleBlock(EnderStorageModContent.ENDER_CHEST_BLOCK.get(), model);
+            simpleBlock(EnderStorageModContent.ENDER_TANK_BLOCK.get(), model);
+
+            ModelFile[] soybean_models = new ModelFile[6];
+            for (int i = 0; i < soybean_models.length; i++) {
+                soybean_models[i] = models().cross("soybean_" + i, modLoc("block/soybean/state" + i));
+            }
+
+            getVariantBuilder(Blocks.WHEAT).forAllStates(state -> ConfiguredModel.builder()
+                    .modelFile(soybean_models[state.getValue(CropBlock.AGE)])
+                    .build()
+            );
         }
     }
 }

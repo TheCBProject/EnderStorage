@@ -1,19 +1,22 @@
 package codechicken.enderstorage.config;
 
-import codechicken.enderstorage.EnderStorage;
 import codechicken.lib.config.ConfigTag;
 import codechicken.lib.config.StandardConfigFile;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.util.ResourceLocation;
+import com.mojang.logging.LogUtils;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraftforge.registries.ForgeRegistries;
+import org.slf4j.Logger;
 
 import java.nio.file.Paths;
 
-/**
+/**s
  * Created by covers1624 on 28/10/19.
  */
 public class EnderStorageConfig {
+
+    private static final Logger LOGGER = LogUtils.getLogger();
 
     private static ConfigTag config;
 
@@ -55,7 +58,7 @@ public class EnderStorageConfig {
         if (ForgeRegistries.ITEMS.containsKey(personalItemName)) {
             personalItem = new ItemStack(ForgeRegistries.ITEMS.getValue(personalItemName));
         } else {
-            EnderStorage.logger.warn("Failed to load PersonaItem '{}', does not exist. Using default.", personalItemName);
+            LOGGER.warn("Failed to load PersonaItem '{}', does not exist. Using default.", personalItemName);
             personalItemTag.resetToDefault();
             personalItem = new ItemStack(Items.DIAMOND);
         }

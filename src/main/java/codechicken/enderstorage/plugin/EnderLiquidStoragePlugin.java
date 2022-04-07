@@ -4,7 +4,7 @@ import codechicken.enderstorage.api.EnderStoragePlugin;
 import codechicken.enderstorage.api.Frequency;
 import codechicken.enderstorage.manager.EnderStorageManager;
 import codechicken.enderstorage.storage.EnderLiquidStorage;
-import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.server.level.ServerPlayer;
 
 import java.util.List;
 
@@ -21,6 +21,6 @@ public class EnderLiquidStoragePlugin implements EnderStoragePlugin<EnderLiquidS
     }
 
     @Override
-    public void sendClientInfo(ServerPlayerEntity player, List<EnderLiquidStorage> list) {
+    public void sendClientInfo(ServerPlayer player, List<EnderLiquidStorage> list) {
     }
 }

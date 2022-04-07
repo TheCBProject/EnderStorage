@@ -6,7 +6,7 @@ import codechicken.enderstorage.api.Frequency;
 import codechicken.enderstorage.manager.EnderStorageManager;
 import codechicken.enderstorage.network.EnderStorageSPH;
 import codechicken.enderstorage.storage.EnderItemStorage;
-import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.server.level.ServerPlayer;
 
 import java.util.List;
 
@@ -23,7 +23,7 @@ public class EnderItemStoragePlugin implements EnderStoragePlugin<EnderItemStora
     }
 
     @Override
-    public void sendClientInfo(ServerPlayerEntity player, List<EnderItemStorage> list) {
+    public void sendClientInfo(ServerPlayer player, List<EnderItemStorage> list) {
         for (AbstractEnderStorage inv : list) {
             if (((EnderItemStorage) inv).openCount() > 0) {
                 EnderStorageSPH.sendOpenUpdateTo(player, inv.freq, true);

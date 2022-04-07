@@ -2,7 +2,6 @@ package codechicken.enderstorage.storage;
 
 import codechicken.enderstorage.api.AbstractEnderStorage;
 import codechicken.enderstorage.api.Frequency;
-import codechicken.enderstorage.client.gui.GuiEnderItemStorage;
 import codechicken.enderstorage.config.EnderStorageConfig;
 import codechicken.enderstorage.container.ContainerEnderItemStorage;
 import codechicken.enderstorage.manager.EnderStorageManager;
@@ -10,18 +9,16 @@ import codechicken.enderstorage.network.EnderStorageSPH;
 import codechicken.lib.data.MCDataInput;
 import codechicken.lib.inventory.InventoryUtils;
 import codechicken.lib.util.ArrayUtils;
-import codechicken.lib.util.ClientUtils;
 import codechicken.lib.util.ServerUtils;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.inventory.IInventory;
-import net.minecraft.inventory.container.SimpleNamedContainerProvider;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.text.ITextComponent;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.Container;
+import net.minecraft.world.SimpleMenuProvider;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 
-public class EnderItemStorage extends AbstractEnderStorage implements IInventory {
+public class EnderItemStorage extends AbstractEnderStorage implements Container {
 
     public static final EnderStorageManager.StorageType<EnderItemStorage> TYPE = new EnderStorageManager.StorageType<>("item");
 
@@ -45,7 +42,7 @@ public class EnderItemStorage extends AbstractEnderStorage implements IInventory
         }
     }
 
-    public void loadFromTag(CompoundNBT tag) {
+    public void loadFromTag(CompoundTag tag) {
         size = tag.getByte("size");
         empty();
         InventoryUtils.readItemStacksFromTag(items, tag.getList("Items", 10));
@@ -90,12 +87,12 @@ public class EnderItemStorage extends AbstractEnderStorage implements IInventory
         return "item";
     }
 
-    public CompoundNBT saveToTag() {
+    public CompoundTag saveToTag() {
         if (size != EnderStorageConfig.storageSize && open == 0) {
             alignSize();
         }
 
-        CompoundNBT compound = new CompoundNBT();
+        CompoundTag compound = new CompoundTag();
         compound.put("Items", InventoryUtils.writeItemStacksToTag(items));
         compound.putByte("size", (byte) size);
 
@@ -178,7 +175,7 @@ public class EnderItemStorage extends AbstractEnderStorage implements IInventory
     }
 
     @Override
-    public boolean stillValid(PlayerEntity var1) {
+    public boolean stillValid(Player var1) {
         return true;
     }
 
@@ -187,8 +184,8 @@ public class EnderItemStorage extends AbstractEnderStorage implements IInventory
         ArrayUtils.fill(items, ItemStack.EMPTY);
     }
 
-    public void openContainer(ServerPlayerEntity player, ITextComponent title) {
-        ServerUtils.openContainer(player, new SimpleNamedContainerProvider((id, inv, p) -> new ContainerEnderItemStorage(id, inv, EnderItemStorage.this), title),//
+    public void openContainer(ServerPlayer player, Component title) {
+        ServerUtils.openContainer(player, new SimpleMenuProvider((id, inv, p) -> new ContainerEnderItemStorage(id, inv, EnderItemStorage.this), title),
                 packet -> {
                     freq.writeToPacket(packet);
                     packet.writeByte(size);
@@ -220,11 +217,11 @@ public class EnderItemStorage extends AbstractEnderStorage implements IInventory
     }
 
     @Override
-    public void startOpen(PlayerEntity player) {
+    public void startOpen(Player player) {
     }
 
     @Override
-    public void stopOpen(PlayerEntity player) {
+    public void stopOpen(Player player) {
     }
 
     @Override

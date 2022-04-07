@@ -1,7 +1,7 @@
 package codechicken.enderstorage.misc;
 
 import codechicken.lib.vec.Vector3;
-import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.world.phys.AABB;
 
 public class EnderKnobSlot {
 
@@ -24,13 +24,13 @@ public class EnderKnobSlot {
         aabb = cornersToAABB(verts);
     }
 
-    private AxisAlignedBB aabb;
+    private AABB aabb;
 
-    public AxisAlignedBB getSelectionBB() {
+    public AABB getSelectionBB() {
         return aabb;
     }
 
-    public static AxisAlignedBB cornersToAABB(Vector3[] corners) {
+    public static AABB cornersToAABB(Vector3[] corners) {
         Vector3 min = corners[0].copy();
         Vector3 max = corners[0].copy();
         for (int i = 1; i < corners.length; i++) {
@@ -51,6 +51,6 @@ public class EnderKnobSlot {
                 max.z = vec.z;
             }
         }
-        return new AxisAlignedBB(min.x, min.y, min.z, max.x, max.y, max.z);
+        return new AABB(min.x, min.y, min.z, max.x, max.y, max.z);
     }
 }

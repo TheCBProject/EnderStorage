@@ -5,14 +5,14 @@ import codechicken.enderstorage.api.EnderStoragePlugin;
 import codechicken.enderstorage.api.Frequency;
 import codechicken.lib.util.ServerUtils;
 import com.google.common.collect.ImmutableMap;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.CompressedStreamTools;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtIo;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.player.PlayerEvent;
+import net.minecraftforge.event.server.ServerStartedEvent;
 import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.event.server.FMLServerStartedEvent;
 
 import java.io.DataOutputStream;
 import java.io.File;
@@ -40,12 +40,12 @@ public class EnderStorageManager {
 
         @SubscribeEvent
         public void onPlayerLogin(PlayerEvent.PlayerLoggedInEvent event) {
-            instance(false).sendClientInfo((ServerPlayerEntity) event.getPlayer());
+            instance(false).sendClientInfo((ServerPlayer) event.getPlayer());
         }
 
         @SubscribeEvent
         public void onPlayerChangedDimension(PlayerEvent.PlayerChangedDimensionEvent event) {
-            instance(false).sendClientInfo((ServerPlayerEntity) event.getPlayer());
+            instance(false).sendClientInfo((ServerPlayer) event.getPlayer());
         }
     }
 
@@ -87,7 +87,7 @@ public class EnderStorageManager {
     private File[] saveFiles;
     private int saveTo;
     private List<AbstractEnderStorage> dirtyStorage;
-    private CompoundNBT saveTag;
+    private CompoundTag saveTag;
 
     public EnderStorageManager(boolean client) {
         this.client = client;
@@ -109,11 +109,11 @@ public class EnderStorageManager {
         MinecraftForge.EVENT_BUS.addListener(EnderStorageManager::onServerStarted);
     }
 
-    private static void onServerStarted(FMLServerStartedEvent event) {
+    private static void onServerStarted(ServerStartedEvent event) {
         EnderStorageManager.reloadManager(false);
     }
 
-    private void sendClientInfo(ServerPlayerEntity player) {
+    private void sendClientInfo(ServerPlayer player) {
         for (Map.Entry<StorageType<?>, EnderStoragePlugin<?>> plugin : plugins.entrySet()) {
             plugin.getValue().sendClientInfo(player, unsafeCast(storageList.get(plugin.getKey())));
         }
@@ -126,7 +126,7 @@ public class EnderStorageManager {
 
     private void load() {
 
-        saveDir = new File(ServerUtils.getSaveDirectory(), "EnderStorage");
+        saveDir = new File(ServerUtils.getSaveDirectory().toFile(), "EnderStorage");
         try {
             if (!saveDir.exists()) {
                 saveDir.mkdirs();
@@ -141,13 +141,13 @@ public class EnderStorageManager {
 
                 if (saveFiles[saveTo ^ 1].exists()) {
                     FileInputStream in = new FileInputStream(saveFiles[saveTo ^ 1]);
-                    saveTag = CompressedStreamTools.readCompressed(in);
+                    saveTag = NbtIo.readCompressed(in);
                     in.close();
                 } else {
-                    saveTag = new CompoundNBT();
+                    saveTag = new CompoundTag();
                 }
             } else {
-                saveTag = new CompoundNBT();
+                saveTag = new CompoundTag();
             }
         } catch (Exception e) {
             throw new RuntimeException(String.format("EnderStorage was unable to read it's data, please delete the 'EnderStorage' folder Here: %s and start the server again.", saveDir), e);
@@ -169,7 +169,7 @@ public class EnderStorageManager {
                     saveFile.createNewFile();
                 }
                 DataOutputStream dout = new DataOutputStream(new FileOutputStream(saveFile));
-                CompressedStreamTools.writeCompressed(saveTag, dout);
+                NbtIo.writeCompressed(saveTag, dout);
                 dout.close();
                 FileOutputStream fout = new FileOutputStream(saveFiles[2]);
                 fout.write(saveTo);

@@ -1,23 +1,23 @@
 package codechicken.enderstorage.tile;
 
 import codechicken.enderstorage.config.EnderStorageConfig;
-import codechicken.enderstorage.init.ModContent;
+import codechicken.enderstorage.init.EnderStorageModContent;
 import codechicken.enderstorage.manager.EnderStorageManager;
-import codechicken.enderstorage.misc.EnderDyeButton;
 import codechicken.enderstorage.storage.EnderItemStorage;
 import codechicken.lib.data.MCDataInput;
 import codechicken.lib.data.MCDataOutput;
 import codechicken.lib.math.MathHelper;
 import codechicken.lib.packet.PacketCustom;
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.Direction;
-import net.minecraft.util.Hand;
-import net.minecraft.util.SoundCategory;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.CapabilityItemHandler;
@@ -28,7 +28,7 @@ import net.minecraftforge.items.wrapper.InvWrapper;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import static net.minecraft.util.SoundEvents.*;
+import static net.minecraft.sounds.SoundEvents.*;
 
 public class TileEnderChest extends TileFrequencyOwner {
 
@@ -39,17 +39,8 @@ public class TileEnderChest extends TileFrequencyOwner {
 
     private LazyOptional<IItemHandler> itemHandler = LazyOptional.empty();
 
-    public static EnderDyeButton[] buttons;
-
-    static {
-        buttons = new EnderDyeButton[3];
-        for (int i = 0; i < 3; i++) {
-            buttons[i] = new EnderDyeButton(i);
-        }
-    }
-
-    public TileEnderChest() {
-        super(ModContent.tileEnderChestType);
+    public TileEnderChest(BlockPos pos, BlockState state) {
+        super(EnderStorageModContent.ENDER_CHEST_TILE.get(), pos, state);
     }
 
     @Override
@@ -66,9 +57,9 @@ public class TileEnderChest extends TileFrequencyOwner {
         a_lidAngle = MathHelper.approachLinear(a_lidAngle, c_numOpen > 0 ? 1 : 0, 0.1);
 
         if (b_lidAngle >= 0.5 && a_lidAngle < 0.5) {
-            level.playSound(null, getBlockPos(), EnderStorageConfig.useVanillaEnderChestSounds ? ENDER_CHEST_CLOSE : CHEST_CLOSE, SoundCategory.BLOCKS, 0.5F, level.random.nextFloat() * 0.1F + 0.9F);
+            level.playSound(null, getBlockPos(), EnderStorageConfig.useVanillaEnderChestSounds ? ENDER_CHEST_CLOSE : CHEST_CLOSE, SoundSource.BLOCKS, 0.5F, level.random.nextFloat() * 0.1F + 0.9F);
         } else if (b_lidAngle == 0 && a_lidAngle > 0) {
-            level.playSound(null, getBlockPos(), EnderStorageConfig.useVanillaEnderChestSounds ? ENDER_CHEST_OPEN : CHEST_OPEN, SoundCategory.BLOCKS, 0.5F, level.random.nextFloat() * 0.1F + 0.9F);
+            level.playSound(null, getBlockPos(), EnderStorageConfig.useVanillaEnderChestSounds ? ENDER_CHEST_OPEN : CHEST_OPEN, SoundSource.BLOCKS, 0.5F, level.random.nextFloat() * 0.1F + 0.9F);
         }
     }
 
@@ -119,26 +110,28 @@ public class TileEnderChest extends TileFrequencyOwner {
 
     @Override
     public void onPlaced(LivingEntity entity) {
-        rotation = entity != null ? (int) Math.floor(entity.yRot * 4 / 360 + 2.5D) & 3 : 0;
+        rotation = entity != null ? (int) Math.floor(entity.getYRot() * 4 / 360 + 2.5D) & 3 : 0;
         onFrequencySet();
+        if (!level.isClientSide) {
+            sendUpdatePacket();
+        }
     }
 
     @Override
-    public CompoundNBT save(CompoundNBT tag) {
-        super.save(tag);
+    public void saveAdditional(CompoundTag tag) {
+        super.saveAdditional(tag);
         tag.putByte("rot", (byte) rotation);
-        return tag;
     }
 
     @Override
-    public void load(BlockState state, CompoundNBT tag) {
-        super.load(state, tag);
+    public void load(CompoundTag tag) {
+        super.load(tag);
         rotation = tag.getByte("rot") & 3;
     }
 
     @Override
-    public boolean activate(PlayerEntity player, int subHit, Hand hand) {
-        getStorage().openContainer((ServerPlayerEntity) player, new TranslationTextComponent(getBlockState().getBlock().getDescriptionId()));
+    public boolean activate(Player player, int subHit, InteractionHand hand) {
+        getStorage().openContainer((ServerPlayer) player, new TranslatableComponent(getBlockState().getBlock().getDescriptionId()));
         return true;
     }
 
