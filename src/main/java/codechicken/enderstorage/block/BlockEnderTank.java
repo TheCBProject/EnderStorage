@@ -57,7 +57,7 @@ public class BlockEnderTank extends BlockEnderStorage {
             cuboids.add(TANK);
             cuboids.add(BUTTONS[rot]);
             cuboids.add(DIAL[rot]);
-            SHAPES[rot] = new MultiIndexedVoxelShape(cuboids.build());
+            SHAPES[rot] = new MultiIndexedVoxelShape(TANK, cuboids.build());
         }
     }
 
