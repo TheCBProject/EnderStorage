@@ -41,9 +41,9 @@ public class RenderCustomEndPortal {
     public void render(Matrix4 mat, MultiBufferSource source) {
         LocalPlayer localPlayer = Minecraft.getInstance().player;
 
-        Shaders.starfieldTime.set((float) ClientUtils.getRenderTime());
-        Shaders.starfieldYaw.set((float) (localPlayer.getYRot() * MathHelper.torad));
-        Shaders.starfieldPitch.set((float) -(localPlayer.getXRot() * MathHelper.torad));
+        Shaders.starfieldTime.glUniform1f((float) ClientUtils.getRenderTime());
+        Shaders.starfieldYaw.glUniform1f((float) (localPlayer.getYRot() * MathHelper.torad));
+        Shaders.starfieldPitch.glUniform1f((float) -(localPlayer.getXRot() * MathHelper.torad));
 
         VertexConsumer cons = new TransformingVertexConsumer(source.getBuffer(STARFIELD_TYPE), mat);
         cons.vertex(surfaceX1, surfaceY, surfaceZ1).endVertex();
