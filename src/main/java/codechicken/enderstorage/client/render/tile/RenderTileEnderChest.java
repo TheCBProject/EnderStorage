@@ -7,12 +7,13 @@ import codechicken.enderstorage.client.render.RenderCustomEndPortal;
 import codechicken.enderstorage.tile.TileEnderChest;
 import codechicken.lib.colour.EnumColour;
 import codechicken.lib.math.MathHelper;
-import codechicken.lib.render.CCModel;
 import codechicken.lib.render.CCModelLibrary;
 import codechicken.lib.render.CCRenderState;
 import codechicken.lib.render.RenderUtils;
 import codechicken.lib.util.ClientUtils;
-import codechicken.lib.vec.*;
+import codechicken.lib.vec.Matrix4;
+import codechicken.lib.vec.Rotation;
+import codechicken.lib.vec.Vector3;
 import codechicken.lib.vec.uv.UVTranslation;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
@@ -97,18 +98,19 @@ public class RenderTileEnderChest implements BlockEntityRenderer<TileEnderChest>
         }
         pose.popPose();
 
+        mat.translate(0.5, 0, 0.5);
         // Buttons
         ccrs.bind(buttonType, source);
+        Matrix4 buttonCommon = mat.copy();
+        buttonCommon.rotate((-90 * (rotation)) * MathHelper.torad, Vector3.Y_POS);
+        buttonCommon.apply(new Rotation(lidAngle, 1, 0, 0).at(new Vector3(-8 / 16D, 9D / 16D, -7 / 16D)));
+
         EnumColour[] colours = freq.toArray();
         for (int i = 0; i < 3; i++) {
-            Transformation trans = BlockEnderChest.buttonT[i]
-                    .with(new Translation(0.5, 0, 0.5))
-                    .with(new Rotation(lidAngle, 1, 0, 0).at(new Vector3(0, 9D / 16D, 1 / 16D)))
-                    .with(new Rotation((-90 * (rotation)) * MathHelper.torad, Vector3.Y_POS).at(new Vector3(0.5, 0, 0.5)))
-                    .with(mat);
-            ButtonModelLibrary.button.render(ccrs, trans, new UVTranslation(0.25 * (colours[i].getWoolMeta() % 4), 0.25 * (colours[i].getWoolMeta() / 4F)));
+            Matrix4 buttonMat = buttonCommon.copy();
+            buttonMat.apply(BlockEnderChest.buttonT[i]);
+            ButtonModelLibrary.button.render(ccrs, buttonMat, new UVTranslation(0.25 * (colours[i].getWoolMeta() % 4), 0.25 * (colours[i].getWoolMeta() / 4)));
         }
-        mat.translate(0.5, 0, 0.5);
 
         // Pearl
         if (lidAngle != 0) {
