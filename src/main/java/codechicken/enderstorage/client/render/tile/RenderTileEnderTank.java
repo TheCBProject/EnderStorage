@@ -9,6 +9,7 @@ import codechicken.lib.colour.EnumColour;
 import codechicken.lib.fluid.FluidUtils;
 import codechicken.lib.math.MathHelper;
 import codechicken.lib.render.*;
+import codechicken.lib.render.model.OBJParser;
 import codechicken.lib.util.ClientUtils;
 import codechicken.lib.vec.*;
 import codechicken.lib.vec.uv.UVTranslation;
@@ -19,7 +20,6 @@ import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.fluids.FluidStack;
-import org.lwjgl.opengl.GL11;
 
 import java.util.Map;
 
@@ -35,7 +35,10 @@ public class RenderTileEnderTank implements BlockEntityRenderer<TileEnderTank> {
     public static final RenderCustomEndPortal renderEndPortal = new RenderCustomEndPortal(0.1205, 0.24, 0.76, 0.24, 0.76);
 
     static {
-        Map<String, CCModel> models = OBJParser.parseModels(new ResourceLocation("enderstorage:models/endertank.obj"), GL11.GL_QUADS, new SwapYZ());
+        Map<String, CCModel> models = new OBJParser(new ResourceLocation("enderstorage:models/endertank.obj"))
+                .quads()
+                .swapYZ()
+                .parse();
         Transformation fix = new Translation(-0.0099 - 0.5, 0, -0.0027 - 0.5);
         valveModel = models.remove("Valve").apply(fix).computeNormals();
         tankModel = CCModel.combine(models.values()).apply(fix).computeNormals().shrinkUVs(0.004);
