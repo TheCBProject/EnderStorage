@@ -128,8 +128,8 @@ public class TankSynchroniser {
 
     public static class PlayerItemTankCache {
 
-        private boolean client;
-        private HashMap<String, PlayerItemTankState> tankStates = new HashMap<>();
+        private final boolean client;
+        private final Map<String, PlayerItemTankState> tankStates = new HashMap<>();
         //client
         private HashSet<Frequency> b_visible;
         private HashSet<Frequency> a_visible;

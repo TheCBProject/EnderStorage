@@ -27,7 +27,7 @@ public class RenderTileEnderTank implements BlockEntityRenderer<TileEnderTank> {
 
     private static final RenderType baseType = RenderType.entityCutout(new ResourceLocation("enderstorage:textures/endertank.png"));
     private static final RenderType buttonType = RenderType.entitySolid(new ResourceLocation("enderstorage:textures/buttons.png"));
-    private static final RenderType pearlType = CCModelLibrary.getIcos4RenderType(new ResourceLocation("enderstorage:textures/hedronmap.png"), false);
+    private static final RenderType pearlType = CCModelLibrary.getIcos4RenderType(new ResourceLocation("enderstorage:textures/hedronmap.png"));
 
     public static final CCModel tankModel;
     public static final CCModel valveModel;

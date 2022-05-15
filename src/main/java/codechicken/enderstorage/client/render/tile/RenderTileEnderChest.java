@@ -37,7 +37,7 @@ public class RenderTileEnderChest implements BlockEntityRenderer<TileEnderChest>
 
     private static final RenderType chestType = RenderType.entityCutout(new ResourceLocation("enderstorage:textures/enderchest.png"));
     private static final RenderType buttonType = RenderType.entitySolid(new ResourceLocation("enderstorage:textures/buttons.png"));
-    private static final RenderType pearlType = CCModelLibrary.getIcos4RenderType(new ResourceLocation("enderstorage:textures/hedronmap.png"), false);
+    private static final RenderType pearlType = CCModelLibrary.getIcos4RenderType(new ResourceLocation("enderstorage:textures/hedronmap.png"));
     private static final RenderCustomEndPortal renderEndPortal = new RenderCustomEndPortal(0.626, 0.188, 0.812, 0.188, 0.812);
 
     private final ModelPart bottom;
