@@ -24,7 +24,7 @@ public class EnderStorage {
         EnderStorageConfig.load();
 
         EnderStorageModContent.init();
-        DistExecutor.safeRunWhenOn(Dist.CLIENT, () -> ClientInit::init);
+        DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> ClientInit::init);
 
         EnderStorageNetwork.init();
 
