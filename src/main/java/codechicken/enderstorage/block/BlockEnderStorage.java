@@ -64,7 +64,7 @@ public abstract class BlockEnderStorage extends BaseEntityBlock// implements ICu
         if (tile != null) {
             drops.add(createItem(tile.getFrequency()));
             if (EnderStorageConfig.anarchyMode && tile.getFrequency().hasOwner()) {
-                drops.add(EnderStorageConfig.personalItem.copy());
+                drops.add(EnderStorageConfig.getPersonalItem().copy());
             }
         }
         return drops;
@@ -103,13 +103,13 @@ public abstract class BlockEnderStorage extends BaseEntityBlock// implements ICu
         if (hit.subHit == 4) {
             ItemStack item = player.getInventory().getSelected();
             if (player.isCrouching() && owner.getFrequency().hasOwner()) {
-                if (!player.getAbilities().instabuild && !player.getInventory().add(EnderStorageConfig.personalItem.copy())) {
+                if (!player.getAbilities().instabuild && !player.getInventory().add(EnderStorageConfig.getPersonalItem().copy())) {
                     return InteractionResult.FAIL;
                 }
 
                 owner.setFreq(owner.getFrequency().copy().setOwner(null));
                 return InteractionResult.SUCCESS;
-            } else if (!item.isEmpty() && ItemUtils.areStacksSameType(item, EnderStorageConfig.personalItem)) {
+            } else if (!item.isEmpty() && ItemUtils.areStacksSameType(item, EnderStorageConfig.getPersonalItem())) {
                 if (!owner.getFrequency().hasOwner()) {
                     owner.setFreq(owner.getFrequency().copy()//
                             .setOwner(player.getUUID())//
