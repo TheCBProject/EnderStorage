@@ -129,7 +129,7 @@ void main() {
         vec2 tex = vec2(u * scale, (v + Time * 0.00006) * scale * 0.6 );
 
         // sample the texture
-        vec4 tcol = texture2D(Sampler0, tex);
+        vec4 tcol = texture(Sampler0, tex);
 
         // set the alpha, blending out at the bunched ends
         float a = tcol.r * (0.05 + (1.0 / mult) * 0.65) * (1 - smoothstep(0.15, 0.48, abs(v - 0.5)));
