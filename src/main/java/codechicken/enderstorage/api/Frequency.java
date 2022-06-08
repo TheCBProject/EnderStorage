@@ -1,10 +1,12 @@
 package codechicken.enderstorage.api;
 
+import codechicken.enderstorage.handler.ConfigurationHandler;
 import codechicken.lib.colour.EnumColour;
 import codechicken.lib.data.MCDataInput;
 import codechicken.lib.data.MCDataOutput;
 import codechicken.lib.util.Copyable;
 import codechicken.lib.util.ItemNBTUtils;
+import net.minecraft.client.Minecraft;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 
@@ -17,20 +19,26 @@ public final class Frequency implements Copyable<Frequency> {
     public EnumColour middle;
     public EnumColour right;
     public String owner;
+    public String dimId;
 
     public Frequency() {
-        this(EnumColour.WHITE, EnumColour.WHITE, EnumColour.WHITE);
+        this(EnumColour.WHITE, EnumColour.WHITE, EnumColour.WHITE, null);
     }
 
     public Frequency(EnumColour left, EnumColour middle, EnumColour right) {
-        this(left, middle, right, null);
+        this(left, middle, right, null, null);
     }
 
-    public Frequency(EnumColour left, EnumColour middle, EnumColour right, String owner) {
+    public Frequency(EnumColour left, EnumColour middle, EnumColour right, String dimId) {
+        this(left, middle, right, null, dimId);
+    }
+
+    public Frequency(EnumColour left, EnumColour middle, EnumColour right, String owner, String dimId) {
         this.left = left;
         this.middle = middle;
         this.right = right;
         this.owner = owner;
+        this.dimId = dimId;
     }
 
     public Frequency(NBTTagCompound tagCompound) {
@@ -38,10 +46,10 @@ public final class Frequency implements Copyable<Frequency> {
     }
 
     public static Frequency fromString(String left, String middle, String right) {
-        return fromString(left, middle, right, null);
+        return fromString(left, middle, right, null, null);
     }
 
-    public static Frequency fromString(String left, String middle, String right, String owner) {
+    public static Frequency fromString(String left, String middle, String right, String owner, String dimId) {
         EnumColour c1 = EnumColour.fromName(left);
         EnumColour c2 = EnumColour.fromName(middle);
         EnumColour c3 = EnumColour.fromName(right);
@@ -54,7 +62,7 @@ public final class Frequency implements Copyable<Frequency> {
         if (c3 == null) {
             throw new RuntimeException(right + " is an invalid colour!");
         }
-        return new Frequency(c1, c2, c3, owner);
+        return new Frequency(c1, c2, c3, owner, dimId);
     }
 
     public Frequency setLeft(EnumColour left) {
@@ -87,6 +95,22 @@ public final class Frequency implements Copyable<Frequency> {
         return owner != null;
     }
 
+    public boolean hasDimid() {
+        return dimId != null;
+    }
+
+    public String getDimId() {
+        return dimId;
+    }
+
+    public Frequency setDimId(String dimId) {
+        if (!ConfigurationHandler.perDimensionStorage) {
+            dimId = "0";
+        }
+        this.dimId = dimId;
+        return this;
+    }
+
     public Frequency set(EnumColour[] colours) {
         setLeft(colours[0]);
         setMiddle(colours[1]);
@@ -99,6 +123,7 @@ public final class Frequency implements Copyable<Frequency> {
         setMiddle(frequency.middle);
         setRight(frequency.right);
         setOwner(frequency.owner);
+        setDimId(frequency.dimId);
         return this;
     }
 
@@ -122,6 +147,9 @@ public final class Frequency implements Copyable<Frequency> {
         left = EnumColour.fromWoolMeta(tagCompound.getInteger("left"));
         middle = EnumColour.fromWoolMeta(tagCompound.getInteger("middle"));
         right = EnumColour.fromWoolMeta(tagCompound.getInteger("right"));
+        if (tagCompound.hasKey("dimid")) {
+            setDimId(tagCompound.getString("dimid"));
+        }
         if (tagCompound.hasKey("owner")) {
             owner = tagCompound.getString("owner");
         }
@@ -132,6 +160,9 @@ public final class Frequency implements Copyable<Frequency> {
         tagCompound.setInteger("left", left.getWoolMeta());
         tagCompound.setInteger("middle", middle.getWoolMeta());
         tagCompound.setInteger("right", right.getWoolMeta());
+        if(hasDimid()) {
+            tagCompound.setString("dimid", getDimId());
+        }
         if (owner != null) {
             tagCompound.setString("owner", owner);
         }
@@ -177,7 +208,11 @@ public final class Frequency implements Copyable<Frequency> {
         if (hasOwner()) {
             owner = ",owner=" + this.owner;
         }
-        return "left=" + getLeft().getName() + ",middle=" + getMiddle().getName() + ",right=" + getRight().getName() + owner;
+        String dimId = "";
+        if (hasDimid()) {
+            dimId = ",dimid=" + getDimId();
+        }
+        return "left=" + getLeft().getName() + ",middle=" + getMiddle().getName() + ",right=" + getRight().getName() + owner + dimId;
     }
 
     public String getTooltip() {
@@ -191,6 +226,6 @@ public final class Frequency implements Copyable<Frequency> {
 
     @Override
     public Frequency copy() {
-        return new Frequency(this.left, this.middle, this.right, this.owner);
+        return new Frequency(this.left, this.middle, this.right, this.owner, this.dimId);
     }
 }

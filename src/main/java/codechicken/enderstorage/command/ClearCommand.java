@@ -139,7 +139,7 @@ public class ClearCommand extends CommandBase implements IBetterHelpCommand {
             if (frequencyPredicate.test(key)) {
                 if (ownerPredicate.test(kvArray.get("owner"))) {
                     noStorage = false;
-                    Frequency freq = Frequency.fromString(kvArray.get("left"), kvArray.get("middle"), kvArray.get("right"), kvArray.get("owner"));
+                    Frequency freq = Frequency.fromString(kvArray.get("left"), kvArray.get("middle"), kvArray.get("right"), kvArray.get("owner"), kvArray.get("dimid"));
                     AbstractEnderStorage storage = manager.getStorage(freq, identifier);
                     storage.clearStorage();
                     cleared.add(freq.toString());

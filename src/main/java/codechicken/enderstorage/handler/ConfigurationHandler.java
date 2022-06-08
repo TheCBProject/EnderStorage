@@ -25,6 +25,7 @@ public class ConfigurationHandler {
 
     public static boolean anarchyMode;
     public static boolean disableCreatorVisuals;
+    public static boolean perDimensionStorage;
     public static boolean useVanillaEnderChestSounds;
     public static ItemStack personalItem;
 
@@ -65,6 +66,7 @@ public class ConfigurationHandler {
         }
         personalItem = new ItemStack(item, 1, meta);
         //endregion
+        perDimensionStorage = config.getTag("perDimensionStorage").setComment("Makes storage connection with the same color only possible inside a dimension. No cross dimension storage.").getBooleanValue(false);
         disableCreatorVisuals = config.getTag("disableCreatorVisuals").setComment("Disables the tank on top of the creators heads.").getBooleanValue(false);
         useVanillaEnderChestSounds = config.getTag("useVanillaEnderChestSounds").setComment("Enable this to make EnderStorage use vanilla's EnderChest sounds instead of the standard chest.").getBooleanValue(false);
         EnderStorageManager.loadConfig(config);

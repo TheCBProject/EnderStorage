@@ -143,6 +143,7 @@ public class BlockEnderStorage extends Block implements ITileEntityProvider {
         if (hit == null) {
             return false;
         }
+        owner.setFreq(owner.frequency.copy().setDimId(String.valueOf(player.dimension)));
         if (hit.subHit == 4) {
             ItemStack item = player.inventory.getCurrentItem();
             if (player.isSneaking() && owner.frequency.hasOwner()) {
