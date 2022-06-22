@@ -6,7 +6,6 @@ import codechicken.lib.data.MCDataOutput;
 import codechicken.lib.util.Copyable;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.item.ItemStack;
 
 import java.util.UUID;
@@ -206,11 +205,11 @@ public final class Frequency implements Copyable<Frequency> {
     }
 
     public Component getTooltip() {
-        return new TranslatableComponent(getLeft().getUnlocalizedName())//
-                .append("/")//
-                .append(new TranslatableComponent(getMiddle().getUnlocalizedName()))//
-                .append("/")//
-                .append(new TranslatableComponent(getRight().getUnlocalizedName()));
+        return Component.translatable(getLeft().getUnlocalizedName())
+                .append("/")
+                .append(Component.translatable(getMiddle().getUnlocalizedName()))
+                .append("/")
+                .append(Component.translatable(getRight().getUnlocalizedName()));
     }
 
     @Override

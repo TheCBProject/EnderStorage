@@ -2,11 +2,7 @@ package codechicken.enderstorage.init;
 
 import codechicken.lib.datagen.ItemModelProvider;
 import net.minecraft.data.DataGenerator;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.CropBlock;
 import net.minecraftforge.client.model.generators.BlockStateProvider;
-import net.minecraftforge.client.model.generators.ConfiguredModel;
 import net.minecraftforge.client.model.generators.ModelFile;
 import net.minecraftforge.common.data.ExistingFileHelper;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -27,10 +23,8 @@ public class DataGenerators {
     public static void gatherDataGenerators(GatherDataEvent event) {
         DataGenerator gen = event.getGenerator();
         ExistingFileHelper files = event.getExistingFileHelper();
-        if (event.includeClient()) {
-            gen.addProvider(new BlockStates(gen, files));
-            gen.addProvider(new ItemModels(gen, files));
-        }
+        gen.addProvider(event.includeClient(), new BlockStates(gen, files));
+        gen.addProvider(event.includeClient(), new ItemModels(gen, files));
     }
 
     private static class ItemModels extends ItemModelProvider {
@@ -71,16 +65,6 @@ public class DataGenerators {
                     .texture("particle", "minecraft:block/obsidian");
             simpleBlock(EnderStorageModContent.ENDER_CHEST_BLOCK.get(), model);
             simpleBlock(EnderStorageModContent.ENDER_TANK_BLOCK.get(), model);
-
-            ModelFile[] soybean_models = new ModelFile[6];
-            for (int i = 0; i < soybean_models.length; i++) {
-                soybean_models[i] = models().cross("soybean_" + i, modLoc("block/soybean/state" + i));
-            }
-
-            getVariantBuilder(Blocks.WHEAT).forAllStates(state -> ConfiguredModel.builder()
-                    .modelFile(soybean_models[state.getValue(CropBlock.AGE)])
-                    .build()
-            );
         }
     }
 }

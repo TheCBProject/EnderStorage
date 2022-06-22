@@ -11,7 +11,7 @@ import codechicken.lib.packet.PacketCustom;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
@@ -131,7 +131,7 @@ public class TileEnderChest extends TileFrequencyOwner {
 
     @Override
     public boolean activate(Player player, int subHit, InteractionHand hand) {
-        getStorage().openContainer((ServerPlayer) player, new TranslatableComponent(getBlockState().getBlock().getDescriptionId()));
+        getStorage().openContainer((ServerPlayer) player, Component.translatable(getBlockState().getBlock().getDescriptionId()));
         return true;
     }
 

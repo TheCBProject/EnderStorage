@@ -69,7 +69,7 @@ public class ClientInit {
     private static void onClientSetupEvent(FMLClientSetupEvent event) {
         MenuScreens.register(ENDER_ITEM_STORAGE.get(), GuiEnderItemStorage::new);
 
-        ModelResourceLocation invLocation = new ModelResourceLocation(ENDER_POUCH.get().getRegistryName(), "inventory");
+        ModelResourceLocation invLocation = new ModelResourceLocation(ENDER_POUCH.getId(), "inventory");
         modelHelper.register(invLocation, new CCBakeryModel());
         ModelBakery.registerItemKeyGenerator(ENDER_POUCH.get(), stack -> {
             Frequency frequency = Frequency.readFromStack(stack);
@@ -77,7 +77,7 @@ public class ClientInit {
             return ModelBakery.defaultItemKeyGenerator.generateKey(stack) + "|" + frequency.toModelLoc() + "|" + open;
         });
 
-        modelHelper.register(new ModelResourceLocation(ENDER_CHEST_ITEM.get().getRegistryName(), "inventory"), new EnderChestItemRender());
-        modelHelper.register(new ModelResourceLocation(ENDER_TANK_ITEM.get().getRegistryName(), "inventory"), new EnderTankItemRender());
+        modelHelper.register(new ModelResourceLocation(ENDER_CHEST_ITEM.getId(), "inventory"), new EnderChestItemRender());
+        modelHelper.register(new ModelResourceLocation(ENDER_TANK_ITEM.getId(), "inventory"), new EnderTankItemRender());
     }
 }

@@ -9,7 +9,6 @@ import codechicken.enderstorage.tile.TileEnderChest;
 import codechicken.lib.model.bakery.IBakeryProvider;
 import codechicken.lib.model.bakery.generation.IBakery;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -76,7 +75,7 @@ public class ItemEnderPouch extends Item implements IBakeryProvider {
         }
         if (!world.isClientSide) {
             Frequency frequency = Frequency.readFromStack(stack);
-            EnderStorageManager.instance(world.isClientSide).getStorage(frequency, EnderItemStorage.TYPE).openContainer((ServerPlayer) player, new TranslatableComponent(stack.getDescriptionId()));
+            EnderStorageManager.instance(world.isClientSide).getStorage(frequency, EnderItemStorage.TYPE).openContainer((ServerPlayer) player, Component.translatable(stack.getDescriptionId()));
         }
         return new InteractionResultHolder<>(InteractionResult.SUCCESS, stack);
     }
