@@ -10,8 +10,8 @@ import net.minecraft.nbt.NbtIo;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.player.PlayerEvent;
+import net.minecraftforge.event.level.LevelEvent;
 import net.minecraftforge.event.server.ServerStartedEvent;
-import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 import java.io.DataOutputStream;
@@ -25,27 +25,27 @@ public class EnderStorageManager {
     public static class EnderStorageSaveHandler {
 
         @SubscribeEvent
-        public void onWorldLoad(WorldEvent.Load event) {
-            if (event.getWorld().isClientSide()) {
+        public void onWorldLoad(LevelEvent.Load event) {
+            if (event.getLevel().isClientSide()) {
                 reloadManager(true);
             }
         }
 
         @SubscribeEvent
-        public void onWorldSave(WorldEvent.Save event) {
-            if (!event.getWorld().isClientSide() && instance(false) != null) {
+        public void onWorldSave(LevelEvent.Save event) {
+            if (!event.getLevel().isClientSide() && instance(false) != null) {
                 instance(false).save(false);
             }
         }
 
         @SubscribeEvent
         public void onPlayerLogin(PlayerEvent.PlayerLoggedInEvent event) {
-            instance(false).sendClientInfo((ServerPlayer) event.getPlayer());
+            instance(false).sendClientInfo((ServerPlayer) event.getEntity());
         }
 
         @SubscribeEvent
         public void onPlayerChangedDimension(PlayerEvent.PlayerChangedDimensionEvent event) {
-            instance(false).sendClientInfo((ServerPlayer) event.getPlayer());
+            instance(false).sendClientInfo((ServerPlayer) event.getEntity());
         }
     }
 

@@ -12,7 +12,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
-import net.minecraftforge.event.world.WorldEvent;
+import net.minecraftforge.event.level.LevelEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fluids.FluidStack;
 
@@ -232,19 +232,19 @@ public class TankSynchroniser {
 
     @SubscribeEvent
     public void onPlayerLogin(PlayerEvent.PlayerLoggedInEvent event) {
-        playerItemTankStates.put(event.getPlayer().getUUID(), new PlayerItemTankCache((ServerPlayer) event.getPlayer()));
+        playerItemTankStates.put(event.getEntity().getUUID(), new PlayerItemTankCache((ServerPlayer) event.getEntity()));
     }
 
     @SubscribeEvent
     public void onPlayerLogout(PlayerEvent.PlayerLoggedOutEvent event) {
         if (playerItemTankStates != null) { //sometimes world unloads before players logout
-            playerItemTankStates.remove(event.getPlayer().getUUID());
+            playerItemTankStates.remove(event.getEntity().getUUID());
         }
     }
 
     @SubscribeEvent
     public void onPlayerChangedDimension(PlayerEvent.PlayerChangedDimensionEvent event) {
-        playerItemTankStates.put(event.getPlayer().getUUID(), new PlayerItemTankCache((ServerPlayer) event.getPlayer()));
+        playerItemTankStates.put(event.getEntity().getUUID(), new PlayerItemTankCache((ServerPlayer) event.getEntity()));
     }
 
     @SubscribeEvent
@@ -266,15 +266,15 @@ public class TankSynchroniser {
     }
 
     @SubscribeEvent
-    public void onWorldUnload(WorldEvent.Unload event) {
-        if (!event.getWorld().isClientSide() && !ServerUtils.getServer().isRunning()) {
+    public void onWorldUnload(LevelEvent.Unload event) {
+        if (!event.getLevel().isClientSide() && !ServerUtils.getServer().isRunning()) {
             playerItemTankStates = null;
         }
     }
 
     @SubscribeEvent
-    public void onWorldLoad(WorldEvent.Load event) {
-        if (event.getWorld().isClientSide()) {
+    public void onWorldLoad(LevelEvent.Load event) {
+        if (event.getLevel().isClientSide()) {
             clientState = new PlayerItemTankCache();
         } else if (playerItemTankStates == null) {
             playerItemTankStates = new HashMap<>();
