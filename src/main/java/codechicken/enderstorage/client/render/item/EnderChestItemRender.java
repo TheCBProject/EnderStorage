@@ -2,6 +2,7 @@ package codechicken.enderstorage.client.render.item;
 
 import codechicken.enderstorage.api.Frequency;
 import codechicken.enderstorage.client.render.tile.RenderTileEnderChest;
+import codechicken.lib.model.PerspectiveModelState;
 import codechicken.lib.render.CCRenderState;
 import codechicken.lib.render.item.IItemRenderer;
 import codechicken.lib.util.TransformUtils;
@@ -29,7 +30,7 @@ public class EnderChestItemRender implements IItemRenderer {
     }
 
     @Override
-    public ModelState getModelTransform() {
+    public PerspectiveModelState getModelState() {
         return TransformUtils.DEFAULT_BLOCK;
     }
 
