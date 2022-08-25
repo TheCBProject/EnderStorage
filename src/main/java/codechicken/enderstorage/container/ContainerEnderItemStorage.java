@@ -12,7 +12,6 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 
-//@ChestContainer
 public class ContainerEnderItemStorage extends AbstractContainerMenu {
 
     public EnderItemStorage chestInv;

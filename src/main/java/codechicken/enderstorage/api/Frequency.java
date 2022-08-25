@@ -6,6 +6,7 @@ import codechicken.lib.data.MCDataOutput;
 import codechicken.lib.util.Copyable;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
 import java.util.UUID;
@@ -82,13 +83,15 @@ public final class Frequency implements Copyable<Frequency> {
         return this;
     }
 
-    public Frequency setOwner(UUID owner) {
-        this.owner = owner;
+    public Frequency setOwner(Player player) {
+        owner = player.getUUID();
+        ownerName = player.getName();
         return this;
     }
 
-    public Frequency setOwnerName(Component ownerName) {
-        this.ownerName = ownerName;
+    public Frequency clearOwner() {
+        owner = null;
+        ownerName = null;
         return this;
     }
 
@@ -104,11 +107,11 @@ public final class Frequency implements Copyable<Frequency> {
     }
 
     public Frequency set(Frequency frequency) {
-        setLeft(frequency.left);
-        setMiddle(frequency.middle);
-        setRight(frequency.right);
-        setOwner(frequency.owner);
-        setOwnerName(frequency.ownerName);
+        left = frequency.left;
+        middle = frequency.middle;
+        right = frequency.right;
+        owner = frequency.owner;
+        ownerName = frequency.ownerName;
         return this;
     }
 
@@ -136,7 +139,7 @@ public final class Frequency implements Copyable<Frequency> {
         return new EnumColour[] { left, middle, right };
     }
 
-    protected Frequency read_internal(CompoundTag tagCompound) {
+    private Frequency read_internal(CompoundTag tagCompound) {
         left = EnumColour.fromWoolMeta(tagCompound.getInt("left"));
         middle = EnumColour.fromWoolMeta(tagCompound.getInt("middle"));
         right = EnumColour.fromWoolMeta(tagCompound.getInt("right"));
@@ -149,7 +152,7 @@ public final class Frequency implements Copyable<Frequency> {
         return this;
     }
 
-    protected CompoundTag write_internal(CompoundTag tagCompound) {
+    private CompoundTag write_internal(CompoundTag tagCompound) {
         tagCompound.putInt("left", left.getWoolMeta());
         tagCompound.putInt("middle", middle.getWoolMeta());
         tagCompound.putInt("right", right.getWoolMeta());

@@ -107,14 +107,11 @@ public abstract class BlockEnderStorage extends BaseEntityBlock// implements ICu
                     return InteractionResult.FAIL;
                 }
 
-                owner.setFreq(owner.getFrequency().copy().setOwner(null));
+                owner.setFreq(owner.getFrequency().copy().clearOwner());
                 return InteractionResult.SUCCESS;
             } else if (!item.isEmpty() && ItemUtils.areStacksSameType(item, EnderStorageConfig.getPersonalItem())) {
                 if (!owner.getFrequency().hasOwner()) {
-                    owner.setFreq(owner.getFrequency().copy()//
-                            .setOwner(player.getUUID())//
-                            .setOwnerName(player.getName())//
-                    );
+                    owner.setFreq(owner.getFrequency().copy().setOwner(player));
                     if (!player.getAbilities().instabuild) {
                         item.shrink(1);
                     }

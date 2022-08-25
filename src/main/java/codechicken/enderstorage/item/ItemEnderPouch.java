@@ -53,11 +53,10 @@ public class ItemEnderPouch extends Item implements IBakeryProvider {
         }
 
         BlockEntity tile = world.getBlockEntity(context.getClickedPos());
-        if (tile instanceof TileEnderChest && context.getPlayer().isCrouching()) {
-            TileEnderChest chest = (TileEnderChest) tile;
+        if (tile instanceof TileEnderChest chest && context.getPlayer().isCrouching()) {
             Frequency frequency = chest.getFrequency().copy();
             if (EnderStorageConfig.anarchyMode && !(frequency.owner != null && frequency.owner.equals(context.getPlayer().getUUID()))) {
-                frequency.setOwner(null);
+                frequency.clearOwner();
             }
 
             frequency.writeToStack(stack);
