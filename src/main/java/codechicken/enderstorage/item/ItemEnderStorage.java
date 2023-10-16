@@ -19,9 +19,7 @@ import java.util.List;
 public class ItemEnderStorage extends BlockItem {
 
     public ItemEnderStorage(Block block) {
-        super(block, new Properties()
-                .tab(CreativeModeTab.TAB_TRANSPORTATION)
-        );
+        super(block, new Properties());
     }
 
     public Frequency getFreq(ItemStack stack) {

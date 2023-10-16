@@ -19,8 +19,8 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.items.wrapper.InvWrapper;
@@ -152,7 +152,7 @@ public class TileEnderChest extends TileFrequencyOwner {
     @Nonnull
     @Override
     public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
-        if (!remove && cap == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
+        if (!remove && cap == ForgeCapabilities.ITEM_HANDLER) {
             return itemHandler.cast();
         }
         return super.getCapability(cap, side);

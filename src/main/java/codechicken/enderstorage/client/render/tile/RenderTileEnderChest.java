@@ -17,7 +17,6 @@ import codechicken.lib.vec.Vector3;
 import codechicken.lib.vec.uv.UVTranslation;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.math.Quaternion;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.CubeListBuilder;
@@ -29,6 +28,7 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.resources.ResourceLocation;
+import org.joml.Quaternionf;
 
 /**
  * Created by covers1624 on 4/12/2016.
@@ -83,7 +83,7 @@ public class RenderTileEnderChest implements BlockEntityRenderer<TileEnderChest>
         pose.translate(0, 1.0, 1.0);
         pose.scale(1.0F, -1.0F, -1.0F);
         pose.translate(0.5, 0.5, 0.5);
-        pose.mulPose(new Quaternion(0, rotation * 90, 0, true));
+        pose.mulPose(new Quaternionf().rotateXYZ(0, (float) (rotation * 90F * MathHelper.torad), 0));
         pose.translate(-0.5, -0.5, -0.5);
         VertexConsumer chestCons = source.getBuffer(chestType);
         lid.xRot = lidAngle;

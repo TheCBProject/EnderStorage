@@ -4,8 +4,8 @@ import codechicken.enderstorage.api.Frequency;
 import codechicken.enderstorage.config.EnderStorageConfig;
 import codechicken.enderstorage.tile.TileFrequencyOwner;
 import codechicken.lib.colour.EnumColour;
-import codechicken.lib.raytracer.SubHitBlockHitResult;
 import codechicken.lib.raytracer.RayTracer;
+import codechicken.lib.raytracer.SubHitBlockHitResult;
 import codechicken.lib.util.ItemUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -22,7 +22,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.FluidState;
-import net.minecraft.world.level.storage.loot.LootContext;
+import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
@@ -58,7 +58,7 @@ public abstract class BlockEnderStorage extends BaseEntityBlock// implements ICu
     }
 
     @Override
-    public List<ItemStack> getDrops(BlockState state, LootContext.Builder builder) {
+    public List<ItemStack> getDrops(BlockState state, LootParams.Builder builder) {
         List<ItemStack> drops = new ArrayList<>();
         TileFrequencyOwner tile = (TileFrequencyOwner) builder.getOptionalParameter(LootContextParams.BLOCK_ENTITY);
         if (tile != null) {

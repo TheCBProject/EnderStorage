@@ -1,9 +1,11 @@
 package codechicken.enderstorage.recipe;
 
 import net.minecraft.core.NonNullList;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.CraftingBookCategory;
 import net.minecraft.world.item.crafting.CraftingRecipe;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.Level;
@@ -48,7 +50,7 @@ public abstract class RecipeBase implements CraftingRecipe, IShapedRecipe<Crafti
     }
 
     @Override
-    public ItemStack assemble(CraftingContainer inv) {
+    public ItemStack assemble(CraftingContainer inv, RegistryAccess pRegistryAccess) {
         return output.copy();
     }
 
@@ -73,7 +75,7 @@ public abstract class RecipeBase implements CraftingRecipe, IShapedRecipe<Crafti
     }
 
     @Override
-    public ItemStack getResultItem() {
+    public ItemStack getResultItem(RegistryAccess pRegistryAccess) {
         return output;
     }
 
@@ -85,5 +87,10 @@ public abstract class RecipeBase implements CraftingRecipe, IShapedRecipe<Crafti
     @Override
     public int getRecipeHeight() {
         return 3;
+    }
+
+    @Override
+    public CraftingBookCategory category() {
+        return CraftingBookCategory.MISC;
     }
 }

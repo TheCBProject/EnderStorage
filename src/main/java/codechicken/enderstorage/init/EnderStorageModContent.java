@@ -12,12 +12,14 @@ import codechicken.enderstorage.tile.TileEnderTank;
 import codechicken.lib.inventory.container.ICCLContainerType;
 import net.covers1624.quack.util.CrashLock;
 import net.minecraft.world.inventory.MenuType;
+import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
-import net.minecraft.world.level.material.Material;
+import net.minecraft.world.level.material.MapColor;
+import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.registries.DeferredRegister;
@@ -38,7 +40,8 @@ public class EnderStorageModContent {
     private static final DeferredRegister<MenuType<?>> MENU_TYPES = DeferredRegister.create(ForgeRegistries.MENU_TYPES, MOD_ID);
     private static final DeferredRegister<RecipeSerializer<?>> RECIPE_SERIALIZERS = DeferredRegister.create(ForgeRegistries.RECIPE_SERIALIZERS, MOD_ID);
 
-    private static final BlockBehaviour.Properties blockProps = Block.Properties.of(Material.STONE)
+    private static final BlockBehaviour.Properties blockProps = Block.Properties.of()
+            .mapColor(MapColor.STONE)
             .strength(20, 100);
     public static final RegistryObject<BlockEnderChest> ENDER_CHEST_BLOCK = BLOCKS.register("ender_chest", () -> new BlockEnderChest(blockProps));
     public static final RegistryObject<BlockEnderTank> ENDER_TANK_BLOCK = BLOCKS.register("ender_tank", () -> new BlockEnderTank(blockProps));
@@ -74,5 +77,14 @@ public class EnderStorageModContent {
         BLOCK_ENTITY_TYPES.register(bus);
         MENU_TYPES.register(bus);
         RECIPE_SERIALIZERS.register(bus);
+        bus.addListener(EnderStorageModContent::onCreativeTabBuild);
+    }
+
+    private static void onCreativeTabBuild(BuildCreativeModeTabContentsEvent event) {
+        if (event.getTabKey() == CreativeModeTabs.BUILDING_BLOCKS) {
+            event.accept(ENDER_POUCH);
+            event.accept(ENDER_CHEST_BLOCK);
+            event.accept(ENDER_TANK_BLOCK);
+        }
     }
 }

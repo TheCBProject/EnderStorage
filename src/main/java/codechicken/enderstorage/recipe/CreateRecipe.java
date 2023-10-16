@@ -5,6 +5,7 @@ import codechicken.enderstorage.init.EnderStorageModContent;
 import codechicken.lib.colour.EnumColour;
 import com.google.gson.JsonObject;
 import net.minecraft.core.NonNullList;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
@@ -29,7 +30,7 @@ public class CreateRecipe extends RecipeBase {
 
     @Nonnull
     @Override
-    public ItemStack assemble(CraftingContainer inv) {
+    public ItemStack assemble(CraftingContainer inv, RegistryAccess pRegistryAccess) {
         EnumColour colour = EnumColour.WHITE;
         finish:
         for (int x = 0; x < 3; x++) {
@@ -45,7 +46,7 @@ public class CreateRecipe extends RecipeBase {
             }
         }
         Frequency frequency = new Frequency(colour, colour, colour);
-        return frequency.writeToStack(super.assemble(inv));
+        return frequency.writeToStack(super.assemble(inv, pRegistryAccess));
     }
 
     @Override

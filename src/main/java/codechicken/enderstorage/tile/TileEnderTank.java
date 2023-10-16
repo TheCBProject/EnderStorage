@@ -20,11 +20,11 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidUtil;
 import net.minecraftforge.fluids.IFluidTank;
-import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fluids.capability.templates.EmptyFluidHandler;
 
@@ -71,7 +71,7 @@ public class TileEnderTank extends TileFrequencyOwner {
     private void ejectLiquid() {
         IFluidHandler source = getStorage();
         for (Direction side : Direction.BY_3D_DATA) {
-            IFluidHandler dest = capCache.getCapabilityOr(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, side, EmptyFluidHandler.INSTANCE);
+            IFluidHandler dest = capCache.getCapabilityOr(ForgeCapabilities.FLUID_HANDLER, side, EmptyFluidHandler.INSTANCE);
             FluidStack drain = source.drain(100, IFluidHandler.FluidAction.SIMULATE);
             if (!drain.isEmpty()) {
                 int qty = dest.fill(drain, IFluidHandler.FluidAction.EXECUTE);
@@ -197,7 +197,7 @@ public class TileEnderTank extends TileFrequencyOwner {
     @Nonnull
     @Override
     public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
-        if (!remove && cap == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY) {
+        if (!remove && cap == ForgeCapabilities.FLUID_HANDLER) {
             return fluidHandler.cast();
         }
         return super.getCapability(cap, side);

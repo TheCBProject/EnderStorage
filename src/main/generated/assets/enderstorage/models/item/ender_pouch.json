@@ -1,3 +1,348 @@
 {
-  "parent": "minecraft:item/generated"
+  "parent": "minecraft:item/generated",
+  "children": {
+    "bag": {
+      "parent": "minecraft:item/generated",
+      "overrides": [
+        {
+          "model": "enderstorage:item/ender_pouch_closed",
+          "predicate": {
+            "enderstorage:open": 0.0,
+            "enderstorage:owned": 0.0
+          }
+        },
+        {
+          "model": "enderstorage:item/ender_pouch_open",
+          "predicate": {
+            "enderstorage:open": 1.0,
+            "enderstorage:owned": 0.0
+          }
+        },
+        {
+          "model": "enderstorage:item/ender_pouch_owned_closed",
+          "predicate": {
+            "enderstorage:open": 0.0,
+            "enderstorage:owned": 1.0
+          }
+        },
+        {
+          "model": "enderstorage:item/ender_pouch_owned_open",
+          "predicate": {
+            "enderstorage:open": 1.0,
+            "enderstorage:owned": 1.0
+          }
+        }
+      ]
+    },
+    "left": {
+      "parent": "minecraft:item/generated",
+      "overrides": [
+        {
+          "model": "enderstorage:item/ender_pouch_button_left_white",
+          "predicate": {
+            "enderstorage:left": 0.0
+          }
+        },
+        {
+          "model": "enderstorage:item/ender_pouch_button_left_orange",
+          "predicate": {
+            "enderstorage:left": 1.0
+          }
+        },
+        {
+          "model": "enderstorage:item/ender_pouch_button_left_magenta",
+          "predicate": {
+            "enderstorage:left": 2.0
+          }
+        },
+        {
+          "model": "enderstorage:item/ender_pouch_button_left_light_blue",
+          "predicate": {
+            "enderstorage:left": 3.0
+          }
+        },
+        {
+          "model": "enderstorage:item/ender_pouch_button_left_yellow",
+          "predicate": {
+            "enderstorage:left": 4.0
+          }
+        },
+        {
+          "model": "enderstorage:item/ender_pouch_button_left_lime",
+          "predicate": {
+            "enderstorage:left": 5.0
+          }
+        },
+        {
+          "model": "enderstorage:item/ender_pouch_button_left_pink",
+          "predicate": {
+            "enderstorage:left": 6.0
+          }
+        },
+        {
+          "model": "enderstorage:item/ender_pouch_button_left_gray",
+          "predicate": {
+            "enderstorage:left": 7.0
+          }
+        },
+        {
+          "model": "enderstorage:item/ender_pouch_button_left_light_gray",
+          "predicate": {
+            "enderstorage:left": 8.0
+          }
+        },
+        {
+          "model": "enderstorage:item/ender_pouch_button_left_cyan",
+          "predicate": {
+            "enderstorage:left": 9.0
+          }
+        },
+        {
+          "model": "enderstorage:item/ender_pouch_button_left_purple",
+          "predicate": {
+            "enderstorage:left": 10.0
+          }
+        },
+        {
+          "model": "enderstorage:item/ender_pouch_button_left_blue",
+          "predicate": {
+            "enderstorage:left": 11.0
+          }
+        },
+        {
+          "model": "enderstorage:item/ender_pouch_button_left_brown",
+          "predicate": {
+            "enderstorage:left": 12.0
+          }
+        },
+        {
+          "model": "enderstorage:item/ender_pouch_button_left_green",
+          "predicate": {
+            "enderstorage:left": 13.0
+          }
+        },
+        {
+          "model": "enderstorage:item/ender_pouch_button_left_red",
+          "predicate": {
+            "enderstorage:left": 14.0
+          }
+        },
+        {
+          "model": "enderstorage:item/ender_pouch_button_left_black",
+          "predicate": {
+            "enderstorage:left": 15.0
+          }
+        }
+      ]
+    },
+    "middle": {
+      "parent": "minecraft:item/generated",
+      "overrides": [
+        {
+          "model": "enderstorage:item/ender_pouch_button_middle_white",
+          "predicate": {
+            "enderstorage:middle": 0.0
+          }
+        },
+        {
+          "model": "enderstorage:item/ender_pouch_button_middle_orange",
+          "predicate": {
+            "enderstorage:middle": 1.0
+          }
+        },
+        {
+          "model": "enderstorage:item/ender_pouch_button_middle_magenta",
+          "predicate": {
+            "enderstorage:middle": 2.0
+          }
+        },
+        {
+          "model": "enderstorage:item/ender_pouch_button_middle_light_blue",
+          "predicate": {
+            "enderstorage:middle": 3.0
+          }
+        },
+        {
+          "model": "enderstorage:item/ender_pouch_button_middle_yellow",
+          "predicate": {
+            "enderstorage:middle": 4.0
+          }
+        },
+        {
+          "model": "enderstorage:item/ender_pouch_button_middle_lime",
+          "predicate": {
+            "enderstorage:middle": 5.0
+          }
+        },
+        {
+          "model": "enderstorage:item/ender_pouch_button_middle_pink",
+          "predicate": {
+            "enderstorage:middle": 6.0
+          }
+        },
+        {
+          "model": "enderstorage:item/ender_pouch_button_middle_gray",
+          "predicate": {
+            "enderstorage:middle": 7.0
+          }
+        },
+        {
+          "model": "enderstorage:item/ender_pouch_button_middle_light_gray",
+          "predicate": {
+            "enderstorage:middle": 8.0
+          }
+        },
+        {
+          "model": "enderstorage:item/ender_pouch_button_middle_cyan",
+          "predicate": {
+            "enderstorage:middle": 9.0
+          }
+        },
+        {
+          "model": "enderstorage:item/ender_pouch_button_middle_purple",
+          "predicate": {
+            "enderstorage:middle": 10.0
+          }
+        },
+        {
+          "model": "enderstorage:item/ender_pouch_button_middle_blue",
+          "predicate": {
+            "enderstorage:middle": 11.0
+          }
+        },
+        {
+          "model": "enderstorage:item/ender_pouch_button_middle_brown",
+          "predicate": {
+            "enderstorage:middle": 12.0
+          }
+        },
+        {
+          "model": "enderstorage:item/ender_pouch_button_middle_green",
+          "predicate": {
+            "enderstorage:middle": 13.0
+          }
+        },
+        {
+          "model": "enderstorage:item/ender_pouch_button_middle_red",
+          "predicate": {
+            "enderstorage:middle": 14.0
+          }
+        },
+        {
+          "model": "enderstorage:item/ender_pouch_button_middle_black",
+          "predicate": {
+            "enderstorage:middle": 15.0
+          }
+        }
+      ]
+    },
+    "right": {
+      "parent": "minecraft:item/generated",
+      "overrides": [
+        {
+          "model": "enderstorage:item/ender_pouch_button_right_white",
+          "predicate": {
+            "enderstorage:right": 0.0
+          }
+        },
+        {
+          "model": "enderstorage:item/ender_pouch_button_right_orange",
+          "predicate": {
+            "enderstorage:right": 1.0
+          }
+        },
+        {
+          "model": "enderstorage:item/ender_pouch_button_right_magenta",
+          "predicate": {
+            "enderstorage:right": 2.0
+          }
+        },
+        {
+          "model": "enderstorage:item/ender_pouch_button_right_light_blue",
+          "predicate": {
+            "enderstorage:right": 3.0
+          }
+        },
+        {
+          "model": "enderstorage:item/ender_pouch_button_right_yellow",
+          "predicate": {
+            "enderstorage:right": 4.0
+          }
+        },
+        {
+          "model": "enderstorage:item/ender_pouch_button_right_lime",
+          "predicate": {
+            "enderstorage:right": 5.0
+          }
+        },
+        {
+          "model": "enderstorage:item/ender_pouch_button_right_pink",
+          "predicate": {
+            "enderstorage:right": 6.0
+          }
+        },
+        {
+          "model": "enderstorage:item/ender_pouch_button_right_gray",
+          "predicate": {
+            "enderstorage:right": 7.0
+          }
+        },
+        {
+          "model": "enderstorage:item/ender_pouch_button_right_light_gray",
+          "predicate": {
+            "enderstorage:right": 8.0
+          }
+        },
+        {
+          "model": "enderstorage:item/ender_pouch_button_right_cyan",
+          "predicate": {
+            "enderstorage:right": 9.0
+          }
+        },
+        {
+          "model": "enderstorage:item/ender_pouch_button_right_purple",
+          "predicate": {
+            "enderstorage:right": 10.0
+          }
+        },
+        {
+          "model": "enderstorage:item/ender_pouch_button_right_blue",
+          "predicate": {
+            "enderstorage:right": 11.0
+          }
+        },
+        {
+          "model": "enderstorage:item/ender_pouch_button_right_brown",
+          "predicate": {
+            "enderstorage:right": 12.0
+          }
+        },
+        {
+          "model": "enderstorage:item/ender_pouch_button_right_green",
+          "predicate": {
+            "enderstorage:right": 13.0
+          }
+        },
+        {
+          "model": "enderstorage:item/ender_pouch_button_right_red",
+          "predicate": {
+            "enderstorage:right": 14.0
+          }
+        },
+        {
+          "model": "enderstorage:item/ender_pouch_button_right_black",
+          "predicate": {
+            "enderstorage:right": 15.0
+          }
+        }
+      ]
+    }
+  },
+  "item_render_order": [
+    "bag",
+    "left",
+    "middle",
+    "right"
+  ],
+  "loader": "codechickenlib:item_composite"
 }

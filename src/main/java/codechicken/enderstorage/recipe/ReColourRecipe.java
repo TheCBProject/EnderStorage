@@ -6,6 +6,7 @@ import codechicken.lib.colour.EnumColour;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import net.minecraft.core.NonNullList;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
@@ -32,7 +33,7 @@ public class ReColourRecipe extends RecipeBase {
     }
 
     @Override
-    public ItemStack assemble(CraftingContainer inv) {
+    public ItemStack assemble(CraftingContainer inv, RegistryAccess pRegistryAccess) {
         int foundRow = 0;
         Frequency currFreq = new Frequency();
         for (int row = 1; row < 3; row++) {//Grab the input frequency, and store it's row.
@@ -63,7 +64,7 @@ public class ReColourRecipe extends RecipeBase {
         currFreq.setMiddle(colours[1]);
         currFreq.setRight(colours[2]);
 
-        return currFreq.writeToStack(super.assemble(inv));
+        return currFreq.writeToStack(super.assemble(inv, pRegistryAccess));
     }
 
     @Override
