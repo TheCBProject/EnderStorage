@@ -6,7 +6,7 @@
 !gradlew
 !gradlew.bat
 !build.gradle
-!build.properties
+!gradle.properties
 !settings.gradle
 
 # Other Files.
@@ -20,4 +20,3 @@
 
 # Include Important Folders
 !src/
-!libs/

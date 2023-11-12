@@ -1,49 +1,30 @@
 plugins {
     id 'java'
     id 'maven-publish'
-    id "net.covers1624.signing" version '1.1.4'
+    id 'signing'
     id 'net.neoforged.gradle' version '[6.0.18,6.2)'
 }
 
-java.toolchain.languageVersion = JavaLanguageVersion.of(17)
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+    withSourcesJar()
+    withJavadocJar()
+}
 
-group = "codechicken"
+group = "io.codechicken"
 archivesBaseName = "EnderStorage"
 
 sourceSets.main.resources.srcDirs += "src/main/generated"
 
-file('build.properties').withReader {
-    def prop = new Properties()
-    prop.load(it)
-    project.ext.config = new ConfigSlurper().parse prop
-}
-
-def signProps = [:]
-if (System.getenv("KEY_STORE")) {
-    println "Using Env variables for jar signing."
-    signProps['keyStore'] = System.getenv("KEY_STORE")
-    file(System.getenv("KEY_STORE_PROPS")).withReader {
-        def props = new Properties()
-        props.load(it)
-        signProps.putAll(props)
-    }
-} else if (project.hasProperty('keyStore')) {
-    println "Using Project properties for jar signing."
-    signProps['keyStore'] = project.getProperty('keyStore')
-    signProps['storePass'] = project.getProperty('keyStorePass')
-    signProps['alias'] = project.getProperty('keyStoreAlias')
-    signProps['keyPass'] = project.getProperty('keyStoreKeyPass')
-} else {
-    println 'No signing secrets found, build will not be signed.'
-}
-
-config.mod_version = "${config.mod_version}." + (System.getenv("BUILD_NUMBER") ?: "1")
-version = "${config.mc_version}-${config.mod_version}"
-println "Starting build of ${archivesBaseName}, Version: ${config.mod_version}"
-println "Using Forge: ${config.forge_version}, for Minecraft: ${config.mc_version}, with Mappings: ${config.mappings}"
+mod_version = "${mod_version}." + (System.getenv("BUILD_NUMBER") ?: "1")
+version = "${mc_version}-${mod_version}"
+println "Starting build of ${archivesBaseName}, Version: ${mod_version}"
+println "Using Forge: ${forge_version}, for Minecraft: ${mc_version}"
 
 minecraft {
-    mappings channel: 'official', version: config.mc_version
+    mappings channel: 'official', version: mc_version
     accessTransformer = file("src/main/resources/META-INF/accesstransformer.cfg")
     runs {
         client {
@@ -69,41 +50,28 @@ repositories {
 }
 
 dependencies {
-    minecraft "net.neoforged:forge:${config.mc_version}-${config.forge_version}"
-    implementation fg.deobf("codechicken:CodeChickenLib:1.19.2-${config.ccl_version}:universal")
-    implementation fg.deobf("mezz.jei:jei-${config.mc_version}-forge:${config.jei_version}")
-}
-
-signing {
-    if (!signProps.isEmpty()) {
-        jars {
-            sign jar
-            after 'reobfJar'
-
-            keyStore = signProps.keyStore
-            alias = signProps.alias
-            storePass = signProps.storePass
-            keyPass = signProps.keyPass
-        }
-    }
+    minecraft "net.neoforged:forge:${mc_version}-${forge_version}"
+    implementation fg.deobf("io.codechicken:CodeChickenLib:${mc_version}-${ccl_version}:universal")
+    implementation fg.deobf("mezz.jei:jei-${mc_version}-forge:${jei_version}")
 }
 
 processResources {
-    inputs.property 'mod_version', config.mod_version
-    inputs.property 'mc_version', config.mc_version
-    inputs.property 'ccl_version', config.ccl_version
+    inputs.property 'mod_version', mod_version
+    inputs.property 'mc_version', mc_version
+    inputs.property 'ccl_version', ccl_version
 
     filesMatching('META-INF/mods.toml') {
-        expand 'file': ['jarVersion': config.mod_version],
-                'mc_version': config.mc_version,
-                'forge_version': config.forge_version,
-                'lang_version': config.forge_version.split('\\.')[0],
-                'ccl_version_range': "[${config.ccl_version.replace(".+", "")},${config.ccl_version_max})"
+        expand 'file': ['jarVersion': mod_version],
+                'mc_version': mc_version,
+                'forge_version': forge_version,
+                'lang_version': forge_version.split('\\.')[0],
+                'ccl_version_range': "[${ccl_version.replace(".+", "")},${ccl_version_max})"
     }
 }
 
 jar {
     finalizedBy 'reobfJar'
+    finalizedBy 'signJar'
     archiveClassifier = 'universal'
     manifest {
         attributes 'Specification-Title': archivesBaseName
@@ -117,11 +85,37 @@ jar {
     from file("LICENSE.txt")
 }
 
-task srcJar(type: Jar) {
-    build.dependsOn it
-    from sourceSets.main.allSource
-    archiveClassifier = 'sources'
-    from file("LICENSE.txt")
+tasks.register("signJar") {
+    dependsOn("jar")
+    dependsOn("reobfJar")
+
+    doFirst {
+        def args = [:]
+        args['jar'] = jar.archiveFile.get().asFile
+        if (System.getenv("KEY_STORE")) {
+            args['keyStore'] = System.getenv("KEY_STORE")
+            file(System.getenv("KEY_STORE_PROPS")).withReader {
+                def props = new Properties()
+                props.load(it)
+                args.addAll(props)
+            }
+        } else if (project.hasProperty('keyStore')) {
+            args['keyStore'] = project.getProperty('keyStore')
+            args['alias'] = project.getProperty('keyStoreAlias')
+            args['storePass'] = project.getProperty('keyStorePass')
+            args['keyPass'] = project.getProperty('keyStoreKeyPass')
+        } else {
+            println "No signing properties."
+            state.setOutcome(org.gradle.api.internal.tasks.TaskExecutionOutcome.UP_TO_DATE)
+            didWork = false
+            return
+        }
+        project.ant.invokeMethod('signjar', args)
+    }
+}
+
+javadoc {
+    options.addBooleanOption("Xdoclint:none", true)
 }
 
 publishing {
@@ -142,7 +136,8 @@ publishing {
             artifactId project.archivesBaseName
             version project.version
             artifact jar
-            artifact srcJar
+            artifact sourcesJar
+            artifact javadocJar
 
             pom {
                 name = archivesBaseName
@@ -181,4 +176,21 @@ publishing {
             }
         }
     }
+}
+
+signing {
+    if (System.getenv('GPG_PRIVATE_KEY')) {
+        useInMemoryPgpKeys(
+                new File(System.getenv('GPG_PRIVATE_KEY')).text,
+                System.getenv('GPG_PRIVATE_KEY_PASS')
+        )
+    } else if (project.hasProperty('gpgPrivateKey')) {
+        useInMemoryPgpKeys(
+                new File(project.getProperty('gpgPrivateKey')).text,
+                project.getProperty('gpgPrivateKeyPass')
+        )
+    } else {
+        return
+    }
+    sign publishing.publications.EnderStorage
 }
