@@ -1,3 +1,5 @@
 {
-  "parent": "minecraft:item/generated"
+  "parent": "minecraft:item/generated",
+  "class": "codechicken.enderstorage.client.render.item.EnderTankItemRender",
+  "loader": "codechickenlib:class"
 }

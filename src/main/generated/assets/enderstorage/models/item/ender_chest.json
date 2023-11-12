@@ -1,3 +1,5 @@
 {
-  "parent": "minecraft:item/generated"
+  "parent": "minecraft:item/generated",
+  "class": "codechicken.enderstorage.client.render.item.EnderChestItemRender",
+  "loader": "codechickenlib:class"
 }

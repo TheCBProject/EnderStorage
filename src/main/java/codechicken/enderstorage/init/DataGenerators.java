@@ -1,5 +1,7 @@
 package codechicken.enderstorage.init;
 
+import codechicken.enderstorage.client.render.item.EnderChestItemRender;
+import codechicken.enderstorage.client.render.item.EnderTankItemRender;
 import codechicken.lib.colour.EnumColour;
 import codechicken.lib.datagen.ItemModelProvider;
 import net.minecraft.core.HolderLookup;
@@ -47,8 +49,8 @@ public class DataGenerators {
 
         @Override
         protected void registerModels() {
-            generated(ENDER_CHEST_ITEM).noTexture();
-            generated(ENDER_TANK_ITEM).noTexture();
+            clazz(ENDER_CHEST_ITEM, EnderChestItemRender.class);
+            clazz(ENDER_TANK_ITEM, EnderTankItemRender.class);
 
             CompositeLoaderBuilder bag = generated(ENDER_POUCH)
                     .noTexture()
