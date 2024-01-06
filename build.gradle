@@ -69,6 +69,24 @@ processResources {
     }
 }
 
+def publishingMetadata = project.layout.buildDirectory.file("libs/$archivesBaseName-$version-publishing.json")
+def publishingMetadataTask = tasks.register("publishingMetadata") {
+    outputs.file(publishingMetadata)
+    doFirst {
+        publishingMetadata.get().asFile.text = JsonOutput.prettyPrint(JsonOutput.toJson([
+                [
+                        'displayName' : "Ender Storage ${version}",
+                        'mcVersion'   : "${mc_version}",
+                        'version'     : "${mod_version}",
+                        'classifier'  : 'universal',
+                        'modLoader'   : 'neoforge',
+                        'curseforgeId': '245174',
+                        'modrinthId'  : 'BbrHg80P'
+                ]
+        ]))
+    }
+}
+
 jar {
     finalizedBy 'reobfJar'
     finalizedBy 'signJar'
@@ -97,7 +115,7 @@ tasks.register("signJar") {
             file(System.getenv("KEY_STORE_PROPS")).withReader {
                 def props = new Properties()
                 props.load(it)
-                args.addAll(props)
+                args.putAll(props)
             }
         } else if (project.hasProperty('keyStore')) {
             args['keyStore'] = project.getProperty('keyStore')
@@ -138,6 +156,10 @@ publishing {
             artifact jar
             artifact sourcesJar
             artifact javadocJar
+            artifact(publishingMetadata) {
+                builtBy publishingMetadataTask
+                classifier 'publishing'
+            }
 
             pom {
                 name = archivesBaseName
