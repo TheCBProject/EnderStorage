@@ -1,0 +1,10 @@
+{
+  "item.enderstorage.ender_pouch": "Мішечок Енду",
+  "block.enderstorage.ender_chest": "Скриня Енду",
+  "enderstorage.command.no_colour": "Неправильний колір: %s",
+  "enderstorage.command.usage": "enderstorage <частота>|(<колір> <колір> <колір>) [Власник]",
+  "enderstorage.command.no_freq": "Неправильна частота",
+  "block.enderstorage.ender_tank": "Резервуар Енду",
+  "enderstorage.command.no_arguments": "Невірна кількість аргументів",
+  "enderstorage.serverop": "Оператор"
+}
