@@ -23,7 +23,7 @@ sourceSets.main.resources.srcDirs += "src/main/generated"
 mod_version = "${mod_version}." + (System.getenv("BUILD_NUMBER") ?: "1")
 version = "${mc_version}-${mod_version}"
 println "Starting build of ${archivesBaseName}, Version: ${mod_version}"
-println "Using Forge: ${forge_version}, for Minecraft: ${mc_version}"
+println "Using NeoForge: ${forge_version}, for Minecraft: ${mc_version}"
 
 minecraft {
     mappings channel: 'official', version: mc_version
@@ -83,7 +83,15 @@ def publishingMetadataTask = tasks.register("publishingMetadata") {
                         'classifier'  : 'universal',
                         'modLoader'   : 'neoforge',
                         'curseforgeId': '245174',
-                        'modrinthId'  : 'BbrHg80P'
+                        'modrinthId'  : 'BbrHg80P',
+                        'dependencies': [
+                                [
+                                        'modId'       : 'codechickenlib',
+                                        'type'        : 'required',
+                                        'modrinthId'  : '242818',
+                                        'curseforgeId': '2gq0ALnz'
+                                ]
+                        ]
                 ]
         ]))
     }
@@ -166,17 +174,16 @@ publishing {
             pom {
                 name = archivesBaseName
                 description = archivesBaseName
-                //The publish plugin doesnt like GString's here apparently..
-                url = "https://github.com/TheCBProject/${archivesBaseName}".toString()
+                url = "https://github.com/TheCBProject/${archivesBaseName}"
                 scm {
-                    url = "https://github.com/TheCBProject/${archivesBaseName}".toString()
-                    connection = "scm:git:git://github.com/TheCBProject/${archivesBaseName}.git".toString()
-                    connection = "scm:git:git@github.com:TheCBProject/${archivesBaseName}.git".toString()
+                    url = "https://github.com/TheCBProject/${archivesBaseName}"
+                    connection = "scm:git:git://github.com/TheCBProject/${archivesBaseName}.git"
+                    connection = "scm:git:git@github.com:TheCBProject/${archivesBaseName}.git"
                 }
 
                 issueManagement {
                     system = 'github'
-                    url = "https://github.com/TheCBProject/${archivesBaseName}/issues".toString()
+                    url = "https://github.com/TheCBProject/${archivesBaseName}/issues"
                 }
                 licenses {
                     license {
