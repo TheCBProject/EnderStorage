@@ -5,17 +5,18 @@ import codechicken.lib.config.ConfigFile;
 import codechicken.lib.config.ConfigValue;
 import com.mojang.logging.LogUtils;
 import net.covers1624.quack.util.CrashLock;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
 import java.nio.file.Paths;
 
 import static codechicken.enderstorage.EnderStorage.MOD_ID;
+import static java.util.Objects.requireNonNull;
 
 /**
  * Created by covers1624 on 28/10/19.
@@ -25,9 +26,7 @@ public class EnderStorageConfig {
     private static final Logger LOGGER = LogUtils.getLogger();
     private static final CrashLock LOCK = new CrashLock("Already initialized.");
 
-    private static ConfigCategory config;
-
-    private static ConfigValue personalItemTag;
+    private static @Nullable ConfigValue personalItemTag;
     @Nullable
     private static ItemStack personalItem;
     public static boolean anarchyMode;
@@ -39,7 +38,7 @@ public class EnderStorageConfig {
     public static void load() {
         LOCK.lock();
 
-        config = new ConfigFile(MOD_ID)
+        ConfigCategory config = new ConfigFile(MOD_ID)
                 .path(Paths.get("./config/EnderStorage.cfg"))
                 .load();
 //        ConfigSyncManager.registerSync(new ResourceLocation("enderstorage:config"), config);
@@ -67,8 +66,10 @@ public class EnderStorageConfig {
     }
 
     public static ItemStack getPersonalItem() {
+        requireNonNull(personalItemTag);
+
         if (personalItem == null) {
-            Item item = ForgeRegistries.ITEMS.getValue(new ResourceLocation(personalItemTag.getString()));
+            Item item = BuiltInRegistries.ITEM.get(new ResourceLocation(personalItemTag.getString()));
             if (item == Items.AIR) {
                 LOGGER.error("Invalid personal item in config. Got: '{}. Resetting to default.", personalItemTag.getString());
                 item = Items.DIAMOND;

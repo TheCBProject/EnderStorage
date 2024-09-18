@@ -18,15 +18,10 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.ItemHandlerHelper;
-import net.minecraftforge.items.wrapper.InvWrapper;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.ItemHandlerHelper;
+import net.neoforged.neoforge.items.wrapper.InvWrapper;
+import org.jetbrains.annotations.Nullable;
 
 import static net.minecraft.sounds.SoundEvents.*;
 
@@ -37,7 +32,7 @@ public class TileEnderChest extends TileFrequencyOwner {
     public int c_numOpen;
     public int rotation;
 
-    private LazyOptional<IItemHandler> itemHandler = LazyOptional.empty();
+    private @Nullable IItemHandler itemHandler;
 
     public TileEnderChest(BlockPos pos, BlockState state) {
         super(EnderStorageModContent.ENDER_CHEST_TILE.get(), pos, state);
@@ -47,6 +42,7 @@ public class TileEnderChest extends TileFrequencyOwner {
     public void tick() {
         super.tick();
 
+        assert level != null;
         if (!level.isClientSide && (level.getGameTime() % 20 == 0 || c_numOpen != getStorage().getNumOpen())) {
             c_numOpen = getStorage().getNumOpen();
             level.blockEvent(getBlockPos(), getBlockState().getBlock(), 1, c_numOpen);
@@ -81,19 +77,14 @@ public class TileEnderChest extends TileFrequencyOwner {
 
     @Override
     public EnderItemStorage getStorage() {
+        assert level != null;
         return EnderStorageManager.instance(level.isClientSide).getStorage(frequency, EnderItemStorage.TYPE);
     }
 
     @Override
     public void onFrequencySet() {
-        itemHandler.invalidate();
-        itemHandler = LazyOptional.of(() -> new InvWrapper(getStorage()));
-    }
-
-    @Override
-    public void setRemoved() {
-        super.setRemoved();
-        itemHandler.invalidate();
+        invalidateCapabilities();
+        itemHandler = null;
     }
 
     @Override
@@ -109,7 +100,8 @@ public class TileEnderChest extends TileFrequencyOwner {
     }
 
     @Override
-    public void onPlaced(LivingEntity entity) {
+    public void onPlaced(@Nullable LivingEntity entity) {
+        assert level != null;
         rotation = entity != null ? (int) Math.floor(entity.getYRot() * 4 / 360 + 2.5D) & 3 : 0;
         onFrequencySet();
         if (!level.isClientSide) {
@@ -137,24 +129,23 @@ public class TileEnderChest extends TileFrequencyOwner {
 
     @Override
     public boolean rotate() {
+        assert level != null;
         if (!level.isClientSide) {
             rotation = (rotation + 1) % 4;
-            PacketCustom.sendToChunk(getUpdatePacket(), level, worldPosition.getX() >> 4, worldPosition.getZ() >> 4);
+            sendUpdatePacket();
         }
         return true;
     }
 
     @Override
     public int comparatorInput() {
-        return itemHandler.map(ItemHandlerHelper::calcRedstoneFromInventory).orElse(0);
+        return ItemHandlerHelper.calcRedstoneFromInventory(getItemHandler());
     }
 
-    @Nonnull
-    @Override
-    public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
-        if (!remove && cap == ForgeCapabilities.ITEM_HANDLER) {
-            return itemHandler.cast();
+    public IItemHandler getItemHandler() {
+        if (itemHandler == null) {
+            itemHandler = new InvWrapper(getStorage());
         }
-        return super.getCapability(cap, side);
+        return itemHandler;
     }
 }

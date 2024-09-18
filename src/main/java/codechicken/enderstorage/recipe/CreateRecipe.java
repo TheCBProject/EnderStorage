@@ -3,32 +3,27 @@ package codechicken.enderstorage.recipe;
 import codechicken.enderstorage.api.Frequency;
 import codechicken.enderstorage.init.EnderStorageModContent;
 import codechicken.lib.colour.EnumColour;
-import com.google.gson.JsonObject;
-import net.minecraft.core.NonNullList;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.GsonHelper;
+import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.CraftingBookCategory;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.ShapedRecipe;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.util.Map;
+import net.minecraft.world.item.crafting.ShapedRecipePattern;
 
 /**
  * Created by covers1624 on 1/11/19.
  */
-public class CreateRecipe extends RecipeBase {
+public class CreateRecipe extends ShapedRecipe {
 
-    public CreateRecipe(ResourceLocation id, String group, @Nonnull ItemStack result, NonNullList<Ingredient> input) {
-        super(id, group, result, input);
+    public CreateRecipe(String group, ShapedRecipePattern pattern, ItemStack result) {
+        super(group, CraftingBookCategory.MISC, pattern, result.copy(), true);
     }
 
-    @Nonnull
     @Override
     public ItemStack assemble(CraftingContainer inv, RegistryAccess pRegistryAccess) {
         EnumColour colour = EnumColour.WHITE;
@@ -56,42 +51,32 @@ public class CreateRecipe extends RecipeBase {
 
     public static class Serializer implements RecipeSerializer<CreateRecipe> {
 
+        private static final Codec<CreateRecipe> CODEC = RecordCodecBuilder.create(builder -> builder.group(
+                        ExtraCodecs.strictOptionalField(Codec.STRING, "group", "").forGetter(e -> e.group),
+                        ShapedRecipePattern.MAP_CODEC.forGetter(e -> e.pattern),
+                        ItemStack.ITEM_WITH_COUNT_CODEC.fieldOf("result").forGetter(e -> e.result)
+                ).apply(builder, CreateRecipe::new)
+        );
+
         @Override
-        public CreateRecipe fromJson(ResourceLocation recipeId, JsonObject json) {
-            String group = GsonHelper.getAsString(json, "group", "");
-            Map<String, Ingredient> key = ShapedRecipe.keyFromJson(GsonHelper.getAsJsonObject(json, "key"));
-            String[] pattern = ShapedRecipe.shrink(ShapedRecipe.patternFromJson(GsonHelper.getAsJsonArray(json, "pattern")));
-            int width = pattern[0].length();
-            int height = pattern.length;
-            NonNullList<Ingredient> ingredients = ShapedRecipe.dissolvePattern(pattern, key, width, height);
-            ItemStack result = ShapedRecipe.itemStackFromJson(GsonHelper.getAsJsonObject(json, "result"));
-            return new CreateRecipe(recipeId, group, result, ingredients);
+        public Codec<CreateRecipe> codec() {
+            return CODEC;
         }
 
-        @Nullable
         @Override
-        public CreateRecipe fromNetwork(ResourceLocation recipeId, FriendlyByteBuf buffer) {
-            String s = buffer.readUtf(32767);
-            NonNullList<Ingredient> ingredients = NonNullList.withSize(3 * 3, Ingredient.EMPTY);
-
-            for (int k = 0; k < ingredients.size(); ++k) {
-                ingredients.set(k, Ingredient.fromNetwork(buffer));
-            }
-
-            ItemStack result = buffer.readItem();
-            return new CreateRecipe(recipeId, s, result, ingredients);
+        public CreateRecipe fromNetwork(FriendlyByteBuf buffer) {
+            return new CreateRecipe(
+                    buffer.readUtf(),
+                    ShapedRecipePattern.fromNetwork(buffer),
+                    buffer.readItem()
+            );
         }
 
         @Override
         public void toNetwork(FriendlyByteBuf buffer, CreateRecipe recipe) {
             buffer.writeUtf(recipe.group);
-
-            for (Ingredient ingredient : recipe.input) {
-                ingredient.toNetwork(buffer);
-            }
-
-            buffer.writeItem(recipe.output);
+            recipe.pattern.toNetwork(buffer);
+            buffer.writeItem(recipe.result);
         }
     }
-
 }

@@ -18,6 +18,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
+import org.jetbrains.annotations.Nullable;
 
 public abstract class TileFrequencyOwner extends BlockEntity {
 
@@ -35,6 +36,7 @@ public abstract class TileFrequencyOwner extends BlockEntity {
     }
 
     public void setFreq(Frequency frequency) {
+        assert level != null;
         this.frequency = frequency;
         onFrequencySet();
         setChanged();
@@ -46,6 +48,7 @@ public abstract class TileFrequencyOwner extends BlockEntity {
     }
 
     public void tick() {
+        assert level != null;
         if (getStorage().getChangeCount() > changeCount) {
             level.updateNeighbourForOutputSignal(worldPosition, getBlockState().getBlock());
             changeCount = getStorage().getChangeCount();
@@ -78,14 +81,12 @@ public abstract class TileFrequencyOwner extends BlockEntity {
         return false;
     }
 
-    public void onNeighborChange(BlockPos from) {
-    }
-
-    public void onPlaced(LivingEntity entity) {
+    public void onPlaced(@Nullable LivingEntity entity) {
     }
 
     protected void sendUpdatePacket() {
-        createPacket().sendToChunk(level, getBlockPos().getX() >> 4, getBlockPos().getZ() >> 4);
+        assert level != null;
+        createPacket().sendToChunk(this);
     }
 
     public PacketCustom createPacket() {

@@ -1,0 +1,28 @@
+{
+  "type": "enderstorage:create_recipe",
+  "key": {
+    "B": {
+      "item": "minecraft:blaze_rod"
+    },
+    "C": {
+      "tag": "forge:chests/wooden"
+    },
+    "O": {
+      "tag": "forge:obsidian"
+    },
+    "P": {
+      "tag": "forge:ender_pearls"
+    },
+    "W": {
+      "tag": "forge:wool"
+    }
+  },
+  "pattern": [
+    "BWB",
+    "OCO",
+    "BPB"
+  ],
+  "result": {
+    "item": "enderstorage:ender_chest"
+  }
+}

@@ -2,16 +2,17 @@ package codechicken.enderstorage;
 
 import codechicken.enderstorage.config.EnderStorageConfig;
 import codechicken.enderstorage.init.ClientInit;
+import codechicken.enderstorage.init.DataGenerators;
 import codechicken.enderstorage.init.EnderStorageModContent;
 import codechicken.enderstorage.manager.EnderStorageManager;
 import codechicken.enderstorage.network.EnderStorageNetwork;
 import codechicken.enderstorage.network.TankSynchroniser;
 import codechicken.enderstorage.plugin.EnderItemStoragePlugin;
 import codechicken.enderstorage.plugin.EnderLiquidStoragePlugin;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.fml.DistExecutor;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.loading.FMLEnvironment;
+import net.neoforged.neoforge.common.NeoForge;
 
 import static codechicken.enderstorage.EnderStorage.MOD_ID;
 
@@ -20,20 +21,24 @@ public class EnderStorage {
 
     public static final String MOD_ID = "enderstorage";
 
-    public EnderStorage() {
+    public EnderStorage(IEventBus modBus) {
         EnderStorageConfig.load();
 
-        EnderStorageModContent.init();
-        DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> ClientInit::init);
+        EnderStorageModContent.init(modBus);
+        if (FMLEnvironment.dist.isClient()) {
+            ClientInit.init(modBus);
+        }
 
-        EnderStorageNetwork.init();
+        EnderStorageNetwork.init(modBus);
 
         EnderStorageManager.init();
         EnderStorageManager.registerPlugin(new EnderItemStoragePlugin());
         EnderStorageManager.registerPlugin(new EnderLiquidStoragePlugin());
 
-        MinecraftForge.EVENT_BUS.register(new EnderStorageManager.EnderStorageSaveHandler());
-        MinecraftForge.EVENT_BUS.register(new TankSynchroniser());
+        NeoForge.EVENT_BUS.register(new EnderStorageManager.EnderStorageSaveHandler());
+        NeoForge.EVENT_BUS.register(new TankSynchroniser());
+
+        DataGenerators.init(modBus);
     }
 
     //    @Mod.EventHandler

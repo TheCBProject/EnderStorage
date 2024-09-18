@@ -10,10 +10,6 @@ public class ButtonModelLibrary {
     public static CCModel button;
 
     static {
-        generateButton();
-    }
-
-    private static void generateButton() {
         button = CCModel.quadModel(20);
         Vector3 min = TileFrequencyOwner.SELECTION_BUTTON.min;
         Vector3 max = TileFrequencyOwner.SELECTION_BUTTON.max;

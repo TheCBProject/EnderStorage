@@ -7,6 +7,7 @@ import codechicken.lib.colour.EnumColour;
 import codechicken.lib.raytracer.RayTracer;
 import codechicken.lib.raytracer.SubHitBlockHitResult;
 import codechicken.lib.util.ItemUtils;
+import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.InteractionHand;
@@ -17,7 +18,11 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
-import net.minecraft.world.level.block.*;
+import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.block.BaseEntityBlock;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.RenderShape;
+import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
@@ -26,16 +31,15 @@ import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Created by covers1624 on 4/11/2016.
  */
-public abstract class BlockEnderStorage extends BaseEntityBlock// implements ICustomParticleBlock
-{
+public abstract class BlockEnderStorage extends BaseEntityBlock {
 
     public BlockEnderStorage(BlockBehaviour.Properties properties) {
         super(properties);
@@ -71,15 +75,17 @@ public abstract class BlockEnderStorage extends BaseEntityBlock// implements ICu
     }
 
     @Override
-    public ItemStack getCloneItemStack(BlockState state, HitResult rayTraceResult, BlockGetter world, BlockPos pos, Player player) {
-        TileFrequencyOwner tile = (TileFrequencyOwner) world.getBlockEntity(pos);
-        return createItem(tile.getFrequency());
+    public ItemStack getCloneItemStack(BlockState state, HitResult rayTraceResult, LevelReader world, BlockPos pos, Player player) {
+        if (world.getBlockEntity(pos) instanceof TileFrequencyOwner tile) {
+            return createItem(tile.getFrequency());
+        }
+        return ItemStack.EMPTY;
     }
 
     private ItemStack createItem(Frequency freq) {
         ItemStack stack = new ItemStack(this, 1);
         if (EnderStorageConfig.anarchyMode) {
-            freq.setOwner(null);
+            freq.clearOwner();
         }
         freq.writeToStack(stack);
         return stack;
@@ -140,18 +146,9 @@ public abstract class BlockEnderStorage extends BaseEntityBlock// implements ICu
     }
 
     @Override
-    public void neighborChanged(BlockState state, Level world, BlockPos pos, Block blockIn, BlockPos fromPos, boolean isMoving) {
-        BlockEntity tile = world.getBlockEntity(pos);
-        if (tile instanceof TileFrequencyOwner) {
-            ((TileFrequencyOwner) tile).onNeighborChange(fromPos);
-        }
-    }
-
-    @Override
-    public void setPlacedBy(Level world, BlockPos pos, BlockState state, LivingEntity placer, ItemStack stack) {
-        BlockEntity tile = world.getBlockEntity(pos);
-        if (tile instanceof TileFrequencyOwner) {
-            ((TileFrequencyOwner) tile).onPlaced(placer);
+    public void setPlacedBy(Level world, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack stack) {
+        if (world.getBlockEntity(pos) instanceof TileFrequencyOwner tile) {
+            tile.onPlaced(placer);
         }
     }
 
@@ -190,5 +187,10 @@ public abstract class BlockEnderStorage extends BaseEntityBlock// implements ICu
         super.triggerEvent(state, worldIn, pos, eventID, eventParam);
         BlockEntity tileentity = worldIn.getBlockEntity(pos);
         return tileentity != null && tileentity.triggerEvent(eventID, eventParam);
+    }
+
+    @Override
+    protected MapCodec<? extends BaseEntityBlock> codec() {
+        throw new UnsupportedOperationException();
     }
 }

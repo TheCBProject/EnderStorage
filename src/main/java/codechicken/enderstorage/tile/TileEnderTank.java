@@ -14,22 +14,19 @@ import codechicken.lib.packet.PacketCustom;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.FluidUtil;
-import net.minecraftforge.fluids.IFluidTank;
-import net.minecraftforge.fluids.capability.IFluidHandler;
-import net.minecraftforge.fluids.capability.templates.EmptyFluidHandler;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.FluidUtil;
+import net.neoforged.neoforge.fluids.IFluidTank;
+import net.neoforged.neoforge.fluids.capability.IFluidHandler;
+import net.neoforged.neoforge.fluids.capability.templates.EmptyFluidHandler;
+import org.jetbrains.annotations.Nullable;
 
 public class TileEnderTank extends TileFrequencyOwner {
 
@@ -37,7 +34,8 @@ public class TileEnderTank extends TileFrequencyOwner {
     public final EnderTankState liquid_state = new EnderTankState();
     public final PressureState pressure_state = new PressureState();
     private final CapabilityCache capCache = new CapabilityCache();
-    private LazyOptional<IFluidHandler> fluidHandler = LazyOptional.empty();
+
+    private @Nullable IFluidHandler fluidHandler;
 
     private boolean described;
 
@@ -48,9 +46,9 @@ public class TileEnderTank extends TileFrequencyOwner {
     @Override
     public void tick() {
         super.tick();
-        capCache.tick();
+        assert level != null;
         pressure_state.update(level.isClientSide);
-        if (pressure_state.a_pressure) {
+        if (!level.isClientSide && pressure_state.a_pressure) {
             ejectLiquid();
         }
 
@@ -60,18 +58,15 @@ public class TileEnderTank extends TileFrequencyOwner {
     @Override
     public void setLevel(Level p_155231_) {
         super.setLevel(p_155231_);
-        capCache.setWorldPos(getLevel(), getBlockPos());
-    }
-
-    @Override
-    public void onNeighborChange(BlockPos from) {
-        capCache.onNeighborChanged(from);
+        if (p_155231_ instanceof ServerLevel serverLevel) {
+            capCache.setLevelPos(serverLevel, getBlockPos());
+        }
     }
 
     private void ejectLiquid() {
         IFluidHandler source = getStorage();
         for (Direction side : Direction.BY_3D_DATA) {
-            IFluidHandler dest = capCache.getCapabilityOr(ForgeCapabilities.FLUID_HANDLER, side, EmptyFluidHandler.INSTANCE);
+            IFluidHandler dest = capCache.getCapabilityOr(Capabilities.FluidHandler.BLOCK, side, EmptyFluidHandler.INSTANCE);
             FluidStack drain = source.drain(100, IFluidHandler.FluidAction.SIMULATE);
             if (!drain.isEmpty()) {
                 int qty = dest.fill(drain, IFluidHandler.FluidAction.EXECUTE);
@@ -90,23 +85,19 @@ public class TileEnderTank extends TileFrequencyOwner {
         if (!level.isClientSide) {
             liquid_state.setFrequency(frequency);
         }
-        fluidHandler.invalidate();
-        fluidHandler = LazyOptional.of(this::getStorage);
-    }
-
-    @Override
-    public void setRemoved() {
-        super.setRemoved();
-        fluidHandler.invalidate();
+        invalidateCapabilities();
+        fluidHandler = null;
     }
 
     @Override
     public EnderLiquidStorage getStorage() {
+        assert level != null;
         return EnderStorageManager.instance(level.isClientSide).getStorage(frequency, EnderLiquidStorage.TYPE);
     }
 
     @Override
-    public void onPlaced(LivingEntity entity) {
+    public void onPlaced(@Nullable LivingEntity entity) {
+        assert level != null;
         rotation = entity != null ? (int) Math.floor(entity.getYRot() * 4 / 360 + 2.5D) & 3 : 0;
         pressure_state.b_rotate = pressure_state.a_rotate = pressure_state.approachRotate();
         if (!level.isClientSide) {
@@ -176,9 +167,10 @@ public class TileEnderTank extends TileFrequencyOwner {
 
     @Override
     public boolean rotate() {
+        assert level != null;
         if (!level.isClientSide) {
             rotation = (rotation + 1) % 4;
-            PacketCustom.sendToChunk(getUpdatePacket(), level, worldPosition.getX() >> 4, worldPosition.getZ() >> 4);
+            sendUpdatePacket();
         }
 
         return true;
@@ -188,19 +180,14 @@ public class TileEnderTank extends TileFrequencyOwner {
     public int comparatorInput() {
         IFluidTank tank = getStorage();
         FluidStack fluid = tank.getFluid();
-        if (fluid == null) {
-            fluid = FluidStack.EMPTY;
-        }
         return fluid.getAmount() * 14 / tank.getCapacity() + (fluid.getAmount() > 0 ? 1 : 0);
     }
 
-    @Nonnull
-    @Override
-    public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
-        if (!remove && cap == ForgeCapabilities.FLUID_HANDLER) {
-            return fluidHandler.cast();
+    public IFluidHandler getFluidHandler() {
+        if (fluidHandler == null) {
+            fluidHandler = getStorage();
         }
-        return super.getCapability(cap, side);
+        return fluidHandler;
     }
 
     public class EnderTankState extends TankSynchroniser.TankState {
@@ -215,6 +202,7 @@ public class TileEnderTank extends TileFrequencyOwner {
 
         @Override
         public void onLiquidChanged() {
+            assert level != null;
             level.getChunkSource().getLightEngine().checkBlock(worldPosition);
         }
     }
@@ -229,6 +217,7 @@ public class TileEnderTank extends TileFrequencyOwner {
         public double b_rotate;
 
         public void update(boolean client) {
+            assert level != null;
             if (client) {
                 b_rotate = a_rotate;
                 a_rotate = MathHelper.approachExp(a_rotate, approachRotate(), 0.5, 20);
@@ -253,6 +242,7 @@ public class TileEnderTank extends TileFrequencyOwner {
         }
 
         public void invert() {
+            assert level != null;
             invert_redstone = !invert_redstone;
             level.getChunk(worldPosition).setUnsaved(true);
         }

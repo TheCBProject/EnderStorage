@@ -2,22 +2,29 @@ package codechicken.enderstorage.init;
 
 import codechicken.enderstorage.client.render.item.EnderChestItemRender;
 import codechicken.enderstorage.client.render.item.EnderTankItemRender;
+import codechicken.enderstorage.recipe.CreateRecipe;
+import codechicken.enderstorage.recipe.ReColourRecipe;
 import codechicken.lib.colour.EnumColour;
 import codechicken.lib.datagen.ItemModelProvider;
+import codechicken.lib.datagen.recipe.RecipeProvider;
+import codechicken.lib.util.CCLTags;
+import net.covers1624.quack.util.CrashLock;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.PackOutput;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.BlockTags;
-import net.minecraftforge.client.model.generators.BlockStateProvider;
-import net.minecraftforge.client.model.generators.ModelFile;
-import net.minecraftforge.common.data.BlockTagsProvider;
-import net.minecraftforge.common.data.ExistingFileHelper;
-import net.minecraftforge.data.event.GatherDataEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.neoforge.client.model.generators.BlockStateProvider;
+import net.neoforged.neoforge.client.model.generators.ModelFile;
+import net.neoforged.neoforge.common.Tags;
+import net.neoforged.neoforge.common.data.BlockTagsProvider;
+import net.neoforged.neoforge.common.data.ExistingFileHelper;
+import net.neoforged.neoforge.data.event.GatherDataEvent;
 import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nonnull;
 import java.util.concurrent.CompletableFuture;
 
 import static codechicken.enderstorage.EnderStorage.MOD_ID;
@@ -26,11 +33,17 @@ import static codechicken.enderstorage.init.EnderStorageModContent.*;
 /**
  * Created by covers1624 on 4/25/20.
  */
-@Mod.EventBusSubscriber (modid = MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class DataGenerators {
 
-    @SubscribeEvent
-    public static void gatherDataGenerators(GatherDataEvent event) {
+    private static final CrashLock LOCK = new CrashLock("Already Initialized.");
+
+    public static void init(IEventBus modBus) {
+        LOCK.lock();
+
+        modBus.addListener(DataGenerators::gatherDataGenerators);
+    }
+
+    private static void gatherDataGenerators(GatherDataEvent event) {
         DataGenerator gen = event.getGenerator();
         PackOutput output = gen.getPackOutput();
         ExistingFileHelper files = event.getExistingFileHelper();
@@ -39,6 +52,7 @@ public class DataGenerators {
         gen.addProvider(event.includeClient(), new BlockStates(output, files));
         gen.addProvider(event.includeClient(), new ItemModels(output, files));
         gen.addProvider(event.includeServer(), new BlockTagGen(output, lookupProvider, files));
+        gen.addProvider(event.includeServer(), new Recipes(output));
     }
 
     private static class ItemModels extends ItemModelProvider {
@@ -106,12 +120,6 @@ public class DataGenerators {
             super(output, MOD_ID, exFileHelper);
         }
 
-        @Nonnull
-        @Override
-        public String getName() {
-            return "EnderStorage BlockStates";
-        }
-
         @Override
         protected void registerStatesAndModels() {
             ModelFile model = models()
@@ -133,6 +141,48 @@ public class DataGenerators {
             tag(BlockTags.MINEABLE_WITH_PICKAXE)
                     .add(ENDER_CHEST_BLOCK.get())
                     .add(ENDER_TANK_BLOCK.get());
+        }
+    }
+
+    private static class Recipes extends RecipeProvider {
+
+        public Recipes(PackOutput output) {
+            super(output, MOD_ID);
+        }
+
+        @Override
+        protected void registerRecipes() {
+            customShaped(ENDER_POUCH, (group, category, pattern, stack, showNotification) -> new CreateRecipe(group, pattern, stack))
+                    .key('P', Tags.Items.ENDER_PEARLS)
+                    .key('L', Tags.Items.LEATHER)
+                    .key('B', Items.BLAZE_POWDER)
+                    .key('W', CCLTags.Items.WOOL)
+                    .patternLine("BLB")
+                    .patternLine("LPL")
+                    .patternLine("BWB");
+
+            customShaped(ENDER_CHEST_ITEM, (group, category, pattern, stack, showNotification) -> new CreateRecipe(group, pattern, stack))
+                    .key('P', Tags.Items.ENDER_PEARLS)
+                    .key('O', Tags.Items.OBSIDIAN)
+                    .key('C', Tags.Items.CHESTS_WOODEN)
+                    .key('B', Items.BLAZE_ROD)
+                    .key('W', CCLTags.Items.WOOL)
+                    .patternLine("BWB")
+                    .patternLine("OCO")
+                    .patternLine("BPB");
+            customShaped(ENDER_TANK_ITEM, (group, category, pattern, stack, showNotification) -> new CreateRecipe(group, pattern, stack))
+                    .key('P', Tags.Items.ENDER_PEARLS)
+                    .key('O', Tags.Items.OBSIDIAN)
+                    .key('C', Items.CAULDRON)
+                    .key('B', Items.BLAZE_ROD)
+                    .key('W', CCLTags.Items.WOOL)
+                    .patternLine("BWB")
+                    .patternLine("OCO")
+                    .patternLine("BPB");
+
+            special(new ResourceLocation(MOD_ID, "recolour_ender_pouch"), () -> new ReColourRecipe(new ItemStack(ENDER_POUCH.get())));
+            special(new ResourceLocation(MOD_ID, "recolour_ender_chest"), () -> new ReColourRecipe(new ItemStack(ENDER_CHEST_ITEM.get())));
+            special(new ResourceLocation(MOD_ID, "recolour_ender_tank"), () -> new ReColourRecipe(new ItemStack(ENDER_TANK_ITEM.get())));
         }
     }
 }

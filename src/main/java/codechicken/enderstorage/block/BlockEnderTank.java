@@ -18,8 +18,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
-
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 import static codechicken.lib.vec.Vector3.CENTER;
 
@@ -36,8 +35,6 @@ public class BlockEnderTank extends BlockEnderStorage {
     public static Transformation[] buttonT = new Transformation[3];
 
     static {
-        //          1 2 3 4  5 6 7 8  9 ROT
-        int asd = 0b00000000_00000000_00000000_00000000;
         for (int i = 0; i < 3; i++) {
             buttonT[i] = new Scale(0.6).with(new Translation(0.35 + (2 - i) * 0.15, 0.91, 0.5));
         }

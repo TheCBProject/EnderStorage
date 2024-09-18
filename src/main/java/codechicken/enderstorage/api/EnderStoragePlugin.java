@@ -9,7 +9,7 @@ public interface EnderStoragePlugin<T extends AbstractEnderStorage> {
 
     T createEnderStorage(EnderStorageManager manager, Frequency freq);
 
-    EnderStorageManager.StorageType<T> identifier();
+    StorageType<T> identifier();
 
     void sendClientInfo(ServerPlayer player, List<T> list);
 }

@@ -77,7 +77,7 @@ public class ContainerEnderItemStorage extends AbstractContainerMenu {
         ItemStack itemstack = ItemStack.EMPTY;
         Slot slot = slots.get(i);
 
-        if (slot != null && slot.hasItem()) {
+        if (slot.hasItem()) {
             ItemStack itemstack1 = slot.getItem();
             itemstack = itemstack1.copy();
 
@@ -103,17 +103,4 @@ public class ContainerEnderItemStorage extends AbstractContainerMenu {
         super.removed(entityplayer);
         chestInv.closeInventory();
     }
-
-    //    @ChestContainer.RowSizeCallback
-    //    public int getRowSize() {
-    //        switch(chestInv.getSize()) {
-    //            case 0:
-    //                return 3;
-    //            case 1:
-    //            case 2:
-    //                return 9;
-    //            default:
-    //                throw new IllegalArgumentException("Invalid chest size: " + chestInv.getSize());
-    //        }
-    //    }
 }

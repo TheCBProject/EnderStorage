@@ -1,0 +1,28 @@
+{
+  "type": "enderstorage:create_recipe",
+  "key": {
+    "B": {
+      "item": "minecraft:blaze_rod"
+    },
+    "C": {
+      "item": "minecraft:cauldron"
+    },
+    "O": {
+      "tag": "forge:obsidian"
+    },
+    "P": {
+      "tag": "forge:ender_pearls"
+    },
+    "W": {
+      "tag": "forge:wool"
+    }
+  },
+  "pattern": [
+    "BWB",
+    "OCO",
+    "BPB"
+  ],
+  "result": {
+    "item": "enderstorage:ender_tank"
+  }
+}

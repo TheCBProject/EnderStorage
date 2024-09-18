@@ -2,17 +2,18 @@ package codechicken.enderstorage.storage;
 
 import codechicken.enderstorage.api.AbstractEnderStorage;
 import codechicken.enderstorage.api.Frequency;
+import codechicken.enderstorage.api.StorageType;
 import codechicken.enderstorage.manager.EnderStorageManager;
 import codechicken.lib.fluid.FluidUtils;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.IFluidTank;
-import net.minecraftforge.fluids.capability.IFluidHandler;
-import net.minecraftforge.fluids.capability.templates.FluidTank;
+import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.IFluidTank;
+import net.neoforged.neoforge.fluids.capability.IFluidHandler;
+import net.neoforged.neoforge.fluids.capability.templates.FluidTank;
 
 public class EnderLiquidStorage extends AbstractEnderStorage implements IFluidHandler, IFluidTank {
 
-    public static final EnderStorageManager.StorageType<EnderLiquidStorage> TYPE = new EnderStorageManager.StorageType<>("liquid");
+    public static final StorageType<EnderLiquidStorage> TYPE = new StorageType<>("liquid");
 
     public static final int CAPACITY = 16 * FluidUtils.B;
 

@@ -20,7 +20,7 @@ public class RenderCustomEndPortal {
 
     private static final RenderType STARFIELD_TYPE = RenderType.create("starfield", DefaultVertexFormat.POSITION, VertexFormat.Mode.QUADS, 256,
             RenderType.CompositeState.builder()
-                    .setShaderState(new RenderStateShard.ShaderStateShard(() -> Shaders.starfieldShader))
+                    .setShaderState(new RenderStateShard.ShaderStateShard(Shaders::starfieldShader))
                     .setTextureState(new RenderStateShard.TextureStateShard(TheEndPortalRenderer.END_PORTAL_LOCATION, false, false))
                     .createCompositeState(false)
     );
@@ -41,10 +41,11 @@ public class RenderCustomEndPortal {
 
     public void render(Matrix4 mat, MultiBufferSource source) {
         LocalPlayer localPlayer = Minecraft.getInstance().player;
+        assert localPlayer != null;
 
-        Shaders.starfieldTime.glUniform1f((float) ClientUtils.getRenderTime());
-        Shaders.starfieldYaw.glUniform1f((float) (localPlayer.getYRot() * MathHelper.torad));
-        Shaders.starfieldPitch.glUniform1f((float) -(localPlayer.getXRot() * MathHelper.torad));
+        Shaders.starfieldTime().glUniform1f((float) ClientUtils.getRenderTime());
+        Shaders.starfieldYaw().glUniform1f((float) (localPlayer.getYRot() * MathHelper.torad));
+        Shaders.starfieldPitch().glUniform1f((float) -(localPlayer.getXRot() * MathHelper.torad));
 
         VertexConsumer cons = new TransformingVertexConsumer(source.getBuffer(STARFIELD_TYPE), mat);
         cons.vertex(surfaceX1, surfaceY, surfaceZ1).endVertex();
@@ -55,10 +56,11 @@ public class RenderCustomEndPortal {
 
     public void render(PoseStack pStack, MultiBufferSource source) {
         LocalPlayer localPlayer = Minecraft.getInstance().player;
+        assert localPlayer != null;
 
-        Shaders.starfieldTime.glUniform1f((float) ClientUtils.getRenderTime());
-        Shaders.starfieldYaw.glUniform1f((float) (localPlayer.getYRot() * MathHelper.torad));
-        Shaders.starfieldPitch.glUniform1f((float) -(localPlayer.getXRot() * MathHelper.torad));
+        Shaders.starfieldTime().glUniform1f((float) ClientUtils.getRenderTime());
+        Shaders.starfieldYaw().glUniform1f((float) (localPlayer.getYRot() * MathHelper.torad));
+        Shaders.starfieldPitch().glUniform1f((float) -(localPlayer.getXRot() * MathHelper.torad));
 
         VertexConsumer cons = source.getBuffer(STARFIELD_TYPE);
         cons.vertex(pStack.last().pose(), (float) surfaceX1, (float) surfaceY, (float) surfaceZ1).endVertex();

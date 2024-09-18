@@ -3,16 +3,19 @@ package codechicken.enderstorage.manager;
 import codechicken.enderstorage.api.AbstractEnderStorage;
 import codechicken.enderstorage.api.EnderStoragePlugin;
 import codechicken.enderstorage.api.Frequency;
+import codechicken.enderstorage.api.StorageType;
 import codechicken.lib.util.ServerUtils;
 import com.google.common.collect.ImmutableMap;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtAccounter;
 import net.minecraft.nbt.NbtIo;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.entity.player.PlayerEvent;
-import net.minecraftforge.event.level.LevelEvent;
-import net.minecraftforge.event.server.ServerStartedEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.entity.player.PlayerEvent;
+import net.neoforged.neoforge.event.level.LevelEvent;
+import net.neoforged.neoforge.event.server.ServerStartedEvent;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.DataOutputStream;
 import java.io.File;
@@ -49,34 +52,8 @@ public class EnderStorageManager {
         }
     }
 
-    public static class StorageType<T extends AbstractEnderStorage> {
-
-        public final String name;
-
-        public StorageType(String name) {
-            this.name = name;
-        }
-
-        @Override
-        public int hashCode() {
-            return name.hashCode();
-        }
-
-        @Override
-        public boolean equals(Object obj) {
-            if (super.equals(obj)) {
-                return true;
-            }
-            if (!(obj instanceof StorageType)) {
-                return false;
-            }
-            StorageType<?> other = (StorageType<?>) obj;
-            return other.name.equals(name);
-        }
-    }
-
-    private static EnderStorageManager serverManager;
-    private static EnderStorageManager clientManager;
+    private static @Nullable EnderStorageManager serverManager;
+    private static @Nullable EnderStorageManager clientManager;
     private static Map<StorageType<?>, EnderStoragePlugin<?>> plugins = new HashMap<>();
 
     private Map<String, AbstractEnderStorage> storageMap;
@@ -106,7 +83,7 @@ public class EnderStorageManager {
     }
 
     public static void init() {
-        MinecraftForge.EVENT_BUS.addListener(EnderStorageManager::onServerStarted);
+        NeoForge.EVENT_BUS.addListener(EnderStorageManager::onServerStarted);
     }
 
     private static void onServerStarted(ServerStartedEvent event) {
@@ -125,7 +102,6 @@ public class EnderStorageManager {
     }
 
     private void load() {
-
         saveDir = new File(ServerUtils.getSaveDirectory().toFile(), "EnderStorage");
         try {
             if (!saveDir.exists()) {
@@ -141,7 +117,7 @@ public class EnderStorageManager {
 
                 if (saveFiles[saveTo ^ 1].exists()) {
                     FileInputStream in = new FileInputStream(saveFiles[saveTo ^ 1]);
-                    saveTag = NbtIo.readCompressed(in);
+                    saveTag = NbtIo.readCompressed(in, NbtAccounter.unlimitedHeap());
                     in.close();
                 } else {
                     saveTag = new CompoundTag();
@@ -205,7 +181,7 @@ public class EnderStorageManager {
 
     @SuppressWarnings ("unchecked")
     public <T extends AbstractEnderStorage> T getStorage(Frequency freq, StorageType<T> type) {
-        String key = freq + ",type=" + type.name;
+        String key = freq + ",type=" + type.name();
         AbstractEnderStorage storage = storageMap.get(key);
         if (storage == null) {
             storage = plugins.get(type).createEnderStorage(this, freq);

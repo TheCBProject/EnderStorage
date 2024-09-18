@@ -1,5 +1,5 @@
 modLoader="javafml"
-loaderVersion="[${lang_version},)"
+loaderVersion="[2,)"
 issueTrackerURL="https://github.com/TheCBProject/EnderStorage"
 license="The MIT License (MIT)"
 
@@ -18,20 +18,20 @@ Stores your stuff in the END!
     Soaryn - tank texture
 	'''
 [[dependencies.enderstorage]]
-	modId="forge"
-	mandatory=true
+	modId="neoforge"
+    type="required"
 	versionRange="[${forge_version},)"
 	ordering="NONE"
 	side="BOTH"
 [[dependencies.enderstorage]]
     modId="minecraft"
-    mandatory=true
-    versionRange="[1.20.1]"
+    type="required"
+    versionRange="[1.20.4]"
     ordering="NONE"
     side="BOTH"
 [[dependencies.enderstorage]]
     modId="codechickenlib"
-    mandatory=true
+    type="required"
     versionRange="${ccl_version_range}"
     ordering="AFTER"
     side="BOTH"

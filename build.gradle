@@ -4,7 +4,7 @@ plugins {
     id 'java'
     id 'maven-publish'
     id 'signing'
-    id 'net.neoforged.gradle' version '[6.0.18,6.2)'
+    id 'net.neoforged.gradle.userdev' version '7.0.97'
 }
 
 java {
@@ -16,32 +16,31 @@ java {
 }
 
 group = "io.codechicken"
-archivesBaseName = "EnderStorage"
+base {
+    archivesName = 'EnderStorage'
+}
 
 sourceSets.main.resources.srcDirs += "src/main/generated"
 
 mod_version = "${mod_version}." + (System.getenv("BUILD_NUMBER") ?: "1")
 version = "${mc_version}-${mod_version}"
-println "Starting build of ${archivesBaseName}, Version: ${mod_version}"
+println "Starting build of ${base.archivesName.get()}, Version: ${mod_version}"
 println "Using NeoForge: ${forge_version}, for Minecraft: ${mc_version}"
 
 minecraft {
-    mappings channel: 'official', version: mc_version
-    accessTransformer = file("src/main/resources/META-INF/accesstransformer.cfg")
-    runs {
-        client {
-            workingDirectory file('run')
-            mods { enderstorage { source sourceSets.main } }
-        }
-        server {
-            workingDirectory file('run')
-            mods { enderstorage { source sourceSets.main } }
-        }
-        data {
-            workingDirectory file('run')
-            args '--mod', 'enderstorage', '--all', '--output', file("src/main/generated"), '--existing', file("src/main/resources")
-            mods { enderstorage { source sourceSets.main } }
-        }
+    accessTransformers.file file("src/main/resources/META-INF/accesstransformer.cfg")
+}
+
+runs {
+    client {
+        workingDirectory file('run')
+    }
+    server {
+        workingDirectory file('run')
+    }
+    data {
+        workingDirectory file('run')
+        programArguments.addAll '--mod', 'enderstorage', '--all', '--output', file("src/main/generated"), '--existing', file("src/main/resources")
     }
 }
 
@@ -52,9 +51,13 @@ repositories {
 }
 
 dependencies {
-    minecraft "net.neoforged:forge:${mc_version}-${forge_version}"
-    implementation fg.deobf("io.codechicken:CodeChickenLib:${mc_version}-${ccl_version}:universal")
-    implementation fg.deobf("mezz.jei:jei-${mc_version}-forge:${jei_version}")
+    implementation "net.neoforged:neoforge:${forge_version}"
+
+    implementation "io.codechicken:CodeChickenLib:${mc_version}-${ccl_version}"
+
+    implementation("mezz.jei:jei-${mc_version}-neoforge:${jei_version}") {
+        transitive false
+    }
 }
 
 processResources {
@@ -71,7 +74,7 @@ processResources {
     }
 }
 
-def publishingMetadata = project.layout.buildDirectory.file("libs/$archivesBaseName-$version-publishing.json")
+def publishingMetadata = project.layout.buildDirectory.file("libs/${base.archivesName.get()}-$version-publishing.json")
 def publishingMetadataTask = tasks.register("publishingMetadata") {
     outputs.file(publishingMetadata)
     doFirst {
@@ -80,7 +83,7 @@ def publishingMetadataTask = tasks.register("publishingMetadata") {
                         'displayName' : "Ender Storage ${version}",
                         'mcVersion'   : "${mc_version}",
                         'version'     : "${mod_version}",
-                        'classifier'  : 'universal',
+                        'classifier'  : null,
                         'modLoader'   : 'neoforge',
                         'curseforgeId': '245174',
                         'modrinthId'  : 'BbrHg80P',
@@ -98,14 +101,12 @@ def publishingMetadataTask = tasks.register("publishingMetadata") {
 }
 
 jar {
-    finalizedBy 'reobfJar'
     finalizedBy 'signJar'
-    archiveClassifier = 'universal'
     manifest {
-        attributes 'Specification-Title': archivesBaseName
+        attributes 'Specification-Title': base.archivesName.get()
         attributes 'Specification-Vendor': 'covers1624'
         attributes 'Specification-Version': "1"
-        attributes 'Implementation-Title': archivesBaseName
+        attributes 'Implementation-Title': base.archivesName.get()
         attributes 'Implementation-Vendor': 'covers1624'
         attributes 'Implementation-Version': version
         attributes 'Implementation-Timestamp': new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
@@ -115,7 +116,6 @@ jar {
 
 tasks.register("signJar") {
     dependsOn("jar")
-    dependsOn("reobfJar")
 
     doFirst {
         def args = [:]
@@ -161,7 +161,7 @@ publishing {
     publications {
         EnderStorage(MavenPublication) {
             groupId project.group
-            artifactId project.archivesBaseName
+            artifactId project.base.archivesName.get()
             version project.version
             artifact jar
             artifact sourcesJar
@@ -172,18 +172,18 @@ publishing {
             }
 
             pom {
-                name = archivesBaseName
-                description = archivesBaseName
-                url = "https://github.com/TheCBProject/${archivesBaseName}"
+                name = base.archivesName.get()
+                description = base.archivesName.get()
+                url = "https://github.com/TheCBProject/${base.archivesName.get()}"
                 scm {
-                    url = "https://github.com/TheCBProject/${archivesBaseName}"
-                    connection = "scm:git:git://github.com/TheCBProject/${archivesBaseName}.git"
-                    connection = "scm:git:git@github.com:TheCBProject/${archivesBaseName}.git"
+                    url = "https://github.com/TheCBProject/${base.archivesName.get()}"
+                    connection = "scm:git:git://github.com/TheCBProject/${base.archivesName.get()}.git"
+                    connection = "scm:git:git@github.com:TheCBProject/${base.archivesName.get()}.git"
                 }
 
                 issueManagement {
                     system = 'github'
-                    url = "https://github.com/TheCBProject/${archivesBaseName}/issues"
+                    url = "https://github.com/TheCBProject/${base.archivesName.get()}/issues"
                 }
                 licenses {
                     license {

@@ -1,8 +1,8 @@
 package codechicken.enderstorage.network;
 
-import codechicken.lib.packet.PacketCustomChannelBuilder;
+import codechicken.lib.packet.PacketCustomChannel;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.network.event.EventNetworkChannel;
+import net.neoforged.bus.api.IEventBus;
 
 /**
  * Created by covers1624 on 28/10/19.
@@ -10,7 +10,10 @@ import net.minecraftforge.network.event.EventNetworkChannel;
 public class EnderStorageNetwork {
 
     public static final ResourceLocation NET_CHANNEL = new ResourceLocation("enderstorage:network");
-    public static EventNetworkChannel netChannel;
+    public static final PacketCustomChannel channel = new PacketCustomChannel(NET_CHANNEL)
+//            .versioned() // TODO
+            .client(() -> EnderStorageCPH::new)
+            .server(() -> EnderStorageSPH::new);
 
     //Client Handled.
     public static final int C_TILE_UPDATE = 1;
@@ -22,11 +25,8 @@ public class EnderStorageNetwork {
     //Server Handled.
     public static final int S_VISIBILITY = 1;
 
-    public static void init() {
-        netChannel = PacketCustomChannelBuilder.named(NET_CHANNEL)
-                .assignClientHandler(() -> EnderStorageCPH::new)
-                .assignServerHandler(() -> EnderStorageSPH::new)
-                .build();
+    public static void init(IEventBus modBus) {
+        channel.init(modBus);
     }
 
 }

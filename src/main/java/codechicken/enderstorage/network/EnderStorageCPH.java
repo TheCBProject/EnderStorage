@@ -17,7 +17,8 @@ import static codechicken.enderstorage.network.EnderStorageNetwork.*;
 public class EnderStorageCPH implements IClientPacketHandler {
 
     @Override
-    public void handlePacket(PacketCustom packet, Minecraft mc, ClientPacketListener handler) {
+    public void handlePacket(PacketCustom packet, Minecraft mc) {
+        assert mc.level != null;
         switch (packet.getType()) {
             case C_TILE_UPDATE:
                 if (mc.level.getBlockEntity(packet.readPos()) instanceof TileFrequencyOwner tile) {

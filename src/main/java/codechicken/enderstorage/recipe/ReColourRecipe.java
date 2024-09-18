@@ -3,68 +3,37 @@ package codechicken.enderstorage.recipe;
 import codechicken.enderstorage.api.Frequency;
 import codechicken.enderstorage.init.EnderStorageModContent;
 import codechicken.lib.colour.EnumColour;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import net.minecraft.core.NonNullList;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.GsonHelper;
+import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.CraftingBookCategory;
+import net.minecraft.world.item.crafting.CraftingRecipe;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
-import net.minecraft.world.item.crafting.ShapedRecipe;
 import net.minecraft.world.level.Level;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import net.neoforged.neoforge.common.crafting.IShapedRecipe;
 
 /**
  * Created by covers1624 on 8/07/2017.
  */
-public class ReColourRecipe extends RecipeBase {
+public class ReColourRecipe implements CraftingRecipe, IShapedRecipe<CraftingContainer> {
 
-    private final Ingredient ingredient;
+    protected final String group;
+    protected final ItemStack result;
+    protected final Ingredient ingredient;
 
-    public ReColourRecipe(ResourceLocation id, String group, @Nonnull ItemStack result, Ingredient ingredient) {
-        super(id, group, result, NonNullList.of(Ingredient.EMPTY, ingredient));
-        this.ingredient = ingredient;
+    public ReColourRecipe(ItemStack result) {
+        this("", result);
     }
 
-    @Override
-    public ItemStack assemble(CraftingContainer inv, RegistryAccess pRegistryAccess) {
-        int foundRow = 0;
-        Frequency currFreq = new Frequency();
-        for (int row = 1; row < 3; row++) {//Grab the input frequency, and store it's row.
-            ItemStack stack = inv.getItem(1 + row * inv.getWidth());
-            if (ingredient.test(stack)) {
-                foundRow = row;
-                currFreq = Frequency.readFromStack(stack);
-                break;
-            }
-        }
-        EnumColour[] colours = new EnumColour[] { null, null, null };
-        for (int col = 0; col < 3; col++) {//Grab the dyes in rows..
-            for (int row = 0; row < foundRow; row++) {
-                ItemStack stack = inv.getItem(col + row * inv.getWidth());
-                if (!stack.isEmpty()) {
-                    EnumColour colour = EnumColour.fromDyeStack(stack);
-                    if (colour != null) {
-                        if (colours[col] == null) {
-                            colours[col] = colour;
-                        } else {
-                            colours[col] = EnumColour.mix(colours[col], colour);
-                        }
-                    }
-                }
-            }
-        }
-        currFreq.setLeft(colours[0]);
-        currFreq.setMiddle(colours[1]);
-        currFreq.setRight(colours[2]);
-
-        return currFreq.writeToStack(super.assemble(inv, pRegistryAccess));
+    public ReColourRecipe(String group, ItemStack result) {
+        this.group = group;
+        this.result = result;
+        ingredient = Ingredient.of(result);
     }
 
     @Override
@@ -132,6 +101,41 @@ public class ReColourRecipe extends RecipeBase {
     }
 
     @Override
+    public ItemStack assemble(CraftingContainer inv, RegistryAccess pRegistryAccess) {
+        int foundRow = 0;
+        Frequency currFreq = new Frequency();
+        for (int row = 1; row < 3; row++) { // Grab the input frequency, and store it's row.
+            ItemStack stack = inv.getItem(1 + row * inv.getWidth());
+            if (ingredient.test(stack)) {
+                foundRow = row;
+                currFreq = Frequency.readFromStack(stack);
+                break;
+            }
+        }
+        EnumColour[] colours = new EnumColour[] { null, null, null };
+        for (int col = 0; col < 3; col++) { // Grab the dyes in rows..
+            for (int row = 0; row < foundRow; row++) {
+                ItemStack stack = inv.getItem(col + row * inv.getWidth());
+                if (!stack.isEmpty()) {
+                    EnumColour colour = EnumColour.fromDyeStack(stack);
+                    if (colour != null) {
+                        if (colours[col] == null) {
+                            colours[col] = colour;
+                        } else {
+                            colours[col] = EnumColour.mix(colours[col], colour);
+                        }
+                    }
+                }
+            }
+        }
+        if (colours[0] != null) currFreq.setLeft(colours[0]);
+        if (colours[1] != null) currFreq.setMiddle(colours[1]);
+        if (colours[2] != null) currFreq.setRight(colours[2]);
+
+        return currFreq.writeToStack(result.copy());
+    }
+
+    @Override
     public boolean isSpecial() {
         return true;
     }
@@ -141,37 +145,58 @@ public class ReColourRecipe extends RecipeBase {
         return EnderStorageModContent.RECOLOUR_RECIPE_SERIALIZER.get();
     }
 
+    @Override
+    public boolean canCraftInDimensions(int width, int height) {
+        return width >= 3 && height >= 3;
+    }
+
+    @Override
+    public String getGroup() {
+        return group;
+    }
+
+    @Override
+    public ItemStack getResultItem(RegistryAccess pRegistryAccess) {
+        return result;
+    }
+
+    @Override
+    public int getRecipeWidth() {
+        return 3;
+    }
+
+    @Override
+    public int getRecipeHeight() {
+        return 3;
+    }
+
+    @Override
+    public CraftingBookCategory category() {
+        return CraftingBookCategory.MISC;
+    }
+
     public static class Serializer implements RecipeSerializer<ReColourRecipe> {
 
-        @Override
-        public ReColourRecipe fromJson(ResourceLocation recipeId, JsonObject json) {
-            String group = GsonHelper.getAsString(json, "group", "");
-            ItemStack result = ShapedRecipe.itemStackFromJson(GsonHelper.getAsJsonObject(json, "result"));
-            Ingredient ingredient;
-            JsonElement ing = json.get("ingredient");
-            if (ing != null) {
-                ingredient = Ingredient.fromJson(ing);
-            } else {
-                ingredient = Ingredient.of(result);
-            }
+        private static final Codec<ReColourRecipe> CODEC = RecordCodecBuilder.create(builder -> builder.group(
+                        ExtraCodecs.strictOptionalField(Codec.STRING, "group", "").forGetter(e -> e.group),
+                        ItemStack.ITEM_WITH_COUNT_CODEC.fieldOf("result").forGetter(e -> e.result)
+                ).apply(builder, ReColourRecipe::new)
+        );
 
-            return new ReColourRecipe(recipeId, group, result, ingredient);
+        @Override
+        public Codec<ReColourRecipe> codec() {
+            return CODEC;
         }
 
-        @Nullable
         @Override
-        public ReColourRecipe fromNetwork(ResourceLocation recipeId, FriendlyByteBuf buffer) {
-            String s = buffer.readUtf(32767);
-            Ingredient ing = Ingredient.fromNetwork(buffer);
-            ItemStack result = buffer.readItem();
-            return new ReColourRecipe(recipeId, s, result, ing);
+        public ReColourRecipe fromNetwork(FriendlyByteBuf buffer) {
+            return new ReColourRecipe(buffer.readUtf(), buffer.readItem());
         }
 
         @Override
         public void toNetwork(FriendlyByteBuf buffer, ReColourRecipe recipe) {
             buffer.writeUtf(recipe.group);
-            recipe.ingredient.toNetwork(buffer);
-            buffer.writeItem(recipe.output);
+            buffer.writeItem(recipe.result);
         }
     }
 

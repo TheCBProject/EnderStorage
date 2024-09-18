@@ -24,7 +24,7 @@ public class EnderKnobSlot {
         aabb = cornersToAABB(verts);
     }
 
-    private AABB aabb;
+    private final AABB aabb;
 
     public AABB getSelectionBB() {
         return aabb;

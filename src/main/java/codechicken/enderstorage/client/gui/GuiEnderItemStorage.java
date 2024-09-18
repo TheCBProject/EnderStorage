@@ -22,7 +22,7 @@ public class GuiEnderItemStorage extends AbstractContainerScreen<ContainerEnderI
 
     @Override
     public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
-        renderBackground(graphics);
+        renderBackground(graphics, mouseX, mouseY, partialTicks);
         super.render(graphics, mouseX, mouseY, partialTicks);
         renderTooltip(graphics, mouseX, mouseY);
     }
@@ -33,6 +33,7 @@ public class GuiEnderItemStorage extends AbstractContainerScreen<ContainerEnderI
         graphics.drawString(font, playerInventoryTitle.getVisualOrderText(), 8, imageHeight - 94, 0x404040, false);
         if (menu.chestInv.freq.hasOwner()) {
             Component name = menu.chestInv.freq.getOwnerName();
+            assert name != null;
             graphics.drawString(font, name.getVisualOrderText(), 170 - font.width(name), 6, 0x404040, false);
         }
     }

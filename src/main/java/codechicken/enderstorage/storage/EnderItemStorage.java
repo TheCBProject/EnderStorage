@@ -2,6 +2,7 @@ package codechicken.enderstorage.storage;
 
 import codechicken.enderstorage.api.AbstractEnderStorage;
 import codechicken.enderstorage.api.Frequency;
+import codechicken.enderstorage.api.StorageType;
 import codechicken.enderstorage.config.EnderStorageConfig;
 import codechicken.enderstorage.container.ContainerEnderItemStorage;
 import codechicken.enderstorage.manager.EnderStorageManager;
@@ -20,18 +21,18 @@ import net.minecraft.world.item.ItemStack;
 
 public class EnderItemStorage extends AbstractEnderStorage implements Container {
 
-    public static final EnderStorageManager.StorageType<EnderItemStorage> TYPE = new EnderStorageManager.StorageType<>("item");
+    public static final StorageType<EnderItemStorage> TYPE = new StorageType<>("item");
 
     public static final int[] sizes = new int[] { 9, 27, 54 };
 
+    private int size;
     private ItemStack[] items;
     private int open;
-    private int size;
 
     public EnderItemStorage(EnderStorageManager manager, Frequency freq) {
         super(manager, freq);
         size = EnderStorageConfig.storageSize;
-        empty();
+        items = new ItemStack[size];
     }
 
     @Override

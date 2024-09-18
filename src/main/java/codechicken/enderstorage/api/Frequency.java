@@ -8,6 +8,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
 
@@ -19,8 +20,8 @@ public final class Frequency implements Copyable<Frequency> {
     public EnumColour left;
     public EnumColour middle;
     public EnumColour right;
-    public UUID owner;
-    public Component ownerName;
+    public @Nullable UUID owner;
+    public @Nullable Component ownerName;
 
     public Frequency() {
         this(EnumColour.WHITE, EnumColour.WHITE, EnumColour.WHITE);
@@ -30,7 +31,7 @@ public final class Frequency implements Copyable<Frequency> {
         this(left, middle, right, null, null);
     }
 
-    public Frequency(EnumColour left, EnumColour middle, EnumColour right, UUID owner, Component ownerName) {
+    public Frequency(EnumColour left, EnumColour middle, EnumColour right, @Nullable UUID owner, @Nullable Component ownerName) {
         this.left = left;
         this.middle = middle;
         this.right = right;
@@ -39,7 +40,15 @@ public final class Frequency implements Copyable<Frequency> {
     }
 
     public Frequency(CompoundTag tagCompound) {
-        read_internal(tagCompound);
+        left = EnumColour.fromWoolMeta(tagCompound.getInt("left"));
+        middle = EnumColour.fromWoolMeta(tagCompound.getInt("middle"));
+        right = EnumColour.fromWoolMeta(tagCompound.getInt("right"));
+        if (tagCompound.hasUUID("owner")) {
+            owner = tagCompound.getUUID("owner");
+        }
+        if (tagCompound.contains("owner_name")) {
+            ownerName = Component.Serializer.fromJson(tagCompound.getString("owner_name"));
+        }
     }
 
     public static Frequency fromString(String left, String middle, String right) {
@@ -63,23 +72,17 @@ public final class Frequency implements Copyable<Frequency> {
     }
 
     public Frequency setLeft(EnumColour left) {
-        if (left != null) {
-            this.left = left;
-        }
+        this.left = left;
         return this;
     }
 
     public Frequency setMiddle(EnumColour middle) {
-        if (middle != null) {
-            this.middle = middle;
-        }
+        this.middle = middle;
         return this;
     }
 
     public Frequency setRight(EnumColour right) {
-        if (right != null) {
-            this.right = right;
-        }
+        this.right = right;
         return this;
     }
 
@@ -127,29 +130,16 @@ public final class Frequency implements Copyable<Frequency> {
         return right;
     }
 
-    public UUID getOwner() {
+    public @Nullable UUID getOwner() {
         return owner;
     }
 
-    public Component getOwnerName() {
+    public @Nullable Component getOwnerName() {
         return ownerName;
     }
 
     public EnumColour[] toArray() {
         return new EnumColour[] { left, middle, right };
-    }
-
-    private Frequency read_internal(CompoundTag tagCompound) {
-        left = EnumColour.fromWoolMeta(tagCompound.getInt("left"));
-        middle = EnumColour.fromWoolMeta(tagCompound.getInt("middle"));
-        right = EnumColour.fromWoolMeta(tagCompound.getInt("right"));
-        if (tagCompound.hasUUID("owner")) {
-            owner = tagCompound.getUUID("owner");
-        }
-        if (tagCompound.contains("owner_name")) {
-            ownerName = Component.Serializer.fromJson(tagCompound.getString("owner_name"));
-        }
-        return this;
     }
 
     private CompoundTag write_internal(CompoundTag tagCompound) {
@@ -179,11 +169,10 @@ public final class Frequency implements Copyable<Frequency> {
     }
 
     public static Frequency readFromStack(ItemStack stack) {
-        if (stack.hasTag()) {
-            CompoundTag stackTag = stack.getTag();
-            if (stackTag.contains("Frequency")) {
-                return new Frequency(stackTag.getCompound("Frequency"));
-            }
+        CompoundTag stackTag = stack.getTag();
+
+        if (stackTag != null && stackTag.contains("Frequency")) {
+            return new Frequency(stackTag.getCompound("Frequency"));
         }
         return new Frequency();
     }
@@ -192,10 +181,6 @@ public final class Frequency implements Copyable<Frequency> {
         CompoundTag tagCompound = stack.getOrCreateTag();
         tagCompound.put("Frequency", write_internal(new CompoundTag()));
         return stack;
-    }
-
-    public String toModelLoc() {
-        return "left=" + getLeft().getSerializedName() + ",middle=" + getMiddle().getSerializedName() + ",right=" + getRight().getSerializedName() + ",owned=" + hasOwner();
     }
 
     @Override

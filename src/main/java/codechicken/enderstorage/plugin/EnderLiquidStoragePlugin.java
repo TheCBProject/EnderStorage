@@ -2,6 +2,7 @@ package codechicken.enderstorage.plugin;
 
 import codechicken.enderstorage.api.EnderStoragePlugin;
 import codechicken.enderstorage.api.Frequency;
+import codechicken.enderstorage.api.StorageType;
 import codechicken.enderstorage.manager.EnderStorageManager;
 import codechicken.enderstorage.storage.EnderLiquidStorage;
 import net.minecraft.server.level.ServerPlayer;
@@ -16,7 +17,7 @@ public class EnderLiquidStoragePlugin implements EnderStoragePlugin<EnderLiquidS
     }
 
     @Override
-    public EnderStorageManager.StorageType<EnderLiquidStorage> identifier() {
+    public StorageType<EnderLiquidStorage> identifier() {
         return EnderLiquidStorage.TYPE;
     }
 

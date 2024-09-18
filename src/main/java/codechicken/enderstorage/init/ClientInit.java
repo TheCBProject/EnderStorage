@@ -10,16 +10,16 @@ import codechicken.enderstorage.config.EnderStorageConfig;
 import codechicken.enderstorage.manager.EnderStorageManager;
 import codechicken.enderstorage.storage.EnderItemStorage;
 import net.covers1624.quack.util.CrashLock;
-import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.client.renderer.item.ClampedItemPropertyFunction;
 import net.minecraft.client.renderer.item.ItemProperties;
+import net.minecraft.client.resources.PlayerSkin;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.client.event.EntityRenderersEvent;
-import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
+import net.neoforged.neoforge.client.event.EntityRenderersEvent;
+import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
 
 import static codechicken.enderstorage.EnderStorage.MOD_ID;
 import static codechicken.enderstorage.init.EnderStorageModContent.*;
@@ -31,14 +31,14 @@ public class ClientInit {
 
     private static final CrashLock LOCK = new CrashLock("Already Initialized.");
 
-    public static void init() {
+    public static void init(IEventBus modBus) {
         LOCK.lock();
-        IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
 
-        bus.addListener(ClientInit::onRegisterRenderers);
-        bus.addListener(ClientInit::onAddRenderLayers);
-        bus.addListener(ClientInit::onClientSetupEvent);
-        Shaders.init();
+        modBus.addListener(ClientInit::onRegisterRenderers);
+        modBus.addListener(ClientInit::onAddRenderLayers);
+        modBus.addListener(ClientInit::onRegisterMenuScreens);
+        modBus.addListener(ClientInit::onClientSetupEvent);
+        Shaders.init(modBus);
     }
 
     private static void onRegisterRenderers(EntityRenderersEvent.RegisterRenderers event) {
@@ -49,7 +49,7 @@ public class ClientInit {
     @SuppressWarnings ({ "rawtypes", "unchecked" })
     private static void onAddRenderLayers(EntityRenderersEvent.AddLayers event) {
         if (!EnderStorageConfig.disableCreatorVisuals) {
-            for (String skin : event.getSkins()) {
+            for (PlayerSkin.Model skin : event.getSkins()) {
                 var skinRenderer = (LivingEntityRenderer) event.getSkin(skin);
                 assert skinRenderer != null;
                 skinRenderer.addLayer(new TankLayerRenderer(skinRenderer));
@@ -57,9 +57,11 @@ public class ClientInit {
         }
     }
 
-    private static void onClientSetupEvent(FMLClientSetupEvent event) {
-        MenuScreens.register(ENDER_ITEM_STORAGE.get(), GuiEnderItemStorage::new);
+    private static void onRegisterMenuScreens(RegisterMenuScreensEvent event) {
+        event.register(ENDER_ITEM_STORAGE.get(), GuiEnderItemStorage::new);
+    }
 
+    private static void onClientSetupEvent(FMLClientSetupEvent event) {
         event.enqueueWork(ClientInit::registerPredicates);
     }
 
@@ -90,5 +92,4 @@ public class ClientInit {
                 (pStack, pLevel, pEntity, pSeed) -> Frequency.readFromStack(pStack).getRight().ordinal()
         );
     }
-
 }

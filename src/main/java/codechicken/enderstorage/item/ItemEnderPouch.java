@@ -17,8 +17,8 @@ import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nullable;
 import java.util.List;
 
 public class ItemEnderPouch extends Item {
@@ -45,10 +45,11 @@ public class ItemEnderPouch extends Item {
             return InteractionResult.PASS;
         }
 
+        Player player = context.getPlayer();
         BlockEntity tile = world.getBlockEntity(context.getClickedPos());
-        if (tile instanceof TileEnderChest chest && context.getPlayer().isCrouching()) {
+        if (tile instanceof TileEnderChest chest && player != null && player.isCrouching()) {
             Frequency frequency = chest.getFrequency().copy();
-            if (EnderStorageConfig.anarchyMode && !(frequency.owner != null && frequency.owner.equals(context.getPlayer().getUUID()))) {
+            if (EnderStorageConfig.anarchyMode && !(frequency.owner != null && frequency.owner.equals(player.getUUID()))) {
                 frequency.clearOwner();
             }
 
@@ -67,7 +68,7 @@ public class ItemEnderPouch extends Item {
         }
         if (!world.isClientSide) {
             Frequency frequency = Frequency.readFromStack(stack);
-            EnderStorageManager.instance(world.isClientSide).getStorage(frequency, EnderItemStorage.TYPE).openContainer((ServerPlayer) player, Component.translatable(stack.getDescriptionId()));
+            EnderStorageManager.instance(false).getStorage(frequency, EnderItemStorage.TYPE).openContainer((ServerPlayer) player, Component.translatable(stack.getDescriptionId()));
         }
         return new InteractionResultHolder<>(InteractionResult.SUCCESS, stack);
     }
