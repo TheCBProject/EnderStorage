@@ -1,5 +1,6 @@
 package codechicken.enderstorage.network;
 
+import codechicken.enderstorage.EnderStorage;
 import codechicken.lib.packet.PacketCustomChannel;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.bus.api.IEventBus;
@@ -11,7 +12,7 @@ public class EnderStorageNetwork {
 
     public static final ResourceLocation NET_CHANNEL = new ResourceLocation("enderstorage:network");
     public static final PacketCustomChannel channel = new PacketCustomChannel(NET_CHANNEL)
-//            .versioned() // TODO
+            .versioned(EnderStorage.container().getModInfo().getVersion().toString())
             .client(() -> EnderStorageCPH::new)
             .server(() -> EnderStorageSPH::new);
 

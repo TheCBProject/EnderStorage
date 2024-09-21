@@ -10,18 +10,24 @@ import codechicken.enderstorage.network.TankSynchroniser;
 import codechicken.enderstorage.plugin.EnderItemStoragePlugin;
 import codechicken.enderstorage.plugin.EnderLiquidStoragePlugin;
 import net.neoforged.bus.api.IEventBus;
+import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.common.NeoForge;
+import org.jetbrains.annotations.Nullable;
 
 import static codechicken.enderstorage.EnderStorage.MOD_ID;
+import static java.util.Objects.requireNonNull;
 
 @Mod (MOD_ID)
 public class EnderStorage {
 
     public static final String MOD_ID = "enderstorage";
 
-    public EnderStorage(IEventBus modBus) {
+    private static @Nullable ModContainer container;
+
+    public EnderStorage(ModContainer container, IEventBus modBus) {
+        EnderStorage.container = container;
         EnderStorageConfig.load();
 
         EnderStorageModContent.init(modBus);
@@ -39,6 +45,10 @@ public class EnderStorage {
         NeoForge.EVENT_BUS.register(new TankSynchroniser());
 
         DataGenerators.init(modBus);
+    }
+
+    public static ModContainer container() {
+        return requireNonNull(container);
     }
 
     //    @Mod.EventHandler
