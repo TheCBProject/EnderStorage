@@ -138,7 +138,7 @@ public class TileEnderChest extends TileFrequencyOwner {
     }
 
     @Override
-    public int comparatorInput() {
+    public int comparatorOutput() {
         return ItemHandlerHelper.calcRedstoneFromInventory(getItemHandler());
     }
 

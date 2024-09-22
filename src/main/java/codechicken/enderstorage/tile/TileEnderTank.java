@@ -177,7 +177,7 @@ public class TileEnderTank extends TileFrequencyOwner {
     }
 
     @Override
-    public int comparatorInput() {
+    public int comparatorOutput() {
         IFluidTank tank = getStorage();
         FluidStack fluid = tank.getFluid();
         return fluid.getAmount() * 14 / tank.getCapacity() + (fluid.getAmount() > 0 ? 1 : 0);

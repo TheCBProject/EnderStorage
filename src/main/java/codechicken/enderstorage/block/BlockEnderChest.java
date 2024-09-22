@@ -77,11 +77,6 @@ public class BlockEnderChest extends BlockEnderStorage {
         return shape;
     }
 
-    @Override
-    public boolean hasAnalogOutputSignal(BlockState state) {
-        return true;
-    }
-
     @Nullable
     @Override
     public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {

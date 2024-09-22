@@ -170,7 +170,12 @@ public abstract class BlockEnderStorage extends BaseEntityBlock {
     @Override
     public int getAnalogOutputSignal(BlockState state, Level world, BlockPos pos) {
         BlockEntity tile = world.getBlockEntity(pos);
-        return tile instanceof TileFrequencyOwner ? ((TileFrequencyOwner) tile).comparatorInput() : 0;
+        return tile instanceof TileFrequencyOwner ? ((TileFrequencyOwner) tile).comparatorOutput() : 0;
+    }
+
+    @Override
+    public boolean hasAnalogOutputSignal(BlockState state) {
+        return true;
     }
 
     @Override

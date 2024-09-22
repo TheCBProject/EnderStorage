@@ -9,8 +9,6 @@ import codechicken.lib.packet.PacketCustom;
 import codechicken.lib.vec.Cuboid6;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.Connection;
-import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -123,7 +121,7 @@ public abstract class TileFrequencyOwner extends BlockEntity {
         return false;
     }
 
-    public int comparatorInput() {
+    public int comparatorOutput() {
         return 0;
     }
 
