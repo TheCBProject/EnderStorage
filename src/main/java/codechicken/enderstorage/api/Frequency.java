@@ -71,18 +71,24 @@ public final class Frequency implements Copyable<Frequency> {
         return new Frequency(c1, c2, c3, owner, ownerName);
     }
 
-    public Frequency setLeft(EnumColour left) {
-        this.left = left;
+    public Frequency setLeft(@Nullable EnumColour left) {
+        if (left != null) {
+            this.left = left;
+        }
         return this;
     }
 
-    public Frequency setMiddle(EnumColour middle) {
-        this.middle = middle;
+    public Frequency setMiddle(@Nullable EnumColour middle) {
+        if (middle != null) {
+            this.middle = middle;
+        }
         return this;
     }
 
-    public Frequency setRight(EnumColour right) {
-        this.right = right;
+    public Frequency setRight(@Nullable EnumColour right) {
+        if (right != null) {
+            this.right = right;
+        }
         return this;
     }
 
@@ -102,7 +108,7 @@ public final class Frequency implements Copyable<Frequency> {
         return owner != null && ownerName != null;
     }
 
-    public Frequency set(EnumColour[] colours) {
+    public Frequency set(@Nullable EnumColour[] colours) {
         setLeft(colours[0]);
         setMiddle(colours[1]);
         setRight(colours[2]);
