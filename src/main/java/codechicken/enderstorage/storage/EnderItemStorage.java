@@ -32,7 +32,7 @@ public class EnderItemStorage extends AbstractEnderStorage implements Container 
     public EnderItemStorage(EnderStorageManager manager, Frequency freq) {
         super(manager, freq);
         size = EnderStorageConfig.storageSize;
-        items = new ItemStack[size];
+        items = ArrayUtils.fill(new ItemStack[getContainerSize()], ItemStack.EMPTY);
     }
 
     @Override
