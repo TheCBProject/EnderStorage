@@ -1,10 +1,10 @@
 {
-  "item.enderstorage.ender_pouch": "Borsa d'omega",
-  "block.enderstorage.ender_chest": "Baule d'omega",
-  "enderstorage.command.no_colour": "Colore invalido: %s",
+  "item.enderstorage.ender_pouch": "Borsa di ender",
+  "block.enderstorage.ender_chest": "Baule di ender",
+  "enderstorage.command.no_colour": "Colore non valido: %s",
   "enderstorage.command.usage": "enderstorage <frequenza>|(<colore> <colore> <colore>) [proprietario]",
-  "enderstorage.command.no_freq": "Frequenza invalida",
-  "block.enderstorage.ender_tank": "Serbatoio d'omega",
-  "enderstorage.command.no_arguments": "Numero invalido di argomenti",
+  "enderstorage.command.no_freq": "Frequenza non valida",
+  "block.enderstorage.ender_tank": "Serbatoio di ender",
+  "enderstorage.command.no_arguments": "Numero di argomenti non valido",
   "enderstorage.serverop": "Operatore"
 }
