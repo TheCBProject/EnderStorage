@@ -1,147 +1,110 @@
 package codechicken.enderstorage.api;
 
+import codechicken.enderstorage.init.EnderStorageModContent;
 import codechicken.lib.colour.EnumColour;
 import codechicken.lib.data.MCDataInput;
 import codechicken.lib.data.MCDataOutput;
-import codechicken.lib.util.Copyable;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.core.RegistryAccess;
+import net.minecraft.core.UUIDUtil;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.ComponentSerialization;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Optional;
 import java.util.UUID;
 
 /**
  * Created by covers1624 on 4/26/2016.
  */
-public final class Frequency implements Copyable<Frequency> {
+public record Frequency(
+        EnumColour left,
+        EnumColour middle,
+        EnumColour right,
+        Optional<UUID> owner,
+        Optional<Component> ownerName
+) {
 
-    public EnumColour left;
-    public EnumColour middle;
-    public EnumColour right;
-    public @Nullable UUID owner;
-    public @Nullable Component ownerName;
+    public static final Codec<Frequency> CODEC = RecordCodecBuilder.create(builder -> builder.group(
+                    EnumColour.CODEC.fieldOf("left").forGetter(Frequency::left),
+                    EnumColour.CODEC.fieldOf("middle").forGetter(Frequency::middle),
+                    EnumColour.CODEC.fieldOf("right").forGetter(Frequency::right),
+                    UUIDUtil.CODEC.optionalFieldOf("owner").forGetter(Frequency::owner),
+                    ComponentSerialization.CODEC.optionalFieldOf("ownerName").forGetter(Frequency::ownerName)
+            ).apply(builder, Frequency::new)
+    );
+    public static final StreamCodec<RegistryFriendlyByteBuf, Frequency> STREAM_CODEC = StreamCodec.composite(
+            EnumColour.STREAM_CODEC, Frequency::left,
+            EnumColour.STREAM_CODEC, Frequency::middle,
+            EnumColour.STREAM_CODEC, Frequency::right,
+            ByteBufCodecs.optional(UUIDUtil.STREAM_CODEC), Frequency::owner,
+            ByteBufCodecs.optional(ComponentSerialization.STREAM_CODEC), Frequency::ownerName,
+            Frequency::new
+    );
 
     public Frequency() {
         this(EnumColour.WHITE, EnumColour.WHITE, EnumColour.WHITE);
     }
 
     public Frequency(EnumColour left, EnumColour middle, EnumColour right) {
-        this(left, middle, right, null, null);
+        this(left, middle, right, Optional.empty(), Optional.empty());
     }
 
-    public Frequency(EnumColour left, EnumColour middle, EnumColour right, @Nullable UUID owner, @Nullable Component ownerName) {
-        this.left = left;
-        this.middle = middle;
-        this.right = right;
-        this.owner = owner;
-        this.ownerName = ownerName;
-    }
-
+    @Deprecated
     public Frequency(CompoundTag tagCompound) {
-        left = EnumColour.fromWoolMeta(tagCompound.getInt("left"));
-        middle = EnumColour.fromWoolMeta(tagCompound.getInt("middle"));
-        right = EnumColour.fromWoolMeta(tagCompound.getInt("right"));
-        if (tagCompound.hasUUID("owner")) {
-            owner = tagCompound.getUUID("owner");
-        }
-        if (tagCompound.contains("owner_name")) {
-            ownerName = Component.Serializer.fromJson(tagCompound.getString("owner_name"));
-        }
+        this(
+                EnumColour.fromWoolMeta(tagCompound.getInt("left")),
+                EnumColour.fromWoolMeta(tagCompound.getInt("middle")),
+                EnumColour.fromWoolMeta(tagCompound.getInt("right")),
+                tagCompound.hasUUID("owner") ? Optional.of(tagCompound.getUUID("owner")) : Optional.empty(),
+                tagCompound.contains("owner_name") ? Optional.of(Component.Serializer.fromJson(tagCompound.getString("owner_name"), RegistryAccess.EMPTY)) : Optional.empty()
+        );
     }
 
-    public static Frequency fromString(String left, String middle, String right) {
-        return fromString(left, middle, right, null, null);
-    }
-
-    public static Frequency fromString(String left, String middle, String right, UUID owner, Component ownerName) {
-        EnumColour c1 = EnumColour.fromName(left);
-        EnumColour c2 = EnumColour.fromName(middle);
-        EnumColour c3 = EnumColour.fromName(right);
-        if (c1 == null) {
-            throw new RuntimeException(left + " is an invalid colour!");
-        }
-        if (c2 == null) {
-            throw new RuntimeException(middle + " is an invalid colour!");
-        }
-        if (c3 == null) {
-            throw new RuntimeException(right + " is an invalid colour!");
-        }
-        return new Frequency(c1, c2, c3, owner, ownerName);
-    }
-
-    public Frequency setLeft(@Nullable EnumColour left) {
+    public Frequency withLeft(@Nullable EnumColour left) {
         if (left != null) {
-            this.left = left;
+            return new Frequency(left, middle, right, owner, ownerName);
         }
         return this;
     }
 
-    public Frequency setMiddle(@Nullable EnumColour middle) {
+    public Frequency withMiddle(@Nullable EnumColour middle) {
         if (middle != null) {
-            this.middle = middle;
+            return new Frequency(left, middle, right, owner, ownerName);
         }
         return this;
     }
 
-    public Frequency setRight(@Nullable EnumColour right) {
+    public Frequency withRight(@Nullable EnumColour right) {
         if (right != null) {
-            this.right = right;
+            return new Frequency(left, middle, right, owner, ownerName);
         }
         return this;
     }
 
-    public Frequency setOwner(Player player) {
-        owner = player.getUUID();
-        ownerName = player.getName();
-        return this;
+    public Frequency withOwner(Player player) {
+        return new Frequency(left, middle, right, Optional.of(player.getUUID()), Optional.of(player.getName()));
     }
 
-    public Frequency clearOwner() {
-        owner = null;
-        ownerName = null;
-        return this;
+    public Frequency withoutOwner() {
+        return new Frequency(left, middle, right, Optional.empty(), Optional.empty());
     }
 
     public boolean hasOwner() {
-        return owner != null && ownerName != null;
+        return owner.isPresent() && ownerName.isPresent();
     }
 
-    public Frequency set(@Nullable EnumColour[] colours) {
-        setLeft(colours[0]);
-        setMiddle(colours[1]);
-        setRight(colours[2]);
-        return this;
-    }
-
-    public Frequency set(Frequency frequency) {
-        left = frequency.left;
-        middle = frequency.middle;
-        right = frequency.right;
-        owner = frequency.owner;
-        ownerName = frequency.ownerName;
-        return this;
-    }
-
-    public EnumColour getLeft() {
-        return left;
-    }
-
-    public EnumColour getMiddle() {
-        return middle;
-    }
-
-    public EnumColour getRight() {
-        return right;
-    }
-
-    public @Nullable UUID getOwner() {
-        return owner;
-    }
-
-    public @Nullable Component getOwnerName() {
-        return ownerName;
+    public Frequency withColours(@Nullable EnumColour[] colours) {
+        return withLeft(colours[0])
+                .withMiddle(colours[1])
+                .withRight(colours[2]);
     }
 
     public EnumColour[] toArray() {
@@ -152,40 +115,29 @@ public final class Frequency implements Copyable<Frequency> {
         tagCompound.putInt("left", left.getWoolMeta());
         tagCompound.putInt("middle", middle.getWoolMeta());
         tagCompound.putInt("right", right.getWoolMeta());
-        if (owner != null) {
-            tagCompound.putUUID("owner", owner);
-        }
-        if (ownerName != null) {
-            tagCompound.putString("owner_name", Component.Serializer.toJson(ownerName));
-        }
+        owner.ifPresent(uuid -> tagCompound.putUUID("owner", uuid));
+        ownerName.ifPresent(component -> tagCompound.putString("owner_name", Component.Serializer.toJson(component, RegistryAccess.EMPTY)));
         return tagCompound;
     }
 
-    public CompoundTag writeToNBT(CompoundTag tagCompound) {
-        write_internal(tagCompound);
-        return tagCompound;
-    }
-
+    @Deprecated
     public void writeToPacket(MCDataOutput packet) {
         packet.writeCompoundNBT(write_internal(new CompoundTag()));
     }
 
+    @Deprecated
     public static Frequency readFromPacket(MCDataInput packet) {
         return new Frequency(packet.readCompoundNBT());
     }
 
+    @Deprecated // Maybe?
     public static Frequency readFromStack(ItemStack stack) {
-        CompoundTag stackTag = stack.getTag();
-
-        if (stackTag != null && stackTag.contains("Frequency")) {
-            return new Frequency(stackTag.getCompound("Frequency"));
-        }
-        return new Frequency();
+        return stack.getOrDefault(EnderStorageModContent.FREQUENCY_DATA_COMPONENT, new Frequency());
     }
 
+    @Deprecated // Maybe?
     public ItemStack writeToStack(ItemStack stack) {
-        CompoundTag tagCompound = stack.getOrCreateTag();
-        tagCompound.put("Frequency", write_internal(new CompoundTag()));
+        stack.set(EnderStorageModContent.FREQUENCY_DATA_COMPONENT, this);
         return stack;
     }
 
@@ -195,24 +147,14 @@ public final class Frequency implements Copyable<Frequency> {
         if (hasOwner()) {
             owner = ",owner=" + this.owner;
         }
-        return "left=" + getLeft().getSerializedName() + ",middle=" + getMiddle().getSerializedName() + ",right=" + getRight().getSerializedName() + owner;
+        return "left=" + left().getSerializedName() + ",middle=" + middle().getSerializedName() + ",right=" + right().getSerializedName() + owner;
     }
 
     public Component getTooltip() {
-        return Component.translatable(getLeft().getUnlocalizedName())
+        return Component.translatable(left().getUnlocalizedName())
                 .append("/")
-                .append(Component.translatable(getMiddle().getUnlocalizedName()))
+                .append(Component.translatable(middle().getUnlocalizedName()))
                 .append("/")
-                .append(Component.translatable(getRight().getUnlocalizedName()));
-    }
-
-    @Override
-    public int hashCode() {
-        return toString().hashCode();
-    }
-
-    @Override
-    public Frequency copy() {
-        return new Frequency(this.left, this.middle, this.right, this.owner, this.ownerName);
+                .append(Component.translatable(right().getUnlocalizedName()));
     }
 }

@@ -15,6 +15,7 @@ import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.level.LevelEvent;
 import net.neoforged.neoforge.event.server.ServerStartedEvent;
+import net.neoforged.neoforge.server.ServerLifecycleHooks;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.DataOutputStream;
@@ -133,7 +134,7 @@ public class EnderStorageManager {
     private void save(boolean force) {
         if (!dirtyStorage.isEmpty() || force) {
             for (AbstractEnderStorage inv : dirtyStorage) {
-                saveTag.put(inv.freq + ",type=" + inv.type(), inv.saveToTag());
+                saveTag.put(inv.freq + ",type=" + inv.type(), inv.saveToTag(ServerLifecycleHooks.getCurrentServer().registryAccess()));
                 inv.setClean();
             }
 
@@ -186,7 +187,7 @@ public class EnderStorageManager {
         if (storage == null) {
             storage = plugins.get(type).createEnderStorage(this, freq);
             if (!client && saveTag.contains(key)) {
-                storage.loadFromTag(saveTag.getCompound(key));
+                storage.loadFromTag(saveTag.getCompound(key), ServerLifecycleHooks.getCurrentServer().registryAccess());
             }
             storageMap.put(key, storage);
             storageList.get(type).add(storage);

@@ -8,13 +8,13 @@
       "item": "minecraft:cauldron"
     },
     "O": {
-      "tag": "forge:obsidian"
+      "tag": "c:obsidians"
     },
     "P": {
-      "tag": "forge:ender_pearls"
+      "tag": "c:ender_pearls"
     },
     "W": {
-      "tag": "forge:wool"
+      "tag": "c:wools"
     }
   },
   "pattern": [
@@ -23,6 +23,7 @@
     "BPB"
   ],
   "result": {
-    "item": "enderstorage:ender_tank"
+    "count": 1,
+    "id": "enderstorage:ender_tank"
   }
 }

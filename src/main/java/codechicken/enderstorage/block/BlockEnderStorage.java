@@ -12,6 +12,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -83,45 +84,45 @@ public abstract class BlockEnderStorage extends BaseEntityBlock {
     }
 
     private ItemStack createItem(Frequency freq) {
-        ItemStack stack = new ItemStack(this, 1);
         if (EnderStorageConfig.anarchyMode) {
-            freq.clearOwner();
+            freq = freq.withoutOwner();
         }
+        ItemStack stack = new ItemStack(this, 1);
         freq.writeToStack(stack);
         return stack;
     }
 
     @Override
-    public InteractionResult use(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult clientHit) {
+    public ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult clientHit) {
         if (world.isClientSide) {
-            return InteractionResult.SUCCESS;
+            return ItemInteractionResult.SUCCESS;
         }
         BlockEntity tile = world.getBlockEntity(pos);
         if (!(tile instanceof TileFrequencyOwner owner)) {
-            return InteractionResult.FAIL;
+            return ItemInteractionResult.FAIL;
         }
 
         //Normal block trace.
         HitResult rawHit = RayTracer.retrace(player);
         if (!(rawHit instanceof SubHitBlockHitResult hit)) {
-            return InteractionResult.FAIL;
+            return ItemInteractionResult.FAIL;
         }
         if (hit.subHit == 4) {
             ItemStack item = player.getInventory().getSelected();
             if (player.isCrouching() && owner.getFrequency().hasOwner()) {
                 if (!player.getAbilities().instabuild && !player.getInventory().add(EnderStorageConfig.getPersonalItem().copy())) {
-                    return InteractionResult.FAIL;
+                    return ItemInteractionResult.FAIL;
                 }
 
-                owner.setFreq(owner.getFrequency().copy().clearOwner());
-                return InteractionResult.SUCCESS;
+                owner.setFreq(owner.getFrequency().withoutOwner());
+                return ItemInteractionResult.SUCCESS;
             } else if (!item.isEmpty() && ItemUtils.areStacksSameType(item, EnderStorageConfig.getPersonalItem())) {
                 if (!owner.getFrequency().hasOwner()) {
-                    owner.setFreq(owner.getFrequency().copy().setOwner(player));
+                    owner.setFreq(owner.getFrequency().withOwner(player));
                     if (!player.getAbilities().instabuild) {
                         item.shrink(1);
                     }
-                    return InteractionResult.SUCCESS;
+                    return ItemInteractionResult.SUCCESS;
                 }
             }
         } else if (hit.subHit >= 1 && hit.subHit <= 3) {
@@ -131,18 +132,18 @@ public abstract class BlockEnderStorage extends BaseEntityBlock {
                 if (dye != null) {
                     EnumColour[] colours = { null, null, null };
                     if (colours[hit.subHit - 1] == dye) {
-                        return InteractionResult.FAIL;
+                        return ItemInteractionResult.FAIL;
                     }
                     colours[hit.subHit - 1] = dye;
-                    owner.setFreq(owner.getFrequency().copy().set(colours));
+                    owner.setFreq(owner.getFrequency().withColours(colours));
                     if (!player.getAbilities().instabuild) {
                         item.shrink(1);
                     }
-                    return InteractionResult.FAIL;
+                    return ItemInteractionResult.FAIL;
                 }
             }
         }
-        return !player.isCrouching() && owner.activate(player, hit.subHit, hand) ? InteractionResult.SUCCESS : InteractionResult.FAIL;
+        return !player.isCrouching() && owner.activate(player, hit.subHit, hand) ? ItemInteractionResult.SUCCESS : ItemInteractionResult.FAIL;
     }
 
     @Override

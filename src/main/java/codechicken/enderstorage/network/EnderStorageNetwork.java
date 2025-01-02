@@ -5,12 +5,14 @@ import codechicken.lib.packet.PacketCustomChannel;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.bus.api.IEventBus;
 
+import static codechicken.enderstorage.EnderStorage.MOD_ID;
+
 /**
  * Created by covers1624 on 28/10/19.
  */
 public class EnderStorageNetwork {
 
-    public static final ResourceLocation NET_CHANNEL = new ResourceLocation("enderstorage:network");
+    public static final ResourceLocation NET_CHANNEL = ResourceLocation.fromNamespaceAndPath(MOD_ID, "network");
     public static final PacketCustomChannel channel = new PacketCustomChannel(NET_CHANNEL)
             .versioned(EnderStorage.container().getModInfo().getVersion().toString())
             .client(() -> EnderStorageCPH::new)

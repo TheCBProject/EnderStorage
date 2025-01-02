@@ -17,7 +17,6 @@ import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
@@ -30,11 +29,9 @@ public class ItemEnderPouch extends Item {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
+    public void appendHoverText(ItemStack stack, Item.TooltipContext ctx, List<Component> tooltip, TooltipFlag flagIn) {
         Frequency frequency = Frequency.readFromStack(stack);
-        if (frequency.hasOwner()) {
-            tooltip.add(frequency.getOwnerName());
-        }
+        frequency.ownerName().ifPresent(tooltip::add);
         tooltip.add(frequency.getTooltip());
     }
 
@@ -48,9 +45,9 @@ public class ItemEnderPouch extends Item {
         Player player = context.getPlayer();
         BlockEntity tile = world.getBlockEntity(context.getClickedPos());
         if (tile instanceof TileEnderChest chest && player != null && player.isCrouching()) {
-            Frequency frequency = chest.getFrequency().copy();
-            if (EnderStorageConfig.anarchyMode && !(frequency.owner != null && frequency.owner.equals(player.getUUID()))) {
-                frequency.clearOwner();
+            Frequency frequency = chest.getFrequency();
+            if (EnderStorageConfig.anarchyMode && !(frequency.owner().isPresent() && frequency.owner().get().equals(player.getUUID()))) {
+                frequency = frequency.withoutOwner();
             }
 
             frequency.writeToStack(stack);

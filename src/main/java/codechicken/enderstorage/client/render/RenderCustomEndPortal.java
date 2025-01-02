@@ -48,10 +48,10 @@ public class RenderCustomEndPortal {
         Shaders.starfieldPitch().glUniform1f((float) -(localPlayer.getXRot() * MathHelper.torad));
 
         VertexConsumer cons = new TransformingVertexConsumer(source.getBuffer(STARFIELD_TYPE), mat);
-        cons.vertex(surfaceX1, surfaceY, surfaceZ1).endVertex();
-        cons.vertex(surfaceX1, surfaceY, surfaceZ2).endVertex();
-        cons.vertex(surfaceX2, surfaceY, surfaceZ2).endVertex();
-        cons.vertex(surfaceX2, surfaceY, surfaceZ1).endVertex();
+        cons.addVertex((float) surfaceX1, (float) surfaceY, (float) surfaceZ1);
+        cons.addVertex((float) surfaceX1, (float) surfaceY, (float) surfaceZ2);
+        cons.addVertex((float) surfaceX2, (float) surfaceY, (float) surfaceZ2);
+        cons.addVertex((float) surfaceX2, (float) surfaceY, (float) surfaceZ1);
     }
 
     public void render(PoseStack pStack, MultiBufferSource source) {
@@ -63,9 +63,9 @@ public class RenderCustomEndPortal {
         Shaders.starfieldPitch().glUniform1f((float) -(localPlayer.getXRot() * MathHelper.torad));
 
         VertexConsumer cons = source.getBuffer(STARFIELD_TYPE);
-        cons.vertex(pStack.last().pose(), (float) surfaceX1, (float) surfaceY, (float) surfaceZ1).endVertex();
-        cons.vertex(pStack.last().pose(), (float) surfaceX1, (float) surfaceY, (float) surfaceZ2).endVertex();
-        cons.vertex(pStack.last().pose(), (float) surfaceX2, (float) surfaceY, (float) surfaceZ2).endVertex();
-        cons.vertex(pStack.last().pose(), (float) surfaceX2, (float) surfaceY, (float) surfaceZ1).endVertex();
+        cons.addVertex(pStack.last().pose(), (float) surfaceX1, (float) surfaceY, (float) surfaceZ1);
+        cons.addVertex(pStack.last().pose(), (float) surfaceX1, (float) surfaceY, (float) surfaceZ2);
+        cons.addVertex(pStack.last().pose(), (float) surfaceX2, (float) surfaceY, (float) surfaceZ2);
+        cons.addVertex(pStack.last().pose(), (float) surfaceX2, (float) surfaceY, (float) surfaceZ1);
     }
 }

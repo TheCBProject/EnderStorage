@@ -4,16 +4,14 @@ import codechicken.enderstorage.api.Frequency;
 import codechicken.enderstorage.init.EnderStorageModContent;
 import codechicken.lib.colour.EnumColour;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.core.RegistryAccess;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.util.ExtraCodecs;
-import net.minecraft.world.inventory.CraftingContainer;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.CraftingBookCategory;
-import net.minecraft.world.item.crafting.RecipeSerializer;
-import net.minecraft.world.item.crafting.ShapedRecipe;
-import net.minecraft.world.item.crafting.ShapedRecipePattern;
+import net.minecraft.world.item.crafting.*;
 
 /**
  * Created by covers1624 on 1/11/19.
@@ -25,12 +23,14 @@ public class CreateRecipe extends ShapedRecipe {
     }
 
     @Override
-    public ItemStack assemble(CraftingContainer inv, RegistryAccess pRegistryAccess) {
+    public ItemStack assemble(CraftingInput inv, HolderLookup.Provider registries) {
         EnumColour colour = EnumColour.WHITE;
+        // Create recipe only has a single wool.
+        // We find it and set the colour to that.
         finish:
-        for (int x = 0; x < 3; x++) {
-            for (int y = 0; y < 3; y++) {
-                ItemStack stack = inv.getItem(x + y * inv.getWidth());
+        for (int x = 0; x < inv.width(); x++) {
+            for (int y = 0; y < inv.height(); y++) {
+                ItemStack stack = inv.getItem(x, y);
                 if (!stack.isEmpty()) {
                     EnumColour c = EnumColour.fromWoolStack(stack);
                     if (c != null) {
@@ -41,7 +41,7 @@ public class CreateRecipe extends ShapedRecipe {
             }
         }
         Frequency frequency = new Frequency(colour, colour, colour);
-        return frequency.writeToStack(super.assemble(inv, pRegistryAccess));
+        return frequency.writeToStack(super.assemble(inv, registries));
     }
 
     @Override
@@ -51,32 +51,28 @@ public class CreateRecipe extends ShapedRecipe {
 
     public static class Serializer implements RecipeSerializer<CreateRecipe> {
 
-        private static final Codec<CreateRecipe> CODEC = RecordCodecBuilder.create(builder -> builder.group(
-                        ExtraCodecs.strictOptionalField(Codec.STRING, "group", "").forGetter(e -> e.group),
+        private static final MapCodec<CreateRecipe> CODEC = RecordCodecBuilder.mapCodec(builder -> builder.group(
+                        Codec.STRING.optionalFieldOf("group", "").forGetter(e -> e.group),
                         ShapedRecipePattern.MAP_CODEC.forGetter(e -> e.pattern),
-                        ItemStack.ITEM_WITH_COUNT_CODEC.fieldOf("result").forGetter(e -> e.result)
+                        ItemStack.STRICT_CODEC.fieldOf("result").forGetter(e -> e.result)
                 ).apply(builder, CreateRecipe::new)
         );
 
+        private static final StreamCodec<RegistryFriendlyByteBuf, CreateRecipe> STREAM_CODEC = StreamCodec.composite(
+                ByteBufCodecs.STRING_UTF8, e -> e.group,
+                ShapedRecipePattern.STREAM_CODEC, e -> e.pattern,
+                ItemStack.STREAM_CODEC, e -> e.result,
+                CreateRecipe::new
+        );
+
         @Override
-        public Codec<CreateRecipe> codec() {
+        public MapCodec<CreateRecipe> codec() {
             return CODEC;
         }
 
         @Override
-        public CreateRecipe fromNetwork(FriendlyByteBuf buffer) {
-            return new CreateRecipe(
-                    buffer.readUtf(),
-                    ShapedRecipePattern.fromNetwork(buffer),
-                    buffer.readItem()
-            );
-        }
-
-        @Override
-        public void toNetwork(FriendlyByteBuf buffer, CreateRecipe recipe) {
-            buffer.writeUtf(recipe.group);
-            recipe.pattern.toNetwork(buffer);
-            buffer.writeItem(recipe.result);
+        public StreamCodec<RegistryFriendlyByteBuf, CreateRecipe> streamCodec() {
+            return STREAM_CODEC;
         }
     }
 }

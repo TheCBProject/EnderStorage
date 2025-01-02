@@ -6,15 +6,16 @@ import codechicken.enderstorage.storage.EnderLiquidStorage;
 import codechicken.lib.math.MathHelper;
 import codechicken.lib.packet.PacketCustom;
 import codechicken.lib.util.ClientUtils;
-import codechicken.lib.util.ServerUtils;
 import com.google.common.collect.Sets;
+import net.minecraft.client.Minecraft;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.material.Fluids;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.neoforge.event.TickEvent;
+import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.level.LevelEvent;
+import net.neoforged.neoforge.event.tick.ServerTickEvent;
 import net.neoforged.neoforge.fluids.FluidStack;
 import org.jetbrains.annotations.Nullable;
 
@@ -42,10 +43,10 @@ public class TankSynchroniser {
             if (client) {
                 b_liquid = c_liquid.copy();
 
-                if (s_liquid.isFluidEqual(c_liquid) || c_liquid.isEmpty()) {
+                if (FluidStack.isSameFluidSameComponents(s_liquid, c_liquid) || c_liquid.isEmpty()) {
                     int change = MathHelper.approachExpI(c_liquid.getAmount(), s_liquid.getAmount(), 0.1);
                     if (c_liquid.isEmpty()) {
-                        c_liquid = new FluidStack(s_liquid, change);
+                        c_liquid = s_liquid.copyWithAmount(change);
                     } else {
                         c_liquid.setAmount(change);
                     }
@@ -57,7 +58,7 @@ public class TankSynchroniser {
             } else {
                 s_liquid = getStorage(false).getFluid();
                 b_liquid = s_liquid.copy();
-                if (!s_liquid.isFluidEqual(c_liquid)) {
+                if (!FluidStack.isSameFluidSameComponents(s_liquid, c_liquid)) {
                     sendSyncPacket();
                     c_liquid = s_liquid.copy();
                 } else if (Math.abs(c_liquid.getAmount() - s_liquid.getAmount()) > 250 || (s_liquid.getAmount() == 0 && c_liquid.getAmount() > 0)) {// Diff grater than 250 Or server no longer has liquid and client does.
@@ -67,7 +68,7 @@ public class TankSynchroniser {
 
                 a_liquid = s_liquid;
             }
-            if ((b_liquid.getAmount() == 0) != (a_liquid.getAmount() == 0) || !b_liquid.isFluidEqual(a_liquid)) {
+            if ((b_liquid.getAmount() == 0) != (a_liquid.getAmount() == 0) || !FluidStack.isSameFluidSameComponents(b_liquid, a_liquid)) {
                 onLiquidChanged();
             }
         }
@@ -79,7 +80,7 @@ public class TankSynchroniser {
 
         public void sync(FluidStack liquid) {
             s_liquid = liquid;
-            if (!s_liquid.isFluidEqual(c_liquid)) {
+            if (!FluidStack.isSameFluidSameComponents(s_liquid, c_liquid)) {
                 f_liquid = c_liquid.copy();
             }
         }
@@ -111,7 +112,7 @@ public class TankSynchroniser {
             }
 
             assert player != null;
-            PacketCustom packet = new PacketCustom(EnderStorageNetwork.NET_CHANNEL, EnderStorageNetwork.C_TANK_SYNC);
+            PacketCustom packet = new PacketCustom(EnderStorageNetwork.NET_CHANNEL, EnderStorageNetwork.C_TANK_SYNC, player.registryAccess());
             getStorage(false).freq.writeToPacket(packet);
             packet.writeFluidStack(s_liquid);
             packet.sendToPlayer(player);
@@ -177,7 +178,7 @@ public class TankSynchroniser {
                 Sets.SetView<Frequency> old_visible = Sets.difference(b_visible, a_visible);
 
                 if (!new_visible.isEmpty() || !old_visible.isEmpty()) {
-                    PacketCustom packet = new PacketCustom(EnderStorageNetwork.NET_CHANNEL, EnderStorageNetwork.S_VISIBILITY);
+                    PacketCustom packet = new PacketCustom(EnderStorageNetwork.NET_CHANNEL, EnderStorageNetwork.S_VISIBILITY, Minecraft.getInstance().player.registryAccess());
 
                     packet.writeShort(new_visible.size());
                     new_visible.forEach(freq -> freq.writeToPacket(packet));
@@ -250,20 +251,16 @@ public class TankSynchroniser {
     }
 
     @SubscribeEvent
-    public void tickEnd(TickEvent.ServerTickEvent event) {
-        if (event.phase == TickEvent.Phase.END) {
-            for (Map.Entry<UUID, PlayerItemTankCache> entry : playerItemTankStates.entrySet()) {
-                entry.getValue().update();
-            }
+    public void tickEnd(ServerTickEvent.Post event) {
+        for (Map.Entry<UUID, PlayerItemTankCache> entry : playerItemTankStates.entrySet()) {
+            entry.getValue().update();
         }
     }
 
     @SubscribeEvent
-    public void tickEnd(TickEvent.ClientTickEvent event) {
-        if (event.phase == TickEvent.Phase.END) {
-            if (ClientUtils.inWorld() && clientState != null) {
-                clientState.update();
-            }
+    public void tickEnd(ClientTickEvent.Post event) {
+        if (ClientUtils.inWorld() && clientState != null) {
+            clientState.update();
         }
     }
 

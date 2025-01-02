@@ -31,7 +31,7 @@ public class Shaders {
     }
 
     private static void onRegisterShaders(RegisterShadersEvent event) {
-        event.registerShader(CCShaderInstance.create(event.getResourceProvider(), new ResourceLocation(MOD_ID, "starfield"), DefaultVertexFormat.POSITION), e -> {
+        event.registerShader(CCShaderInstance.create(event.getResourceProvider(), ResourceLocation.fromNamespaceAndPath(MOD_ID, "starfield"), DefaultVertexFormat.POSITION), e -> {
             starfieldShader = (CCShaderInstance) e;
             starfieldTime = starfieldShader.getUniform("Time");
             starfieldYaw = starfieldShader.getUniform("Yaw");

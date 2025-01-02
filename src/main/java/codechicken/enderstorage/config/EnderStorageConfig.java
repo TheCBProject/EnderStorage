@@ -69,7 +69,7 @@ public class EnderStorageConfig {
         requireNonNull(personalItemTag);
 
         if (personalItem == null) {
-            Item item = BuiltInRegistries.ITEM.get(new ResourceLocation(personalItemTag.getString()));
+            Item item = BuiltInRegistries.ITEM.get(ResourceLocation.parse(personalItemTag.getString()));
             if (item == Items.AIR) {
                 LOGGER.error("Invalid personal item in config. Got: '{}. Resetting to default.", personalItemTag.getString());
                 item = Items.DIAMOND;

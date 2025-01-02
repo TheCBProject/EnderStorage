@@ -13,6 +13,7 @@ import codechicken.lib.math.MathHelper;
 import codechicken.lib.packet.PacketCustom;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionHand;
@@ -106,15 +107,15 @@ public class TileEnderTank extends TileFrequencyOwner {
     }
 
     @Override
-    public void saveAdditional(CompoundTag tag) {
-        super.saveAdditional(tag);
+    public void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+        super.saveAdditional(tag, registries);
         tag.putByte("rot", (byte) rotation);
         tag.putBoolean("ir", pressure_state.invert_redstone);
     }
 
     @Override
-    public void load(CompoundTag tag) {
-        super.load(tag);
+    public void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+        super.loadAdditional(tag, registries);
         liquid_state.setFrequency(frequency);
         rotation = tag.getByte("rot") & 3;
         pressure_state.invert_redstone = tag.getBoolean("ir");
@@ -194,7 +195,7 @@ public class TileEnderTank extends TileFrequencyOwner {
 
         @Override
         public void sendSyncPacket() {
-            PacketCustom packet = new PacketCustom(EnderStorageNetwork.NET_CHANNEL, EnderStorageNetwork.C_LIQUID_SYNC);
+            PacketCustom packet = new PacketCustom(EnderStorageNetwork.NET_CHANNEL, EnderStorageNetwork.C_LIQUID_SYNC, level.registryAccess());
             packet.writePos(getBlockPos());
             packet.writeFluidStack(s_liquid);
             packet.sendToChunk(TileEnderTank.this);
@@ -235,7 +236,7 @@ public class TileEnderTank extends TileFrequencyOwner {
         }
 
         private void sendSyncPacket() {
-            PacketCustom packet = new PacketCustom(EnderStorageNetwork.NET_CHANNEL, EnderStorageNetwork.C_PRESSURE_SYNC);
+            PacketCustom packet = new PacketCustom(EnderStorageNetwork.NET_CHANNEL, EnderStorageNetwork.C_PRESSURE_SYNC, level.registryAccess());
             packet.writePos(getBlockPos());
             packet.writeBoolean(a_pressure);
             packet.sendToChunk(TileEnderTank.this);

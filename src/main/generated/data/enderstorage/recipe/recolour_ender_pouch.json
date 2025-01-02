@@ -1,6 +1,7 @@
 {
   "type": "enderstorage:recolour_recipe",
   "result": {
-    "item": "enderstorage:ender_chest"
+    "count": 1,
+    "id": "enderstorage:ender_pouch"
   }
 }

@@ -23,11 +23,13 @@ import net.neoforged.neoforge.fluids.FluidStack;
 
 import java.util.Map;
 
+import static codechicken.enderstorage.EnderStorage.MOD_ID;
+
 public class RenderTileEnderTank implements BlockEntityRenderer<TileEnderTank> {
 
-    private static final RenderType baseType = RenderType.entityCutout(new ResourceLocation("enderstorage:textures/endertank.png"));
-    private static final RenderType buttonType = RenderType.entitySolid(new ResourceLocation("enderstorage:textures/buttons.png"));
-    private static final RenderType pearlType = CCModelLibrary.getIcos4RenderType(new ResourceLocation("enderstorage:textures/hedronmap.png"));
+    private static final RenderType baseType = RenderType.entityCutout(ResourceLocation.fromNamespaceAndPath(MOD_ID, "textures/endertank.png"));
+    private static final RenderType buttonType = RenderType.entitySolid(ResourceLocation.fromNamespaceAndPath(MOD_ID, "textures/buttons.png"));
+    private static final RenderType pearlType = CCModelLibrary.getIcos4RenderType(ResourceLocation.fromNamespaceAndPath(MOD_ID, "textures/hedronmap.png"));
 
     public static final CCModel tankModel;
     public static final CCModel valveModel;
@@ -35,7 +37,7 @@ public class RenderTileEnderTank implements BlockEntityRenderer<TileEnderTank> {
     public static final RenderCustomEndPortal renderEndPortal = new RenderCustomEndPortal(0.1205, 0.24, 0.76, 0.24, 0.76);
 
     static {
-        Map<String, CCModel> models = new OBJParser(new ResourceLocation("enderstorage:models/endertank.obj"))
+        Map<String, CCModel> models = new OBJParser(ResourceLocation.fromNamespaceAndPath(MOD_ID, "models/endertank.obj"))
                 .quads()
                 .swapYZ()
                 .parse();

@@ -8,7 +8,9 @@ import codechicken.lib.data.MCDataOutput;
 import codechicken.lib.packet.PacketCustom;
 import codechicken.lib.vec.Cuboid6;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -59,14 +61,21 @@ public abstract class TileFrequencyOwner extends BlockEntity {
     }
 
     @Override
-    public void load(CompoundTag tag) {
-        super.load(tag);
-        frequency.set(new Frequency(tag.getCompound("Frequency")));
+    protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+        super.loadAdditional(tag, registries);
+        frequency = Frequency.CODEC
+                .parse(registries.createSerializationContext(NbtOps.INSTANCE), tag.get("Frequency"))
+                .getOrThrow();
     }
 
     @Override
-    public void saveAdditional(CompoundTag tag) {
-        tag.put("Frequency", frequency.writeToNBT(new CompoundTag()));
+    protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+        super.saveAdditional(tag, registries);
+
+        tag.put("Frequency", Frequency.CODEC
+                .encodeStart(registries.createSerializationContext(NbtOps.INSTANCE), frequency)
+                .getOrThrow()
+        );
     }
 
     @Override
@@ -88,29 +97,29 @@ public abstract class TileFrequencyOwner extends BlockEntity {
     }
 
     public PacketCustom createPacket() {
-        PacketCustom packet = new PacketCustom(EnderStorageNetwork.NET_CHANNEL, EnderStorageNetwork.C_TILE_UPDATE);
+        PacketCustom packet = new PacketCustom(EnderStorageNetwork.NET_CHANNEL, EnderStorageNetwork.C_TILE_UPDATE, level.registryAccess());
         packet.writePos(getBlockPos());
         writeToPacket(packet);
         return packet;
     }
 
     public void writeToPacket(MCDataOutput packet) {
-        frequency.writeToPacket(packet);
+        packet.writeWithRegistryCodec(Frequency.STREAM_CODEC, frequency);
     }
 
     public void readFromPacket(MCDataInput packet) {
-        frequency.set(Frequency.readFromPacket(packet));
+        frequency = packet.readWithRegistryCodec(Frequency.STREAM_CODEC);
         onFrequencySet();
     }
 
     @Override
-    public CompoundTag getUpdateTag() {
-        return saveWithoutMetadata();
+    public CompoundTag getUpdateTag(HolderLookup.Provider registries) {
+        return saveWithoutMetadata(registries);
     }
 
     @Override
-    public void handleUpdateTag(CompoundTag tag) {
-        load(tag);
+    public void handleUpdateTag(CompoundTag tag, HolderLookup.Provider registries) {
+        loadWithComponents(tag, registries);
     }
 
     public int getLightValue() {

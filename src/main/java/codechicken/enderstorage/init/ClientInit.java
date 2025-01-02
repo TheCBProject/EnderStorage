@@ -68,28 +68,28 @@ public class ClientInit {
     private static void registerPredicates() {
         ItemProperties.register(
                 ENDER_POUCH.get(),
-                new ResourceLocation(MOD_ID, "owned"),
+                ResourceLocation.fromNamespaceAndPath(MOD_ID, "owned"),
                 (ClampedItemPropertyFunction) (pStack, pLevel, pEntity, pSeed) -> Frequency.readFromStack(pStack).hasOwner() ? 1 : 0
         );
         ItemProperties.register(
                 ENDER_POUCH.get(),
-                new ResourceLocation(MOD_ID, "open"),
+                ResourceLocation.fromNamespaceAndPath(MOD_ID, "open"),
                 (ClampedItemPropertyFunction) (pStack, pLevel, pEntity, pSeed) -> EnderStorageManager.instance(true).getStorage(Frequency.readFromStack(pStack), EnderItemStorage.TYPE).openCount()
         );
         ItemProperties.register(
                 ENDER_POUCH.get(),
-                new ResourceLocation(MOD_ID, "left"),
-                (pStack, pLevel, pEntity, pSeed) -> Frequency.readFromStack(pStack).getLeft().ordinal()
+                ResourceLocation.fromNamespaceAndPath(MOD_ID, "left"),
+                (pStack, pLevel, pEntity, pSeed) -> Frequency.readFromStack(pStack).left().ordinal()
         );
         ItemProperties.register(
                 ENDER_POUCH.get(),
-                new ResourceLocation(MOD_ID, "middle"),
-                (pStack, pLevel, pEntity, pSeed) -> Frequency.readFromStack(pStack).getMiddle().ordinal()
+                ResourceLocation.fromNamespaceAndPath(MOD_ID, "middle"),
+                (pStack, pLevel, pEntity, pSeed) -> Frequency.readFromStack(pStack).middle().ordinal()
         );
         ItemProperties.register(
                 ENDER_POUCH.get(),
-                new ResourceLocation(MOD_ID, "right"),
-                (pStack, pLevel, pEntity, pSeed) -> Frequency.readFromStack(pStack).getRight().ordinal()
+                ResourceLocation.fromNamespaceAndPath(MOD_ID, "right"),
+                (pStack, pLevel, pEntity, pSeed) -> Frequency.readFromStack(pStack).right().ordinal()
         );
     }
 }

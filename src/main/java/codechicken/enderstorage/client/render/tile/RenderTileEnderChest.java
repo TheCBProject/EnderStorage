@@ -30,14 +30,16 @@ import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.resources.ResourceLocation;
 import org.joml.Quaternionf;
 
+import static codechicken.enderstorage.EnderStorage.MOD_ID;
+
 /**
  * Created by covers1624 on 4/12/2016.
  */
 public class RenderTileEnderChest implements BlockEntityRenderer<TileEnderChest> {
 
-    private static final RenderType chestType = RenderType.entityCutout(new ResourceLocation("enderstorage:textures/enderchest.png"));
-    private static final RenderType buttonType = RenderType.entitySolid(new ResourceLocation("enderstorage:textures/buttons.png"));
-    private static final RenderType pearlType = CCModelLibrary.getIcos4RenderType(new ResourceLocation("enderstorage:textures/hedronmap.png"));
+    private static final RenderType chestType = RenderType.entityCutout(ResourceLocation.fromNamespaceAndPath(MOD_ID, "textures/enderchest.png"));
+    private static final RenderType buttonType = RenderType.entitySolid(ResourceLocation.fromNamespaceAndPath(MOD_ID, "textures/buttons.png"));
+    private static final RenderType pearlType = CCModelLibrary.getIcos4RenderType(ResourceLocation.fromNamespaceAndPath(MOD_ID, "textures/hedronmap.png"));
     private static final RenderCustomEndPortal renderEndPortal = new RenderCustomEndPortal(0.626, 0.188, 0.812, 0.188, 0.812);
 
     private final ModelPart bottom;

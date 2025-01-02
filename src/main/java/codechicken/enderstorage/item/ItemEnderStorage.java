@@ -5,10 +5,7 @@ import codechicken.enderstorage.tile.TileFrequencyOwner;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.BlockItem;
-import net.minecraft.world.item.CreativeModeTab;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.*;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
@@ -39,11 +36,9 @@ public class ItemEnderStorage extends BlockItem {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
+    public void appendHoverText(ItemStack stack, Item.TooltipContext ctx, List<Component> tooltip, TooltipFlag flagIn) {
         Frequency frequency = Frequency.readFromStack(stack);
-        if (frequency.hasOwner()) {
-            tooltip.add(frequency.getOwnerName());
-        }
+        frequency.ownerName().ifPresent(tooltip::add);
         tooltip.add(frequency.getTooltip());
     }
 

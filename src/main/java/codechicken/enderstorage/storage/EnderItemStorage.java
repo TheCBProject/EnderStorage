@@ -9,8 +9,9 @@ import codechicken.enderstorage.manager.EnderStorageManager;
 import codechicken.enderstorage.network.EnderStorageSPH;
 import codechicken.lib.data.MCDataInput;
 import codechicken.lib.inventory.InventoryUtils;
+import codechicken.lib.inventory.container.CCLMenuType;
 import codechicken.lib.util.ArrayUtils;
-import codechicken.lib.util.ServerUtils;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
@@ -43,10 +44,11 @@ public class EnderItemStorage extends AbstractEnderStorage implements Container 
         }
     }
 
-    public void loadFromTag(CompoundTag tag) {
+    @Override
+    public void loadFromTag(CompoundTag tag, HolderLookup.Provider registries) {
         size = tag.getByte("size");
         empty();
-        InventoryUtils.readItemStacksFromTag(items, tag.getList("Items", 10));
+        InventoryUtils.readItemStacksFromTag(registries, items, tag.getList("Items", 10));
         if (size != EnderStorageConfig.storageSize) {
             alignSize();
         }
@@ -88,13 +90,14 @@ public class EnderItemStorage extends AbstractEnderStorage implements Container 
         return "item";
     }
 
-    public CompoundTag saveToTag() {
+    @Override
+    public CompoundTag saveToTag(HolderLookup.Provider registries) {
         if (size != EnderStorageConfig.storageSize && open == 0) {
             alignSize();
         }
 
         CompoundTag compound = new CompoundTag();
-        compound.put("Items", InventoryUtils.writeItemStacksToTag(items));
+        compound.put("Items", InventoryUtils.writeItemStacksToTag(registries, items));
         compound.putByte("size", (byte) size);
 
         return compound;
@@ -186,7 +189,7 @@ public class EnderItemStorage extends AbstractEnderStorage implements Container 
     }
 
     public void openContainer(ServerPlayer player, Component title) {
-        ServerUtils.openContainer(player, new SimpleMenuProvider((id, inv, p) -> new ContainerEnderItemStorage(id, inv, EnderItemStorage.this), title),
+        CCLMenuType.openMenu(player, new SimpleMenuProvider((id, inv, p) -> new ContainerEnderItemStorage(id, inv, EnderItemStorage.this), title),
                 packet -> {
                     freq.writeToPacket(packet);
                     packet.writeByte(size);

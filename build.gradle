@@ -4,12 +4,12 @@ plugins {
     id 'java'
     id 'maven-publish'
     id 'signing'
-    id 'net.neoforged.gradle.userdev' version '7.0.97'
+    id 'net.neoforged.gradle.userdev' version '7.0.165'
 }
 
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(17)
+        languageVersion = JavaLanguageVersion.of(21)
     }
     withSourcesJar()
     withJavadocJar()
@@ -40,7 +40,7 @@ runs {
     }
     data {
         workingDirectory file('run')
-        programArguments.addAll '--mod', 'enderstorage', '--all', '--output', file("src/main/generated"), '--existing', file("src/main/resources")
+        arguments.addAll '--mod', 'enderstorage', '--all', '--output', file("src/main/generated").absolutePath, '--existing', file("src/main/resources").absolutePath
     }
 }
 
@@ -65,7 +65,7 @@ processResources {
     inputs.property 'mc_version', mc_version
     inputs.property 'ccl_version', ccl_version
 
-    filesMatching('META-INF/mods.toml') {
+    filesMatching('META-INF/neoforge.mods.toml') {
         expand 'file': ['jarVersion': mod_version],
                 'mc_version': mc_version,
                 'forge_version': forge_version,

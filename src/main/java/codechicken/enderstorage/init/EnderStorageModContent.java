@@ -1,5 +1,6 @@
 package codechicken.enderstorage.init;
 
+import codechicken.enderstorage.api.Frequency;
 import codechicken.enderstorage.block.BlockEnderChest;
 import codechicken.enderstorage.block.BlockEnderTank;
 import codechicken.enderstorage.container.ContainerEnderItemStorage;
@@ -9,8 +10,9 @@ import codechicken.enderstorage.recipe.CreateRecipe;
 import codechicken.enderstorage.recipe.ReColourRecipe;
 import codechicken.enderstorage.tile.TileEnderChest;
 import codechicken.enderstorage.tile.TileEnderTank;
-import codechicken.lib.inventory.container.ICCLContainerType;
+import codechicken.lib.inventory.container.CCLMenuType;
 import net.covers1624.quack.util.CrashLock;
+import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.CreativeModeTabs;
@@ -38,6 +40,7 @@ public class EnderStorageModContent {
     private static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(Registries.BLOCK, MOD_ID);
     private static final DeferredRegister<Item> ITEMS = DeferredRegister.create(Registries.ITEM, MOD_ID);
     private static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITY_TYPES = DeferredRegister.create(Registries.BLOCK_ENTITY_TYPE, MOD_ID);
+    private static final DeferredRegister<DataComponentType<?>> DATA_COMPONENTS = DeferredRegister.create(Registries.DATA_COMPONENT_TYPE, MOD_ID);
     private static final DeferredRegister<MenuType<?>> MENU_TYPES = DeferredRegister.create(Registries.MENU, MOD_ID);
     private static final DeferredRegister<RecipeSerializer<?>> RECIPE_SERIALIZERS = DeferredRegister.create(Registries.RECIPE_SERIALIZER, MOD_ID);
 
@@ -59,8 +62,15 @@ public class EnderStorageModContent {
             BlockEntityType.Builder.of(TileEnderTank::new, ENDER_TANK_BLOCK.get()).build(null)
     );
 
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<Frequency>> FREQUENCY_DATA_COMPONENT = DATA_COMPONENTS.register("frequency", () ->
+            DataComponentType.<Frequency>builder()
+                    .persistent(Frequency.CODEC)
+                    .networkSynchronized(Frequency.STREAM_CODEC)
+                    .build()
+    );
+
     public static final DeferredHolder<MenuType<?>, MenuType<ContainerEnderItemStorage>> ENDER_ITEM_STORAGE = MENU_TYPES.register("ender_item_storage", () ->
-            ICCLContainerType.create(ContainerEnderItemStorage::new)
+            CCLMenuType.create(ContainerEnderItemStorage::new)
     );
 
     public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<CreateRecipe>> CREATE_RECIPE_SERIALIZER = RECIPE_SERIALIZERS.register("create_recipe",
@@ -75,6 +85,7 @@ public class EnderStorageModContent {
         BLOCKS.register(modBus);
         ITEMS.register(modBus);
         BLOCK_ENTITY_TYPES.register(modBus);
+        DATA_COMPONENTS.register(modBus);
         MENU_TYPES.register(modBus);
         RECIPE_SERIALIZERS.register(modBus);
         modBus.addListener(EnderStorageModContent::onCreativeTabBuild);

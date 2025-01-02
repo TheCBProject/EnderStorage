@@ -4,23 +4,26 @@ import codechicken.enderstorage.api.Frequency;
 import codechicken.enderstorage.init.EnderStorageModContent;
 import codechicken.lib.colour.EnumColour;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.core.RegistryAccess;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.util.ExtraCodecs;
-import net.minecraft.world.inventory.CraftingContainer;
+import net.covers1624.quack.collection.ColUtils;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.CraftingBookCategory;
-import net.minecraft.world.item.crafting.CraftingRecipe;
-import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraft.world.item.crafting.*;
 import net.minecraft.world.level.Level;
-import net.neoforged.neoforge.common.crafting.IShapedRecipe;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 /**
  * Created by covers1624 on 8/07/2017.
  */
-public class ReColourRecipe implements CraftingRecipe, IShapedRecipe<CraftingContainer> {
+public class ReColourRecipe implements CraftingRecipe {
 
     protected final String group;
     protected final ItemStack result;
@@ -37,102 +40,42 @@ public class ReColourRecipe implements CraftingRecipe, IShapedRecipe<CraftingCon
     }
 
     @Override
-    public boolean matches(CraftingContainer inv, Level worldIn) {
+    public boolean matches(CraftingInput inv, Level worldIn) {
         if (inv.isEmpty()) {
             return false;
         }
-        boolean inputFound = false;
-        int foundRow = 0;
-        for (int row = 1; row < 3; row++) {//Find the input in the last 2 rows.
-            ItemStack stack = inv.getItem(1 + row * inv.getWidth());
-            if (!stack.isEmpty()) {
-                if (ingredient.test(stack)) {
-                    foundRow = row;
-                    inputFound = true;
-                    break;
-                }
-            }
-        }
-        if (!inputFound) {
+        ItemWithPos chest = findChest(inv);
+        if (chest == null || chest.y == 0) {
             return false;
         }
-        EnumColour[] colours = new EnumColour[] { null, null, null };
-        boolean hasDye = false;
-        for (int col = 0; col < 3; col++) {//Grab the dyes in the columns above the chest.
-            for (int row = 0; row < foundRow; row++) {
-                ItemStack stack = inv.getItem(col + row * inv.getWidth());
-                if (!stack.isEmpty()) {
-                    EnumColour colour = EnumColour.fromDyeStack(stack);
-                    if (colour != null) {//Already a dye in that column, invalid.
-                        if (colours[col] != null) {
-                            EnumColour merge = EnumColour.mix(colours[col], colour);
-                            if (merge == null || merge == colour) {
-                                return false;
-                            }
-                            colours[col] = merge;
-                        } else {//Cool valid dye.
-                            hasDye = true;
-                            colours[col] = colour;
-                        }
+        List<ItemWithPos> validPositions = new ArrayList<>();
+        validPositions.add(chest);
 
-                    }
+        EnumColour[] colours = findDyes(inv, chest, validPositions);
+        if (colours == null) return false;
+
+        for (int x = 0; x < inv.width(); x++) {
+            for (int y = 0; y < inv.height(); y++) {
+                ItemStack stack = inv.getItem(x + y * inv.width());
+                if (!stack.isEmpty() && !validPositions.contains(new ItemWithPos(x, y, stack))) {
+                    return false;
                 }
             }
         }
-        if (hasDye) {//Cull the recipe of there is cruft.
-            for (int col = 0; col < 3; col++) {
-                for (int row = 0; row < 3; row++) {
-                    ItemStack stack = inv.getItem(col + row * inv.getWidth());
-                    if (!stack.isEmpty()) {
-                        if (row >= foundRow) {//Make sure there is no dye bellow or on the same row as the chest.
-                            if (EnumColour.fromDyeStack(stack) != null) {
-                                return false;
-                            }
-                        }//Make sure there is no other cruft in the recipe.
-                        if (!ingredient.test(stack) && EnumColour.fromDyeStack(stack) == null) {
-                            return false;
-                        }
-                    }
-                }
-            }
-        }
-
-        return hasDye;
+        return true;
     }
 
     @Override
-    public ItemStack assemble(CraftingContainer inv, RegistryAccess pRegistryAccess) {
-        int foundRow = 0;
-        Frequency currFreq = new Frequency();
-        for (int row = 1; row < 3; row++) { // Grab the input frequency, and store it's row.
-            ItemStack stack = inv.getItem(1 + row * inv.getWidth());
-            if (ingredient.test(stack)) {
-                foundRow = row;
-                currFreq = Frequency.readFromStack(stack);
-                break;
-            }
-        }
-        EnumColour[] colours = new EnumColour[] { null, null, null };
-        for (int col = 0; col < 3; col++) { // Grab the dyes in rows..
-            for (int row = 0; row < foundRow; row++) {
-                ItemStack stack = inv.getItem(col + row * inv.getWidth());
-                if (!stack.isEmpty()) {
-                    EnumColour colour = EnumColour.fromDyeStack(stack);
-                    if (colour != null) {
-                        if (colours[col] == null) {
-                            colours[col] = colour;
-                        } else {
-                            colours[col] = EnumColour.mix(colours[col], colour);
-                        }
-                    }
-                }
-            }
-        }
-        if (colours[0] != null) currFreq.setLeft(colours[0]);
-        if (colours[1] != null) currFreq.setMiddle(colours[1]);
-        if (colours[2] != null) currFreq.setRight(colours[2]);
+    public ItemStack assemble(CraftingInput inv, HolderLookup.Provider registries) {
+        ItemWithPos chestPos = findChest(inv);
+        if (chestPos == null) return result.copy(); // This should not happen...
 
-        return currFreq.writeToStack(result.copy());
+        EnumColour[] colours = findDyes(inv, chestPos, null);
+        if (colours == null) return result.copy(); // This should also not happen...
+
+        return Frequency.readFromStack(chestPos.stack)
+                .withColours(colours)
+                .writeToStack(result.copy());
     }
 
     @Override
@@ -156,18 +99,8 @@ public class ReColourRecipe implements CraftingRecipe, IShapedRecipe<CraftingCon
     }
 
     @Override
-    public ItemStack getResultItem(RegistryAccess pRegistryAccess) {
+    public ItemStack getResultItem(HolderLookup.Provider registries) {
         return result;
-    }
-
-    @Override
-    public int getRecipeWidth() {
-        return 3;
-    }
-
-    @Override
-    public int getRecipeHeight() {
-        return 3;
     }
 
     @Override
@@ -175,29 +108,73 @@ public class ReColourRecipe implements CraftingRecipe, IShapedRecipe<CraftingCon
         return CraftingBookCategory.MISC;
     }
 
+    private @Nullable ItemWithPos findChest(CraftingInput inv) {
+        ItemWithPos chest = null;
+        for (int x = 0; x < inv.width(); x++) {
+            for (int y = 0; y < inv.height(); y++) {
+                ItemStack stack = inv.getItem(x, y);
+                if (stack.isEmpty()) continue;
+                if (!ingredient.test(stack)) continue;
+
+                chest = new ItemWithPos(x, y, stack);
+                break;
+            }
+        }
+        return chest;
+    }
+
+    private EnumColour @Nullable [] findDyes(CraftingInput inv, ItemWithPos chest, @Nullable List<ItemWithPos> validPositions) {
+        EnumColour[] colours = new EnumColour[] { null, null, null };
+        for (int x = 0; x < inv.width(); x++) {
+            for (int y = 0; y < chest.y; y++) {
+                ItemStack stack = inv.getItem(x, y);
+                if (stack.isEmpty()) continue;
+
+                EnumColour colour = EnumColour.fromDyeStack(stack);
+                if (colour == null) continue; // Not a dye.
+
+                int effectiveColour = chest.x == x ? 1 : chest.x < x ? 2 : 0;
+
+                if (colours[effectiveColour] != null) {
+                    EnumColour merge = EnumColour.mix(colours[effectiveColour], colour);
+                    if (merge == null || merge == colour) return null;
+
+                    colours[effectiveColour] = merge;
+                } else {
+                    colours[effectiveColour] = colour;
+                }
+                if (validPositions != null) {
+                    validPositions.add(new ItemWithPos(x, y, stack));
+                }
+            }
+        }
+        return !ColUtils.allMatch(colours, Objects::isNull) ? colours : null;
+    }
+
+    private record ItemWithPos(int x, int y, ItemStack stack) { }
+
     public static class Serializer implements RecipeSerializer<ReColourRecipe> {
 
-        private static final Codec<ReColourRecipe> CODEC = RecordCodecBuilder.create(builder -> builder.group(
-                        ExtraCodecs.strictOptionalField(Codec.STRING, "group", "").forGetter(e -> e.group),
-                        ItemStack.ITEM_WITH_COUNT_CODEC.fieldOf("result").forGetter(e -> e.result)
+        private static final MapCodec<ReColourRecipe> CODEC = RecordCodecBuilder.mapCodec(builder -> builder.group(
+                        Codec.STRING.optionalFieldOf("group", "").forGetter(e -> e.group),
+                        ItemStack.STRICT_CODEC.fieldOf("result").forGetter(e -> e.result)
                 ).apply(builder, ReColourRecipe::new)
         );
 
+        private static final StreamCodec<RegistryFriendlyByteBuf, ReColourRecipe> STREAM_CODEC = StreamCodec.composite(
+                ByteBufCodecs.STRING_UTF8, e -> e.group,
+                ItemStack.STREAM_CODEC, e -> e.result,
+                ReColourRecipe::new
+        );
+
         @Override
-        public Codec<ReColourRecipe> codec() {
+        public MapCodec<ReColourRecipe> codec() {
             return CODEC;
         }
 
         @Override
-        public ReColourRecipe fromNetwork(FriendlyByteBuf buffer) {
-            return new ReColourRecipe(buffer.readUtf(), buffer.readItem());
-        }
-
-        @Override
-        public void toNetwork(FriendlyByteBuf buffer, ReColourRecipe recipe) {
-            buffer.writeUtf(recipe.group);
-            buffer.writeItem(recipe.result);
+        public StreamCodec<RegistryFriendlyByteBuf, ReColourRecipe> streamCodec() {
+            return STREAM_CODEC;
         }
     }
-
 }

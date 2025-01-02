@@ -52,7 +52,7 @@ public class DataGenerators {
         gen.addProvider(event.includeClient(), new BlockStates(output, files));
         gen.addProvider(event.includeClient(), new ItemModels(output, files));
         gen.addProvider(event.includeServer(), new BlockTagGen(output, lookupProvider, files));
-        gen.addProvider(event.includeServer(), new Recipes(output));
+        gen.addProvider(event.includeServer(), new Recipes(lookupProvider, output));
     }
 
     private static class ItemModels extends ItemModelProvider {
@@ -146,43 +146,43 @@ public class DataGenerators {
 
     private static class Recipes extends RecipeProvider {
 
-        public Recipes(PackOutput output) {
-            super(output, MOD_ID);
+        public Recipes(CompletableFuture<HolderLookup.Provider> lookupProvider, PackOutput output) {
+            super(lookupProvider, output, MOD_ID);
         }
 
         @Override
         protected void registerRecipes() {
             customShaped(ENDER_POUCH, (group, category, pattern, stack, showNotification) -> new CreateRecipe(group, pattern, stack))
                     .key('P', Tags.Items.ENDER_PEARLS)
-                    .key('L', Tags.Items.LEATHER)
+                    .key('L', Tags.Items.LEATHERS)
                     .key('B', Items.BLAZE_POWDER)
-                    .key('W', CCLTags.Items.WOOL)
+                    .key('W', CCLTags.Items.WOOLS)
                     .patternLine("BLB")
                     .patternLine("LPL")
                     .patternLine("BWB");
 
             customShaped(ENDER_CHEST_ITEM, (group, category, pattern, stack, showNotification) -> new CreateRecipe(group, pattern, stack))
                     .key('P', Tags.Items.ENDER_PEARLS)
-                    .key('O', Tags.Items.OBSIDIAN)
+                    .key('O', Tags.Items.OBSIDIANS)
                     .key('C', Tags.Items.CHESTS_WOODEN)
                     .key('B', Items.BLAZE_ROD)
-                    .key('W', CCLTags.Items.WOOL)
+                    .key('W', CCLTags.Items.WOOLS)
                     .patternLine("BWB")
                     .patternLine("OCO")
                     .patternLine("BPB");
             customShaped(ENDER_TANK_ITEM, (group, category, pattern, stack, showNotification) -> new CreateRecipe(group, pattern, stack))
                     .key('P', Tags.Items.ENDER_PEARLS)
-                    .key('O', Tags.Items.OBSIDIAN)
+                    .key('O', Tags.Items.OBSIDIANS)
                     .key('C', Items.CAULDRON)
                     .key('B', Items.BLAZE_ROD)
-                    .key('W', CCLTags.Items.WOOL)
+                    .key('W', CCLTags.Items.WOOLS)
                     .patternLine("BWB")
                     .patternLine("OCO")
                     .patternLine("BPB");
 
-            special(new ResourceLocation(MOD_ID, "recolour_ender_pouch"), () -> new ReColourRecipe(new ItemStack(ENDER_POUCH.get())));
-            special(new ResourceLocation(MOD_ID, "recolour_ender_chest"), () -> new ReColourRecipe(new ItemStack(ENDER_CHEST_ITEM.get())));
-            special(new ResourceLocation(MOD_ID, "recolour_ender_tank"), () -> new ReColourRecipe(new ItemStack(ENDER_TANK_ITEM.get())));
+            special(ResourceLocation.fromNamespaceAndPath(MOD_ID, "recolour_ender_pouch"), () -> new ReColourRecipe(new ItemStack(ENDER_POUCH.get())));
+            special(ResourceLocation.fromNamespaceAndPath(MOD_ID, "recolour_ender_chest"), () -> new ReColourRecipe(new ItemStack(ENDER_CHEST_ITEM.get())));
+            special(ResourceLocation.fromNamespaceAndPath(MOD_ID, "recolour_ender_tank"), () -> new ReColourRecipe(new ItemStack(ENDER_TANK_ITEM.get())));
         }
     }
 }
