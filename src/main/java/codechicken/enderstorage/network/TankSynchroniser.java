@@ -232,7 +232,10 @@ public class TankSynchroniser {
     }
 
     public static void handleVisiblityPacket(ServerPlayer player, PacketCustom packet) {
-        playerItemTankStates.get(player.getUUID()).handleVisiblityPacket(packet);
+        var cache = playerItemTankStates.get(player.getUUID());
+        if (cache != null) {
+            cache.handleVisiblityPacket(packet);
+        }
     }
 
     @SubscribeEvent
