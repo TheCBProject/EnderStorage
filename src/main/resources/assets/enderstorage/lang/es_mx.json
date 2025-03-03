@@ -1,0 +1,10 @@
+{
+ "item.enderstorage.ender_pouch": "Bolsa Ender",
+"block.enderstorage.ender_chest": "Cofre Ender",
+"enderstorage.command.no_colour": "Color inválido: %s",
+"enderstorage.command.usage": "enderstorage <frecuencia>|(<color> <color> <color>) [propietario]",
+"enderstorage.command.no_freq": "Frecuencia inválida",
+"block.enderstorage.ender_tank": "Tanque Ender",
+"enderstorage.command.no_arguments": "Número inválido de argumentos",
+"enderstorage.serverop": "Operador",
+}
