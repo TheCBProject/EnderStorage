@@ -26,13 +26,13 @@ import static codechicken.enderstorage.EnderStorage.MOD_ID;
  */
 public class EnderStorageNetwork {
 
-    public static final StreamNetworkChannel CHANNEL = new StreamNetworkChannel(MOD_ID);
+    protected static final StreamNetworkChannel CHANNEL = new StreamNetworkChannel(MOD_ID);
 
-    public static final ClientPacketHandle TILE_UPDATE = CHANNEL.playToClient("tile_update", EnderStorageNetwork::handleTileUpdate);
-    public static final ClientPacketHandle CLIENT_OPEN = CHANNEL.playToClient("client_open", EnderStorageNetwork::handleClientOpen);
-    public static final ClientPacketHandle TANK_SYNC = CHANNEL.playToClient("tank_sync", EnderStorageNetwork::handleTankSync);
-    public static final ClientPacketHandle LIQUID_SYNC = CHANNEL.playToClient("liquid_sync", EnderStorageNetwork::handleLiquidSync);
-    public static final ClientPacketHandle PRESSURE_SYNC = CHANNEL.playToClient("pressure_sync", EnderStorageNetwork::handlePressureSync);
+    public static final ClientPacketHandle TILE_UPDATE = CHANNEL.playToClient("tile_update");
+    public static final ClientPacketHandle CLIENT_OPEN = CHANNEL.playToClient("client_open");
+    public static final ClientPacketHandle TANK_SYNC = CHANNEL.playToClient("tank_sync");
+    public static final ClientPacketHandle LIQUID_SYNC = CHANNEL.playToClient("liquid_sync");
+    public static final ClientPacketHandle PRESSURE_SYNC = CHANNEL.playToClient("pressure_sync");
 
     public static final ServerPacketHandle TANK_VISIBILITY = CHANNEL.playToServer("tank_visibility", EnderStorageNetwork::handleTankVisibility);
 
@@ -40,11 +40,6 @@ public class EnderStorageNetwork {
         CHANNEL.init(modBus, container);
     }
 
-    private static void handleTileUpdate(RegistryFriendlyByteBuf packet, IPayloadContext ctx) {
-        if (ctx.player().level().getBlockEntity(packet.readBlockPos()) instanceof TileFrequencyOwner tile) {
-            tile.readFromPacket(packet);
-        }
-    }
 
     public static void sendOpenUpdateTo(@Nullable ServerPlayer player, Frequency freq, boolean open) {
         // TODO, DON'T USE ServerLifecycleHooks HERE, PASS SOME CONTEXT IN, LIKE THE SERVER
@@ -54,31 +49,6 @@ public class EnderStorageNetwork {
         packet.sendToPlayer(player);
     }
 
-    private static void handleClientOpen(RegistryFriendlyByteBuf packet, IPayloadContext ctx) {
-        EnderStorageManager.instance(true)
-                .getStorage(packet.cc$readWithRegistryCodec(Frequency.STREAM_CODEC), EnderItemStorage.TYPE)
-                .setClientOpen(packet.readBoolean() ? 1 : 0);
-    }
-
-    private static void handleTankSync(RegistryFriendlyByteBuf packet, IPayloadContext ctx) {
-        ClientTankSynchronizer.handleClientSync(
-                packet.cc$readWithRegistryCodec(Frequency.STREAM_CODEC),
-                packet.cc$readWithRegistryCodec(FluidStack.OPTIONAL_STREAM_CODEC)
-        );
-    }
-
-    private static void handleLiquidSync(RegistryFriendlyByteBuf packet, IPayloadContext ctx) {
-        if (!(ctx.player().level().getBlockEntity(packet.readBlockPos()) instanceof TileEnderTank tile)) return;
-        if (!(tile.getTankState() instanceof TileEnderTank.ClientTankState tankState)) return;
-
-        tankState.sync(packet.cc$readWithRegistryCodec(FluidStack.OPTIONAL_STREAM_CODEC));
-    }
-
-    private static void handlePressureSync(RegistryFriendlyByteBuf packet, IPayloadContext ctx) {
-        if (ctx.player().level().getBlockEntity(packet.readBlockPos()) instanceof TileEnderTank tile) {
-            tile.pressure_state.a_pressure = packet.readBoolean();
-        }
-    }
 
     private static void handleTankVisibility(RegistryFriendlyByteBuf packet, IPayloadContext ctx) {
         ServerTankSynchronizer.handleVisibilityPacket((ServerPlayer) ctx.player(), packet);

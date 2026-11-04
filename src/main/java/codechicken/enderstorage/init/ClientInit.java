@@ -12,6 +12,7 @@ import codechicken.enderstorage.client.render.tile.RenderTileEnderChest;
 import codechicken.enderstorage.client.render.tile.RenderTileEnderTank;
 import codechicken.enderstorage.config.EnderStorageConfig;
 import codechicken.enderstorage.manager.ClientTankSynchronizer;
+import codechicken.enderstorage.network.EnderStorageNetworkClient;
 import com.google.common.reflect.TypeToken;
 import net.covers1624.quack.util.CrashLock;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
@@ -46,6 +47,7 @@ public class ClientInit {
 
         RenderCustomEndPortal.init(modBus);
         ClientTankSynchronizer.init(modBus);
+        EnderStorageNetworkClient.initClient();
     }
 
     private static void onRegisterRenderers(EntityRenderersEvent.RegisterRenderers event) {

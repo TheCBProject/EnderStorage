@@ -26,9 +26,6 @@ public class EnderStorage {
         EnderStorageConfig.load();
 
         EnderStorageModContent.init(modBus);
-        if (FMLEnvironment.getDist().isClient()) {
-            ClientInit.init(modBus);
-        }
 
         EnderStorageNetwork.init(modBus, container);
 
@@ -40,11 +37,9 @@ public class EnderStorage {
         ServerTankSynchronizer.init(modBus);
 
         DataGenerators.init(modBus);
+
+        if (FMLEnvironment.getDist().isClient()) {
+            ClientInit.init(modBus);
+        }
     }
-
-    //    @Mod.EventHandler
-    //    public void serverStarting(FMLServerStartingEvent event) {
-    //        event.registerServerCommand(new EnderStorageCommand());
-    //    }
-
 }
